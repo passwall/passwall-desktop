@@ -1,0 +1,95 @@
+$spacer-map: (
+  0: $spacer-0,
+  1: $spacer-1,
+  2: $spacer-2,
+  3: $spacer-3,
+  4: $spacer-4,
+  5: $spacer-5,
+  6: $spacer-6,
+  7: $spacer-7,
+  8: $spacer-8
+) !default;
+
+@each $scale, $size in $spacer-map {
+  .m-#{$scale} {
+    margin: $size !important;
+  }
+  .my-#{$scale},
+  .mt-#{$scale} {
+    margin-top: $size !important;
+  }
+  .mx-#{$scale},
+  .mr-#{$scale} {
+    margin-right: $size !important;
+  }
+  .my-#{$scale},
+  .mb-#{$scale} {
+    margin-bottom: $size !important;
+  }
+  .mx-#{$scale},
+  .ml-#{$scale} {
+    margin-left: $size !important;
+  }
+
+  @if ($size != 0) {
+    .m-n#{$scale} {
+      margin: -$size !important;
+    }
+    .my-n#{$scale},
+    .mt-n#{$scale} {
+      margin-top: -$size !important;
+    }
+    .mx-n#{$scale},
+    .mr-n#{$scale} {
+      margin-right: -$size !important;
+    }
+    .my-n#{$scale},
+    .mb-n#{$scale} {
+      margin-bottom: -$size !important;
+    }
+    .mx-n#{$scale},
+    .ml-n#{$scale} {
+      margin-left: -$size !important;
+    }
+  }
+
+  // padding
+
+  .p-#{$scale} {
+    padding: $size !important;
+  }
+  .py-#{$scale},
+  .pt-#{$scale} {
+    padding-top: $size !important;
+  }
+  .px-#{$scale},
+  .pr-#{$scale} {
+    padding-right: $size !important;
+  }
+  .py-#{$scale},
+  .pb-#{$scale} {
+    padding-bottom: $size !important;
+  }
+  .px-#{$scale},
+  .pl-#{$scale} {
+    padding-left: $size !important;
+  }
+}
+
+.my-auto,
+.mt-auto {
+  margin-top: auto !important;
+}
+.my-auto,
+.mb-auto {
+  margin-bottom: auto !important;
+}
+
+.mx-auto,
+.ml-auto {
+  margin-left: auto !important;
+}
+.mx-auto,
+.mr-auto {
+  margin-right: auto !important;
+}

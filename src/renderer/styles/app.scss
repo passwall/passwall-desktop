@@ -1,0 +1,111 @@
+// Config
+@import 'config/variables';
+@import 'config/font-face';
+@import 'config/formalize';
+
+// Plugins
+@import 'plugins/snotify';
+@import 'plugins/v-tooltip';
+
+// Utilities
+@import 'utilities/space';
+@import 'utilities/colors';
+@import 'utilities/flexbox';
+@import 'utilities/typography';
+@import 'utilities/display';
+@import 'utilities/visibility';
+
+html {
+  color: $color-dark;
+}
+
+.radius {
+  border-radius: $radius;
+}
+
+.radius-2 {
+  border-radius: $radius-2;
+}
+
+.rounded {
+  border-radius: 50%;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fade {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity $transition;
+  }
+
+  &-enter,
+  &-leave-to {
+    opacity: 0;
+  }
+}
+
+.table-row {
+  &-enter-active,
+  &-leave-active {
+    transition: $transition;
+  }
+
+  &-enter {
+    transform: translateX(-10px);
+  }
+
+  &-leave-to {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.anim-spin {
+  animation: spin 2s linear infinite;
+}
+
+.text-center  {
+  text-align: center;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.c-pointer {
+  cursor: pointer;
+}
+
+hr {
+  border: 0;
+  border-bottom: 1px solid $color-dark-10;
+}
+
+.slide {
+  &-enter-active {
+    transition: all $transition ease;
+  }
+
+  &-leave-active {
+    transition: all $transition ease;
+  }
+
+  &-enter,
+  &-leave-to {
+    transform: translateX(100%);
+  }
+}

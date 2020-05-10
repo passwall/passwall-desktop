@@ -1,0 +1,115 @@
+.tooltip {
+  $arrow-size: 8px;
+  display: block !important;
+  z-index: 10000;
+  box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.15);
+
+  .tooltip-inner {
+    background: black;
+    color: white;
+    border-radius: $radius-2;
+    padding: $spacer-2 $spacer-3;
+    font-weight: $font-weight-medium;
+  }
+
+  .tooltip-arrow {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: absolute;
+    margin: $arrow-size;
+    border-color: black;
+    z-index: 1;
+  }
+
+  &[x-placement^='top'] {
+    margin-bottom: $arrow-size;
+
+    .tooltip-arrow {
+      border-width: $arrow-size $arrow-size 0 $arrow-size;
+      border-left-color: transparent !important;
+      border-right-color: transparent !important;
+      border-bottom-color: transparent !important;
+      bottom: -$arrow-size;
+      left: calc(50% - #{$arrow-size});
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  &[x-placement^='bottom'] {
+    margin-top: $arrow-size;
+
+    .tooltip-arrow {
+      border-width: 0 $arrow-size $arrow-size $arrow-size;
+      border-left-color: transparent !important;
+      border-right-color: transparent !important;
+      border-top-color: transparent !important;
+      top: -$arrow-size;
+      left: calc(50% - #{$arrow-size});
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  &[x-placement^='right'] {
+    margin-left: 5px;
+
+    .tooltip-arrow {
+      border-width: $arrow-size $arrow-size $arrow-size 0;
+      border-left-color: transparent !important;
+      border-top-color: transparent !important;
+      border-bottom-color: transparent !important;
+      left: -$arrow-size;
+      top: calc(50% - #{$arrow-size});
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  &[x-placement^='left'] {
+    margin-right: 5px;
+
+    .tooltip-arrow {
+      border-width: $arrow-size 0 $arrow-size $arrow-size;
+      border-top-color: transparent !important;
+      border-right-color: transparent !important;
+      border-bottom-color: transparent !important;
+      right: -$arrow-size;
+      top: calc(50% - #{$arrow-size});
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  &.popover {
+    .popover-inner {
+      background-color: white;
+      color: black;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .popover-arrow {
+      border-color: #f9f9f9;
+    }
+  }
+
+  &[aria-hidden='true'] {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.15s, visibility 0.15s;
+  }
+
+  &[aria-hidden='false'] {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.15s;
+  }
+}
+
+.tooltip.popover .popover-inner {
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+  padding: 0px;
+}

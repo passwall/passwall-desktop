@@ -1,0 +1,76 @@
+// Form size
+$input-height: 52px !default;
+
+// Button size
+$button-height: 48px !default;
+$button-height-small: 35px !default;
+$button-height-x-small: 26px !default;
+$button-height-xx-small: 20px !default;
+
+// Typography
+$line-height-normal: 1.4;
+$line-height-head: 1.2;
+
+$font-weight-regular: 400 !default;
+$font-weight-medium: 500 !default;
+$font-weight-semibold: 600 !default;
+
+$font-size-mini: 10px !default;
+$font-size-small: 12px !default;
+$font-size-normal: 13px !default;
+$font-size-medium: 14px !default;
+$font-size-big: 15px !default;
+
+$font-size-h5: $font-size-normal !default;
+$font-size-h4: $font-size-big !default;
+$font-size-h3: 18px !default;
+$font-size-h2: 36px !default;
+$font-size-h1: 46px !default;
+
+// Global
+$radius: 4px !default;
+$radius-2: 2px !default;
+$transition: 120ms !default;
+
+// Colors
+$color-gray: #8b939b !default;
+$color-dark: #1d252d !default;
+$color-dark-60: rgba($color-dark, 0.6) !default;
+$color-dark-50: rgba($color-dark, 0.5) !default;
+$color-dark-30: rgba($color-dark, 0.3) !default;
+$color-dark-20: rgba($color-dark, 0.2) !default;
+$color-dark-10: rgba($color-dark, 0.1) !default;
+$color-dark-5: rgba($color-dark, 0.05) !default;
+$color-dark-3: rgba($color-dark, 0.03) !default;
+$color-white: #fff !default;
+$color-turk: #2dccd3 !default;
+$color-turk-dark: #1a757a !default;
+$color-turk-10: rgba($color-turk, 0.1) !default;
+$color-turk-30: rgba($color-turk, 0.3) !default;
+$color-red: #ff6961 !default;
+$color-red-dark: #c21a00 !default;
+$color-red-soft: rgba($color-red, 0.2) !default;
+$color-orange: #fca400 !default;
+$color-orange-dark: #c27100 !default;
+$color-orange-soft: rgba($color-orange, 0.2) !default;
+$color-blue: #3e7af2 !default;
+$color-blue-dark: #0870a1 !default;
+$color-blue-soft: rgba($color-blue, 0.2) !default;
+$color-green: #00c76c !default;
+$color-green-soft: rgba($color-green, 0.2) !default;
+$color-red-5: rgba($color-red, 0.05) !default;
+$color-orange-5: rgba($color-orange, 0.05) !default;
+$color-blue-5: rgba($color-blue, 0.05) !default;
+
+// space
+$spacer: 8px !default;
+
+$spacer-0: 0 !default; // 0
+$spacer-1: round($spacer / 2) !default; // 4px
+$spacer-2: $spacer !default; // 8px
+$spacer-3: $spacer * 2 !default; // 16px
+$spacer-4: $spacer * 3 !default; // 24px
+$spacer-5: $spacer * 4 !default; // 32px
+$spacer-6: $spacer * 5 !default; // 40px
+$spacer-7: $spacer * 6 !default; // 48px
+$spacer-8: $spacer * 7 !default; // 56px
