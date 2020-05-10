@@ -1,6 +1,4 @@
-# passwall-desktop
-
-> PassWall Desktop
+# PassWall Desktop
 
 #### Build Setup
 
