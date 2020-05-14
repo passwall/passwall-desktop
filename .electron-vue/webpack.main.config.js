@@ -1,50 +1,46 @@
-'use strict'
+'use strict';
 
-process.env.BABEL_ENV = 'main'
+process.env.BABEL_ENV = 'main';
 
-const path = require('path')
-const { dependencies } = require('../package.json')
-const webpack = require('webpack')
+const path = require('path');
+const { dependencies } = require('../package.json');
+const webpack = require('webpack');
 
-const MinifyPlugin = require("babel-minify-webpack-plugin")
+const MinifyPlugin = require('babel-minify-webpack-plugin');
 
 let mainConfig = {
   entry: {
-    main: path.join(__dirname, '../src/main/index.js')
+    main: path.join(__dirname, '../src/main/index.js'),
   },
-  externals: [
-    ...Object.keys(dependencies || {})
-  ],
+  externals: [...Object.keys(dependencies || {})],
   module: {
     rules: [
       {
         test: /\.js$/,
         use: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.node$/,
-        use: 'node-loader'
-      }
-    ]
+        use: 'node-loader',
+      },
+    ],
   },
   node: {
     __dirname: process.env.NODE_ENV !== 'production',
-    __filename: process.env.NODE_ENV !== 'production'
+    __filename: process.env.NODE_ENV !== 'production',
   },
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
-    path: path.join(__dirname, '../dist/electron')
+    path: path.join(__dirname, '../dist/electron'),
   },
-  plugins: [
-    new webpack.NoEmitOnErrorsPlugin()
-  ],
+  plugins: [new webpack.NoEmitOnErrorsPlugin()],
   resolve: {
-    extensions: ['.js', '.json', '.node']
+    extensions: ['.js', '.json', '.node'],
   },
-  target: 'electron-main'
-}
+  target: 'electron-main',
+};
 
 /**
  * Adjust mainConfig for development settings
@@ -52,9 +48,9 @@ let mainConfig = {
 if (process.env.NODE_ENV !== 'production') {
   mainConfig.plugins.push(
     new webpack.DefinePlugin({
-      '__static': `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`
-    })
-  )
+      __static: `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`,
+    }),
+  );
 }
 
 /**
@@ -64,9 +60,9 @@ if (process.env.NODE_ENV === 'production') {
   mainConfig.plugins.push(
     new MinifyPlugin(),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': '"production"'
-    })
-  )
+      'process.env.NODE_ENV': '"production"',
+    }),
+  );
 }
 
-module.exports = mainConfig
+module.exports = mainConfig;

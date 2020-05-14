@@ -1,16 +1,22 @@
-import Vue from 'vue';
+import Vue from 'vue'
 
-import App from './App';
-import router from './router';
-import store from './store';
-import i18n from './i18n';
+import '@/components'
+import App from './App'
+import router from './router'
+import store from './store'
+import i18n from './i18n'
 
-Vue.config.productionTip = false;
+import VeeValidate from 'vee-validate'
+Vue.use(VeeValidate, {
+  events: 'input|blur'
+})
+
+Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
   router,
   store,
   i18n,
-  render: h => h(App),
-}).$mount('#app');
+  render: h => h(App)
+}).$mount('#app')
