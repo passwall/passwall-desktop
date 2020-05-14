@@ -9,7 +9,7 @@
     <form class="login-form" @submit.stop.prevent="onLogin">
       <!-- E-Mail Address -->
       <div>
-        <label>E-Mail Address</label>
+        <label v-text="$t('EMailAddress')" />
         <FormText
           v-model="LoginForm.email"
           size="medium"
@@ -19,11 +19,20 @@
         />
       </div>
       <!-- Master Password -->
-      <div>
-        <label>Master Password</label>
+      <div class="mt-4 mb-5">
+        <label class="w-100">
+          {{ $t('MasterPassword') }}
+          <Icon
+            size="14"
+            name="question-mark"
+            class="master-pass-tooltip"
+            v-tooltip.bottom="$t('MasterPasswordRecoveryMessage')"
+          />
+        </label>
         <FormText
           v-model="LoginForm.master_password"
           size="medium"
+          type="password"
           v-validate="'required|min:6|max:100'"
           name="Master Password"
           placeholder="Master Password"
@@ -59,22 +68,33 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .login-container {
   width: 100%;
+  height: 100%;
   position: relative;
   display: flex;
   justify-content: space-between;
+
+  .btn,
+  .form-text {
+    width: 350px;
+  }
 }
 
-.login-container .btn,
-.login-container .form-text {
-  width: 350px;
+.master-pass-tooltip {
+  color: $color-gray;
+  float: right;
+  margin-top: 4px;
+
+  &:hover {
+    color: #fff;
+  }
 }
 
-.login-background  {
+.login-background {
   position: absolute;
-  bottom: 0px;
+  top: 0px;
   left: 0px;
 }
 
@@ -92,12 +112,14 @@ export default {
   padding-top: 130px;
 }
 
-.login-form label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 22px;
-  color: #fff;
-  margin-bottom: 8px;
+.login-form {
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    color: #fff;
+    margin-bottom: 8px;
+  }
 }
 </style>

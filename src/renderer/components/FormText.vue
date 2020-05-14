@@ -3,7 +3,7 @@
     <input
       :type="$attrs.type || 'text'"
       :value="value"
-      :class="[`--${size}`]"
+      :class="[`--${size}`, { '--error': getError }]"
       class="form-text"
       autocorrect="off"
       autocomplete="off"
@@ -31,7 +31,6 @@ export default {
 
   computed: {
     getError() {
-      console.log(this.errors, this.name)
       const error = this.errors.items.find(e => e.field == this.name)
       return error ? error.msg : ''
     },
@@ -48,10 +47,13 @@ export default {
 }
 </script>
 
-<style>
-.form-text-wrapper .error {
-  font-size: 12px;
-  color: red;
+<style lang="scss">
+.form-text-wrapper {
+  .error {
+    font-size: 10px;
+    color: $color-red;
+    margin-top: $spacer-1;
+  }
 }
 
 .form-text {
@@ -60,21 +62,31 @@ export default {
   color: rgba(255, 255, 255, 0.2);
   background-color: transparent;
   color: #fff;
-}
+  caret-color: #5707ff;
 
-.form-text:placeholder {
-  color: rgba(255, 255, 255, 0.2);
-}
+  &:placeholder {
+    color: rgba(255, 255, 255, 0.2);
+  }
 
-.form-text.--small {
-  height: 32px;
-  padding: 15px 16px;
-}
+  &:focus {
+    border: 1px solid #5707ff;
+  }
 
-.form-text.--medium {
-  height: 48px;
-  padding: 15px 16px;
-  font-size: 12px;
-  line-height: 18px;
+  &.--error {
+    border: 1px solid #ff0000;
+  }
+
+  // sizes
+  &.--small {
+    height: 32px;
+    padding: 15px 16px;
+  }
+
+  &.--medium {
+    height: 48px;
+    padding: 15px 16px;
+    font-size: 12px;
+    line-height: 18px;
+  }
 }
 </style>

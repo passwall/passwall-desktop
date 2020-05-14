@@ -33,7 +33,9 @@ $radius-2: 2px !default;
 $transition: 120ms !default;
 
 // Colors
-$color-gray: #8b939b !default;
+$color-primary-400: #151c27;
+$color-gray: #8b93a2 !default;
+$color-gray-20: rgba($color-gray, 0.2) !default;
 $color-dark: #1d252d !default;
 $color-dark-60: rgba($color-dark, 0.6) !default;
 $color-dark-50: rgba($color-dark, 0.5) !default;
@@ -48,7 +50,7 @@ $color-turk-dark: #1a757a !default;
 $color-turk-10: rgba($color-turk, 0.1) !default;
 $color-turk-30: rgba($color-turk, 0.3) !default;
 $color-red: #ff6961 !default;
-$color-red-dark: #c21a00 !default;
+$color-red-dark: #cf472d !default;
 $color-red-soft: rgba($color-red, 0.2) !default;
 $color-orange: #fca400 !default;
 $color-orange-dark: #c27100 !default;

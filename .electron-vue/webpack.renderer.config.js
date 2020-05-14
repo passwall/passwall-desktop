@@ -38,6 +38,15 @@ let rendererConfig = {
         use: ['vue-style-loader', 'css-loader'],
       },
       {
+        test: /\.scss$/,
+        use: ['vue-style-loader', 'css-loader', {
+          loader: 'sass-loader',
+          options: {
+            prependData: '@import "./src/renderer/styles/config/variables";'
+          }
+        }],
+      },
+      {
         test: /\.html$/,
         use: 'vue-html-loader',
       },
