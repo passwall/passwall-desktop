@@ -1,18 +1,23 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import Vue from 'vue'
+import Router from 'vue-router'
+import CheckAuth from './auth-check'
 
-Vue.use(Router);
+Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
       name: 'Login',
-      component: require('@/views/Login').default,
+      component: require('@/views/Login').default
     },
     {
       path: '*',
-      redirect: '/',
-    },
-  ],
-});
+      redirect: '/'
+    }
+  ]
+})
+
+// router.beforeEach(CheckAuth)
+
+export default router

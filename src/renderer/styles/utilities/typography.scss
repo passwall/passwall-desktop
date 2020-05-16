@@ -40,46 +40,65 @@ strong {
 }
 
 h1,
-h2 {
-  font-family: 'Tungsten', sans-serif;
-  line-height: $line-height-head;
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'IBM Plex Sans';
 }
 
 h1,
 .h1 {
   font-size: $font-size-h1;
+  font-weight: bold;
+  line-height: 72px;
 }
 
 h2,
 .h2 {
   font-size: $font-size-h2;
+  font-weight: bold;
+  line-height: 56px;
 }
 
 h3,
 .h3 {
   font-size: $font-size-h3;
-  font-weight: $font-weight-regular;
+  font-weight: bold;
+  line-height: 48px;
 }
 
 h4,
 .h4 {
   font-size: $font-size-h4;
-  font-weight: $font-weight-regular;
+  font-weight: bold;
+  line-height: 32px;
 }
 
 h5,
 .h5 {
   font-size: $font-size-h5;
-  font-weight: $font-weight-medium;
+  font-weight: bold;
+  line-height: 24px;
 }
 
-.ta-left {
+h6,
+.h6 {
+  font-size: $font-size-h6;
+  font-weight: bold;
+  line-height: 16px;
+}
+
+.text-left {
   text-align: left !important;
 }
-.ta-right {
+
+.text-right {
   text-align: right !important;
 }
-.ta-center {
+
+.text-center {
   text-align: center !important;
 }
 

@@ -3,8 +3,7 @@
   font-style: normal;
   font-weight: normal; /*400*/
   font-display: swap;
-  src: url('/fonts/inter/Inter-Regular.woff2') format('woff2'),
-    url('/fonts/inter/Inter-Regular.woff') format('woff');
+  src: url('/static/fonts/Inter/Inter-Regular.ttf') format('truetype');
 }
 
 @font-face {
@@ -12,8 +11,7 @@
   font-style: normal;
   font-weight: 500; /*500*/
   font-display: swap;
-  src: url('/fonts/inter/Inter-Medium.woff2') format('woff2'),
-    url('/fonts/inter/Inter-Medium.woff') format('woff');
+  src: url('/static/fonts/Inter/Inter-Medium.ttf') format('truetype');
 }
 
 @font-face {
@@ -21,6 +19,30 @@
   font-style: normal;
   font-weight: bold; /*600*/
   font-display: swap;
-  src: url('/fonts/inter/Inter-SemiBold.woff2') format('woff2'),
-    url('/fonts/inter/Inter-SemiBold.woff') format('woff');
+  src: url('/static/fonts/Inter/Inter-SemiBold.ttf') format('truetype');
+}
+
+// 'IBM Plex Sans'
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: bold; /*600*/
+  font-display: swap;
+  src: url('/static/fonts/IBMPlexSans/IBMPlexSans-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 500; /*500*/
+  font-display: swap;
+  src: url('/static/fonts/IBMPlexSans/IBMPlexSans-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: bold; /*600*/
+  font-display: swap;
+  src: url('/static/fonts/IBMPlexSans/IBMPlexSans-Regular.ttf') format('truetype');
 }

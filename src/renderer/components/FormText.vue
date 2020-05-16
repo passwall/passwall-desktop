@@ -51,7 +51,7 @@ export default {
 .form-text-wrapper {
   .error {
     font-size: 10px;
-    color: $color-red;
+    color: $color-danger;
     margin-top: $spacer-1;
   }
 }

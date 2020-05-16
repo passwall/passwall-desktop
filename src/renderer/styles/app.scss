@@ -15,7 +15,7 @@
 @import 'utilities/visibility';
 
 html {
-  color: $color-dark;
+  color: $color-primary;
 }
 
 .radius {
@@ -91,7 +91,7 @@ html {
 
 hr {
   border: 0;
-  border-bottom: 1px solid $color-dark-10;
+  border-bottom: 1px solid $color-primary;
 }
 
 .slide {

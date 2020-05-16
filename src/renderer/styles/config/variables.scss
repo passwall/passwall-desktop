@@ -21,11 +21,12 @@ $font-size-normal: 13px !default;
 $font-size-medium: 14px !default;
 $font-size-big: 15px !default;
 
-$font-size-h5: $font-size-normal !default;
-$font-size-h4: $font-size-big !default;
-$font-size-h3: 18px !default;
-$font-size-h2: 36px !default;
-$font-size-h1: 46px !default;
+$font-size-h6: 16px !default;
+$font-size-h5: 24px !default;
+$font-size-h4: 32px !default;
+$font-size-h3: 40px !default;
+$font-size-h2: 48px !default;
+$font-size-h1: 64px !default;
 
 // Global
 $radius: 4px !default;
@@ -33,40 +34,23 @@ $radius-2: 2px !default;
 $transition: 120ms !default;
 
 // Colors
-$color-primary-400: #151c27;
-$color-gray: #8b93a2 !default;
-$color-gray-20: rgba($color-gray, 0.2) !default;
-$color-dark: #1d252d !default;
-$color-dark-60: rgba($color-dark, 0.6) !default;
-$color-dark-50: rgba($color-dark, 0.5) !default;
-$color-dark-30: rgba($color-dark, 0.3) !default;
-$color-dark-20: rgba($color-dark, 0.2) !default;
-$color-dark-10: rgba($color-dark, 0.1) !default;
-$color-dark-5: rgba($color-dark, 0.05) !default;
-$color-dark-3: rgba($color-dark, 0.03) !default;
-$color-white: #fff !default;
-$color-turk: #2dccd3 !default;
-$color-turk-dark: #1a757a !default;
-$color-turk-10: rgba($color-turk, 0.1) !default;
-$color-turk-30: rgba($color-turk, 0.3) !default;
-$color-red: #ff6961 !default;
-$color-red-dark: #cf472d !default;
-$color-red-soft: rgba($color-red, 0.2) !default;
-$color-orange: #fca400 !default;
-$color-orange-dark: #c27100 !default;
-$color-orange-soft: rgba($color-orange, 0.2) !default;
-$color-blue: #3e7af2 !default;
-$color-blue-dark: #0870a1 !default;
-$color-blue-soft: rgba($color-blue, 0.2) !default;
-$color-green: #00c76c !default;
-$color-green-soft: rgba($color-green, 0.2) !default;
-$color-red-5: rgba($color-red, 0.05) !default;
-$color-orange-5: rgba($color-orange, 0.05) !default;
-$color-blue-5: rgba($color-blue, 0.05) !default;
+$color-primary: #1e253d !default;
+$color-secondary: #00ffd1 !default;
+$color-link: #4c91ff !default;
+
+$color-success: #6af499 !default;
+$color-danger: #ff5151 !default;
+$color-warning: #ea5f00 !default;
+$color-info: #68c3e3 !default;
+
+$color-gray-200: #e3e3e3 !default;
+$color-gray-300: #8b93a1 !default;
+$color-gray-400: #151c27 !default;
+$color-gray-500: #0a0f17 !default;
+$color-gray-600: #06070a !default;
 
 // space
 $spacer: 8px !default;
-
 $spacer-0: 0 !default; // 0
 $spacer-1: round($spacer / 2) !default; // 4px
 $spacer-2: $spacer !default; // 8px

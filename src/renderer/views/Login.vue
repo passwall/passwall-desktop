@@ -83,7 +83,7 @@ export default {
 }
 
 .master-pass-tooltip {
-  color: $color-gray;
+  color: $color-gray-300;
   float: right;
   margin-top: 4px;
 
