@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import Axios from 'axios'
+import AuthService from '@/api/services/Auth'
+import HTTPClient from '@/api/HTTPClient'
 
 import '@/styles/app.scss'
 import '@/components'
@@ -21,21 +22,28 @@ Vue.config.productionTip = false
 
 const AuthCheck = async () => {
   const goToLogin = async () => {
-    localStorage.removeItem('token')
+    localStorage.removeItem('access_token')
+    store.state.access_token = null
+    store.state.refresh_token = null
     await router.push({ name: 'Login' })
   }
 
   try {
-    const token = localStorage.getItem('token')
-    if (token) {
-      Axios.defaults.headers.common.Authorization = `Bearer ${token}`
+    if (store.state.access_token) {
+      HTTPClient.setHeader('Authorization', `Bearer ${store.state.access_token}`)
 
       try {
-        await Axios.post('auth/check')
+        await AuthService.Check()
       } catch (error) {
         try {
-          const { data } = await Axios.post('auth/refresh')
-          localStorage.setItem('token', data.token)
+          const { data } = await AuthService.Refresh({
+            refresh_token: store.state.refresh_token
+          })
+
+          store.state.access_token = data.access_token
+          store.state.refresh_token = data.refresh_token
+          localStorage.setItem('access_token', data.access_token)
+          localStorage.setItem('refresh_token', data.refresh_token)
         } catch (error) {
           await goToLogin()
         }
@@ -47,8 +55,8 @@ const AuthCheck = async () => {
 }
 
 ;(async () => {
-  // await AuthCheck()
-  // setInterval(AuthCheck, 30e3)
+  await AuthCheck()
+  setInterval(AuthCheck, 30e3)
 
   /* eslint-disable no-new */
   new Vue({

@@ -45,23 +45,31 @@
 </template>
 
 <script>
-import FormText from '@/components/FormText'
+import { mapActions } from 'vuex'
 
 export default {
   data() {
     return {
       LoginForm: {
-        email: '',
-        master_password: ''
+        email: 'hello@passwall.io',
+        master_password: 'password'
       }
     }
   },
 
   methods: {
+    ...mapActions('Auth', ['Login']),
+
     onLogin() {
-      this.$validator.validate().then(result => {
+      this.$validator.validate().then(async result => {
         if (!result) return
-        conosle.log(this.LoginForm)
+
+        try {
+          await this.Login(this.LoginForm)
+          this.$router.push({ name: 'Home' })
+        } catch (error) {
+          console.log(error)
+        }
       })
     }
   }
@@ -102,14 +110,18 @@ export default {
   position: absolute;
   top: 0px;
   right: 0px;
+  z-index: 10;
 }
 
 .login-form {
   width: 50%;
+  min-width: 450px;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 130px;
+  background-color: black;
+  z-index: 9;
 }
 
 .login-form {

@@ -1,6 +1,20 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
 
-Vue.use(Vuex);
+import Auth from '@/views/Auth/store'
 
-export default new Vuex.Store({});
+export default new Vuex.Store({
+  state() {
+    return {
+      access_token: localStorage.getItem('access_token'),
+      refresh_token: localStorage.getItem('refresh_token')
+    }
+  },
+
+  actions: {},
+
+  modules: {
+    Auth
+  }
+})

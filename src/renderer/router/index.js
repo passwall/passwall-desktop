@@ -7,9 +7,17 @@ Vue.use(Router)
 const router = new Router({
   routes: [
     {
-      path: '/',
+      path: '/login',
       name: 'Login',
-      component: require('@/views/Login').default
+      component: require('@/views/Auth/Login').default,
+      meta: {
+        auth: true
+      }
+    },
+    {
+      path: '/',
+      name: 'Home',
+      component: require('@/views/Home/index').default
     },
     {
       path: '*',
@@ -18,6 +26,6 @@ const router = new Router({
   ]
 })
 
-// router.beforeEach(CheckAuth)
+router.beforeEach(CheckAuth)
 
 export default router
