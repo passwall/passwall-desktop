@@ -18,6 +18,19 @@ html {
   color: $color-primary;
 }
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  outline: 0;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+}
+
 .radius {
   border-radius: $radius;
 }
