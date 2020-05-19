@@ -2,8 +2,8 @@
   <div class="login-container">
     <!-- Left Background -->
     <div>
-      <Icon name="passwall-back" class="login-background" width="450px" height="540px" />
-      <Icon name="right-corner" class="login-right-corner" size="82" />
+      <VIcon name="passwall-back" class="login-background" width="450px" height="540px" />
+      <VIcon name="right-corner" class="login-right-corner" size="82" />
     </div>
     <!-- Login Form -->
     <form class="login-form" @submit.stop.prevent="onLogin">
@@ -22,7 +22,7 @@
       <div class="mt-4 mb-5">
         <label class="w-100">
           {{ $t('MasterPassword') }}
-          <Icon
+          <VIcon
             size="14"
             name="question-mark"
             class="master-pass-tooltip"

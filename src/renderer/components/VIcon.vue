@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: 'Icon',
+  name: 'VIcon',
 
   props: {
     name: String,
