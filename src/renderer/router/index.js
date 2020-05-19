@@ -23,7 +23,14 @@ const router = new Router({
         {
           path: '/all-items',
           name: 'AllItems',
-          component: require('@/views/AllItems/index').default
+          component: require('@/views/AllItems/index').default,
+          children: [
+            {
+              path: ':id',
+              name: 'LoginDetail',
+              component: require('@/views/Logins/Detail').default
+            }
+          ]
         },
         {
           path: '/logins',

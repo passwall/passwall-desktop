@@ -1,21 +1,26 @@
 <template>
-  <div class="items-container">
-    <!-- Search -->
-    <div class="search-wrapper">
-      <VFormText
-        :placeholder="$t('Search passwords, websites, notes')"
-        theme="black"
-        class="w-100"
-      />
+  <div class="content-container">
+    <div class="items-container">
+      <!-- Search -->
+      <div class="search-wrapper">
+        <VFormText
+          :placeholder="$t('Search passwords, websites, notes')"
+          theme="black"
+          class="w-100"
+        />
+      </div>
+      <!-- Items -->
+      <perfect-scrollbar class="all-items">
+        <LoginItem
+          v-for="i in 20"
+          :key="i"
+          :data="{ id: i, website: 'spotify.com', email: 'a.kemalakcay@gmail.com' }"
+          @click="onClickItem({ id: i, website: 'spotify.com', email: 'a.kemalakcay@gmail.com' })"
+        />
+      </perfect-scrollbar>
     </div>
-    <!-- Items -->
-    <perfect-scrollbar class="all-items">
-      <LoginItem
-        v-for="i in 20"
-        :key="i"
-        :data="{ website: 'spotify.com', email: 'a.kemalakcay@gmail.com' }"
-      />
-    </perfect-scrollbar>
+    <!-- Detail -->
+    <router-view />
   </div>
 </template>
 
@@ -23,15 +28,30 @@
 export default {
   data() {
     return {}
+  },
+
+  methods: {
+    onClickItem(data) {
+      this.$router.push({
+        name: 'LoginDetail',
+        params: { id: data.id, data }
+      })
+    }
   }
 }
 </script>
 
 <style lang="scss">
+.content-container {
+  width: 100%;
+  display: flex;
+}
+
 .items-container {
   display: flex;
   flex-direction: column;
   min-width: 295px;
+  max-width: 295px;
   height: 100vh;
 }
 

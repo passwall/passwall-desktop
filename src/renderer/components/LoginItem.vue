@@ -1,5 +1,5 @@
 <template>
-  <div class="login-item">
+  <div class="login-item" @click="$emit('click')">
     <!-- Avatar -->
     <div class="login-item-avatar">
       <img v-if="data.src" :src="data.src" />
