@@ -2,7 +2,10 @@
   <div class="sidebar">
     <div class="account">
       <!-- Avatar -->
-      <img src="" class="account-avatar rounded" />
+      <!-- <img src="" class="account-avatar rounded" /> -->
+      <div class="account-avatar">
+        <UserIcon size="22" />
+      </div>
       <!-- Info -->
       <div class="account-info">
         <span class="account-info-name" v-text="user.name" />
@@ -115,8 +118,13 @@ export default {
     padding: 0 $spacer-3;
 
     &-avatar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       width: 40px;
       height: 40px;
+      border-radius: 50%;
+      background-color: $color-gray-600;
     }
 
     &-info {

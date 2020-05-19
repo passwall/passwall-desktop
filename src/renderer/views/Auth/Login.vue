@@ -10,7 +10,7 @@
       <!-- E-Mail Address -->
       <div>
         <label v-text="$t('EMailAddress')" />
-        <FormText
+        <VFormText
           v-model="LoginForm.email"
           size="medium"
           v-validate="'required|email'"
@@ -29,7 +29,7 @@
             v-tooltip.bottom="$t('MasterPasswordRecoveryMessage')"
           />
         </label>
-        <FormText
+        <VFormText
           v-model="LoginForm.master_password"
           size="medium"
           type="password"

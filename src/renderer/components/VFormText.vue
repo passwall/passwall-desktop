@@ -3,26 +3,30 @@
     <input
       :type="$attrs.type || 'text'"
       :value="value"
-      :class="[`--${size}`, { '--error': getError }]"
+      :class="clazz"
       class="form-text"
       autocorrect="off"
       autocomplete="off"
       spellcheck="false"
-      v-bind="$attrs"
       v-on="inputListeners"
+      v-bind="$attrs"
     />
     <!-- Error -->
-    <p class="error" v-text="getError" />
+    <p class="error" v-if="getError" v-text="getError" />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'FormText',
+  name: 'VFormText',
 
   props: {
     name: String,
     value: String,
+    theme: {
+      type: String,
+      default: 'default'
+    },
     size: {
       type: String,
       default: 'small'
@@ -30,6 +34,10 @@ export default {
   },
 
   computed: {
+    clazz() {
+      return [`--${this.size}`, `--${this.theme}`, { '--error': this.getError }]
+    },
+
     getError() {
       const error = this.errors.items.find(e => e.field == this.name)
       return error ? error.msg : ''
@@ -54,39 +62,52 @@ export default {
     color: $color-danger;
     margin-top: $spacer-1;
   }
-}
 
-.form-text {
-  border: 1px solid #151c27;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.2);
-  background-color: transparent;
-  color: #fff;
-  caret-color: #5707ff;
+  .form-text {
+    width: 100%;
+    color: #fff;
 
-  &:placeholder {
-    color: rgba(255, 255, 255, 0.2);
-  }
+    &::placeholder {
+      color: $color-gray-300;
+    }
 
-  &:focus {
-    border: 1px solid #5707ff;
-  }
+    &:focus {
+      border: 1px solid $color-primary;
+    }
 
-  &.--error {
-    border: 1px solid #ff0000;
-  }
+    &.--error {
+      border: 1px solid #ff0000;
+    }
 
-  // sizes
-  &.--small {
-    height: 32px;
-    padding: 15px 16px;
-  }
+    // themes
+    &.--default {
+      border: 1px solid #151c27;
+      color: $color-gray-300;
+      background-color: transparent;
+      caret-color: $color-primary;
+    }
 
-  &.--medium {
-    height: 48px;
-    padding: 15px 16px;
-    font-size: 12px;
-    line-height: 18px;
+    &.--black {
+      color: $color-gray-300;
+    border: 1px solid black;
+      background-color: black;
+      caret-color: $color-primary;
+    }
+
+    // sizes
+    &.--small {
+      height: 32px;
+      border-radius: 4px;
+      padding: 15px 16px;
+    }
+
+    &.--medium {
+      border-radius: 8px;
+      height: 48px;
+      padding: 15px 16px;
+      font-size: 12px;
+      line-height: 18px;
+    }
   }
 }
 </style>

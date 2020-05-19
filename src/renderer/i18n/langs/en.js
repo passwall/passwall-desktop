@@ -11,5 +11,6 @@ export default {
   CreditCards: 'Credit Cards',
   Identities: 'Identities',
   GiveFeedback: 'Give Feedback',
-  Trash: 'Trash'
+  Trash: 'Trash',
+  'Search passwords, websites, notes': 'Search passwords, websites, notes'
 }

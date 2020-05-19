@@ -17,6 +17,7 @@ const router = new Router({
     {
       path: '/',
       name: 'Home',
+      redirect: '/all-items',
       component: require('@/views/Home/index').default,
       children: [
         {
