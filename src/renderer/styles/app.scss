@@ -62,6 +62,15 @@ html {
   }
 }
 
+.ps__rail-y {
+  width: 10px !important;
+  background-color: $color-gray-500 !important;
+}
+
+.ps__thumb-y {
+  background-color: $color-primary !important;
+}
+
 .table-row {
   &-enter-active,
   &-leave-active {

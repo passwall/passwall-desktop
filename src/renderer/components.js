@@ -8,7 +8,8 @@ import {
   CreditCardIcon,
   UserIcon,
   TrashIcon,
-  ExternalLinkIcon
+  ExternalLinkIcon,
+  CheveronRightIcon
 } from '@vue-hero-icons/solid'
 Vue.component(LogoutIcon.name, LogoutIcon)
 Vue.component(StarIcon.name, StarIcon)
@@ -18,6 +19,7 @@ Vue.component(CreditCardIcon.name, CreditCardIcon)
 Vue.component(UserIcon.name, UserIcon)
 Vue.component(TrashIcon.name, TrashIcon)
 Vue.component(ExternalLinkIcon.name, ExternalLinkIcon)
+Vue.component(CheveronRightIcon.name, CheveronRightIcon)
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
