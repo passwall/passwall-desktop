@@ -28,6 +28,26 @@ const router = new Router({
           path: '/logins',
           name: 'Logins',
           component: require('@/views/Logins/index').default
+        },
+        {
+          path: '/private-notes',
+          name: 'PrivateNotes',
+          component: require('@/views/PrivateNotes/index').default
+        },
+        {
+          path: '/credit-cards',
+          name: 'CreditCards',
+          component: require('@/views/CreditCards/index').default
+        },
+        {
+          path: '/identities',
+          name: 'Identities',
+          component: require('@/views/Identities/index').default
+        },
+        {
+          path: '/trash',
+          name: 'Trash',
+          component: require('@/views/Trash/index').default
         }
       ]
     },
