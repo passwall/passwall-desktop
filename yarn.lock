@@ -148,6 +148,27 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.60.tgz#73eb4d1e1c8aa5dc724363b57db019cf28863ef7"
   integrity sha512-YjPbypHFuiOV0bTgeF07HpEEqhmHaZqYNSdCKeBJa+yFoQ/7BC+FpJcwmi34xUIIRVFktnUyP1dPU8U0612GOg==
 
+"@vue-hero-icons/outline@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@vue-hero-icons/outline/-/outline-1.2.0.tgz#13d28d4867fbfd02792d27b9d8cd2124957dee81"
+  integrity sha512-Eebdw97wdRMZ+QAXQSC9J264rd4xIDWQ9RY3tNMtcXGIDL1POH3DiAS1pfsJRBzSMTFTNmYqqNvMfOBxE0uVuA==
+  dependencies:
+    "@vue/babel-helper-vue-jsx-merge-props" "^1.0.0"
+    heroicons "git+https://github.com/refactoringui/heroicons.git#master"
+
+"@vue-hero-icons/solid@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@vue-hero-icons/solid/-/solid-1.2.0.tgz#ecd8814dc4a4bda61bed273f036260103ee04f70"
+  integrity sha512-NuvJDADr0Zi05Xr/WinUP1Y56bCLm6P32t/0pbu/FKUsvNgaMDoedO+9a0nwBXtXmCnPKhCvnd+h6OYI/TzOkw==
+  dependencies:
+    "@vue/babel-helper-vue-jsx-merge-props" "^1.0.0"
+    heroicons "git+https://github.com/refactoringui/heroicons.git#master"
+
+"@vue/babel-helper-vue-jsx-merge-props@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@vue/babel-helper-vue-jsx-merge-props/-/babel-helper-vue-jsx-merge-props-1.0.0.tgz#048fe579958da408fb7a8b2a3ec050b50a661040"
+  integrity sha512-6tyf5Cqm4m6v7buITuwS+jHzPlIPxbFzEhXR5JGZpbrvOcp1hiQKckd305/3C7C36wFekNTQSxAtgeM0j0yoUw==
+
 "@vue/component-compiler-utils@^3.1.0":
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/@vue/component-compiler-utils/-/component-compiler-utils-3.1.2.tgz#8213a5ff3202f9f2137fe55370f9e8b9656081c3"
@@ -5272,6 +5293,10 @@ header-case@^1.0.0:
   dependencies:
     no-case "^2.2.0"
     upper-case "^1.1.3"
+
+"heroicons@git+https://github.com/refactoringui/heroicons.git#master":
+  version "0.2.0"
+  resolved "git+https://github.com/refactoringui/heroicons.git#bdbd41c50700c77300e4da38b1020a1765d14481"
 
 highlight.js@^9.3.0:
   version "9.18.1"

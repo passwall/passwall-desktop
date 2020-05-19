@@ -55,6 +55,8 @@
     }
   },
   "dependencies": {
+    "@vue-hero-icons/outline": "^1.2.0",
+    "@vue-hero-icons/solid": "^1.2.0",
     "axios": "^0.18.0",
     "electron": "^2.0.4",
     "v-tooltip": "^2.0.3",

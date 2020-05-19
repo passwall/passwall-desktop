@@ -9,6 +9,25 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 
+import {
+  LogoutIcon,
+  StarIcon,
+  LockClosedIcon,
+  ClipboardCheckIcon,
+  CreditCardIcon,
+  UserIcon,
+  TrashIcon,
+  ExternalLinkIcon
+} from '@vue-hero-icons/solid'
+Vue.component(LogoutIcon.name, LogoutIcon)
+Vue.component(StarIcon.name, StarIcon)
+Vue.component(LockClosedIcon.name, LockClosedIcon)
+Vue.component(ClipboardCheckIcon.name, ClipboardCheckIcon)
+Vue.component(CreditCardIcon.name, CreditCardIcon)
+Vue.component(UserIcon.name, UserIcon)
+Vue.component(TrashIcon.name, TrashIcon)
+Vue.component(ExternalLinkIcon.name, ExternalLinkIcon)
+
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
 

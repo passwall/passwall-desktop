@@ -29,6 +29,7 @@ html {
   width: 100vw;
   height: 100vh;
   background-color: black;
+  color: $color-gray-300;
 }
 
 .radius {
@@ -88,6 +89,18 @@ html {
 
 .text-center  {
   text-align: center;
+}
+
+.rot-90 {
+  transform: rotate(90deg);
+}
+
+.rot-180 {
+  transform: rotate(180deg);
+}
+
+.rot-270 {
+  transform: rotate(270deg);
 }
 
 .w-100 {

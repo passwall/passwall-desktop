@@ -107,6 +107,7 @@ export default {
 }
 
 .login-right-corner {
+  color: $color-primary;
   position: absolute;
   top: 0px;
   right: 0px;
