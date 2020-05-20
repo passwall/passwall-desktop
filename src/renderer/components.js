@@ -9,7 +9,9 @@ import {
   UserIcon,
   TrashIcon,
   ExternalLinkIcon,
-  CheveronRightIcon
+  CheveronRightIcon,
+  ShareIcon,
+  ClipboardCopyIcon
 } from '@vue-hero-icons/solid'
 Vue.component(LogoutIcon.name, LogoutIcon)
 Vue.component(StarIcon.name, StarIcon)
@@ -20,6 +22,8 @@ Vue.component(UserIcon.name, UserIcon)
 Vue.component(TrashIcon.name, TrashIcon)
 Vue.component(ExternalLinkIcon.name, ExternalLinkIcon)
 Vue.component(CheveronRightIcon.name, CheveronRightIcon)
+Vue.component(ShareIcon.name, ShareIcon)
+Vue.component(ClipboardCopyIcon.name, ClipboardCopyIcon)
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
