@@ -12,5 +12,9 @@ export default {
   Identities: 'Identities',
   GiveFeedback: 'Give Feedback',
   Trash: 'Trash',
+  Share: 'Share',
+  Delete: 'Delete',
+  ClickToFill: 'Click to fill',
+  Copy: 'Copy',
   'Search passwords, websites, notes': 'Search passwords, websites, notes'
 }

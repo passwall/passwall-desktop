@@ -39,7 +39,7 @@
         />
       </div>
       <!-- Login Btn -->
-      <Btn type="submit" size="medium">Login</Btn>
+      <VButton type="submit" size="medium">{{ $t('Login') }}</VButton>
     </form>
   </div>
 </template>

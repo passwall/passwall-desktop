@@ -14,8 +14,8 @@
         <LoginItem
           v-for="i in 20"
           :key="i"
-          :data="{ id: i, website: 'spotify.com', email: 'a.kemalakcay@gmail.com' }"
-          @click="onClickItem({ id: i, website: 'spotify.com', email: 'a.kemalakcay@gmail.com' })"
+          :data="{ id: i, url: 'spotify.com', email: 'a.kemalakcay@gmail.com' }"
+          @click="onClickItem({ id: i, url: 'spotify.com', email: 'a.kemalakcay@gmail.com' })"
         />
       </perfect-scrollbar>
     </div>

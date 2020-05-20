@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: 'Btn',
+  name: 'VButton',
 
   props: {
     size: {
@@ -43,31 +43,31 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .btn {
   border: 1px solid #151c27;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.2);
   color: #fff;
   font-weight: 600;
   cursor: pointer;
-}
 
-.btn.--primary {
-  background-color: #5707ff;
-}
+  &.--primary {
+    background-color: $color-primary;
+  }
 
-.btn.--small {
-  height: 32px;
-  padding: 12px 16px;
-  font-size: 12px;
-  line-height: 18px;
-}
+  /* size */
+  &.--small {
+    height: 34px;
+    padding: 4px 16px;
+    font-size: 12px;
+    line-height: 18px;
+  }
 
-.btn.--medium {
-  height: 48px;
-  padding: 12px 16px;
-  font-size: 14px;
-  line-height: 24px;
+  &.--medium {
+    height: 48px;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 24px;
+  }
 }
 </style>

@@ -15,7 +15,7 @@
         <ShareIcon size="14" />
       </button>
       <!-- Delete -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
+      <button class="detail-page-header-icon" v-tooltip="$t('Delete')">
         <TrashIcon size="14" />
       </button>
       <!-- Copy -->
@@ -29,17 +29,17 @@
         <!-- URL -->
         <div class="form-row">
           <label v-text="$t('URL')" />
-          <VFormText v-model="form.url" :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText :placeholder="$t('ClickToFill')" theme="no-border" />
         </div>
         <!-- E-Mail Address -->
         <div class="form-row">
           <label v-text="$t('EMailAddress')" />
-          <VFormText v-model="form.email" :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText :placeholder="$t('ClickToFill')" theme="no-border" />
         </div>
         <!-- Username -->
         <div class="form-row">
           <label v-text="$t('Username')" />
-          <VFormText v-model="form.username" :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText :placeholder="$t('ClickToFill')" theme="no-border" />
         </div>
         <!-- Password -->
         <div class="form-row">
@@ -58,20 +58,19 @@
 export default {
   data() {
     return {
-      form: {}
+      form: {
+        url: '',
+        email: '',
+        username: '',
+        password: ''
+      }
     }
   },
 
-  created() {
-    if (this.$route.params.data) {
-      this.form = this.$route.params.data
-    } else {
-      this.$router.back()
+  computed: {
+    data() {
+      return this.$route.params.data
     }
-  },
-
-  methods: {
-    onClickDelete() {}
   }
 }
 </script>
@@ -126,15 +125,10 @@ export default {
       color: $color-gray-300;
     }
   }
-
-  &-content {
-    height: calc(100% - 64px);
-  }
 }
 
 .form {
   padding: $spacer-3;
-  height: 100%;
 
   &,
   &-row {

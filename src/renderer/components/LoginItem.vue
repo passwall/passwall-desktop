@@ -6,7 +6,7 @@
     </div>
     <!-- Summary -->
     <div class="login-item-summary">
-      <span v-text="data.website" class="website" />
+      <span v-text="data.url" class="url" />
       <span v-text="data.email" class="email" />
     </div>
     <!-- Detail -->
@@ -57,7 +57,7 @@ export default {
     display: flex;
     flex-direction: column;
 
-    .website {
+    .url {
       font-weight: bold;
       font-size: 12px;
       line-height: 16px;

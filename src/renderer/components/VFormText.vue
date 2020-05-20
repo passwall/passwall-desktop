@@ -66,13 +66,12 @@ export default {
   .form-text {
     width: 100%;
     color: #fff;
+    border: 0;
 
     &::placeholder {
+      font-weight: normal;
+      font-size: $font-size-small;
       color: $color-gray-300;
-    }
-
-    &:focus {
-      border: 1px solid $color-primary;
     }
 
     &.--error {
@@ -81,30 +80,43 @@ export default {
 
     // themes
     &.--default {
-      border: 1px solid #151c27;
       color: $color-gray-300;
+      border: 1px solid #151c27;
       background-color: transparent;
       caret-color: $color-primary;
+
+      &:focus {
+        border: 1px solid $color-primary;
+      }
     }
 
     &.--black {
       color: $color-gray-300;
-    border: 1px solid black;
       background-color: black;
+      border: 1px solid black;
       caret-color: $color-primary;
+
+      &:focus {
+        border: 1px solid $color-primary;
+      }
+    }
+
+    &.--no-border {
+      caret-color: $color-primary;
+      background-color: transparent;
     }
 
     // sizes
     &.--small {
       height: 32px;
       border-radius: 4px;
-      padding: 15px 16px;
+      padding: 0 16px;
     }
 
     &.--medium {
       border-radius: 8px;
       height: 48px;
-      padding: 15px 16px;
+      padding: 0 16px;
       font-size: 12px;
       line-height: 18px;
     }
