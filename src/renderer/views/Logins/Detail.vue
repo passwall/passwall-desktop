@@ -20,35 +20,96 @@
       </button>
       <!-- Copy -->
       <button class="detail-page-header-icon" v-tooltip="$t('Copy')">
-        <ClipboardCopyIcon size="14" />
+        <DuplicateIcon size="14" />
       </button>
     </div>
     <!-- Content -->
     <div class="detail-page-content">
+      <!-- Edit Btn -->
+      <button
+        v-if="!isEditMode"
+        class="detail-page-header-icon edit-btn"
+        v-tooltip="$t('Edit')"
+        @click="isEditMode = true"
+      >
+        <PencilIcon size="14" />
+      </button>
       <div class="form">
         <!-- URL -->
         <div class="form-row">
           <label v-text="$t('URL')" />
-          <VFormText v-model="form.url" :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText
+            v-if="isEditMode"
+            v-model="form.url"
+            theme="no-border"
+            :placeholder="$t('ClickToFill')"
+          />
+          <!-- Text -->
+          <div v-else class="d-flex flex-items-center px-3 py-2">
+            <span v-text="form.url" class="mr-2" />
+            <ClipboardButton :copy="form.url" />
+          </div>
         </div>
         <!-- E-Mail Address -->
         <div class="form-row">
           <label v-text="$t('EMailAddress')" />
-          <VFormText v-model="form.email" :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText
+            v-if="isEditMode"
+            v-model="form.email"
+            theme="no-border"
+            :placeholder="$t('ClickToFill')"
+          />
+          <!-- Text -->
+          <div v-else class="d-flex flex-items-center px-3 py-2">
+            <span v-text="form.email" class="mr-2" />
+            <ClipboardButton :copy="form.email" />
+          </div>
         </div>
         <!-- Username -->
         <div class="form-row">
           <label v-text="$t('Username')" />
-          <VFormText v-model="form.username" :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText
+            v-if="isEditMode"
+            v-model="form.username"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
+          <!-- Text -->
+          <div v-else class="d-flex flex-items-center px-3 py-2">
+            <span v-text="form.username" class="mr-2" />
+            <ClipboardButton :copy="form.username" />
+          </div>
         </div>
         <!-- Password -->
         <div class="form-row">
           <label v-text="$t('Password')" />
-          <!-- <VFormPassword :placeholder="$t('ClickToFill')" theme="no-border" /> -->
+          <VFormText
+            v-if="isEditMode"
+            type="password"
+            v-model="form.password"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
+          <!-- Text -->
+          <div v-else class="d-flex flex-items-center px-3 py-2">
+            <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
+            <ClipboardButton :copy="form.password" />
+            <!-- Show/Hide Pass -->
+            <button
+              class="detail-page-header-icon ml-2"
+              style="width: 20px; height: 20px;"
+              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+            >
+              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
+              <EyeIcon v-else size="12" @click="showPass = true" />
+            </button>
+          </div>
         </div>
 
         <!-- Save -->
-        <VButton type="submit" class="mt-auto mb-5 mx-3">{{ $t('Save') }}</VButton>
+        <VButton type="submit" v-if="isEditMode" class="mt-auto mb-5 mx-3">
+          {{ $t('Save') }}
+        </VButton>
       </div>
     </div>
   </div>
@@ -58,20 +119,35 @@
 export default {
   data() {
     return {
+      isEditMode: false,
+      showPass: false,
       form: {}
     }
   },
 
+  beforeRouteUpdate(to, from, next) {
+    this.init(to.params)
+    next()
+  },
+
   created() {
-    if (this.$route.params.data) {
-      this.form = this.$route.params.data
-    } else {
-      this.$router.back()
-    }
+    this.init(this.$route.params)
   },
 
   methods: {
-    onClickDelete() {}
+    init(params) {
+      if (params.data) {
+        this.form = params.data
+      } else {
+        this.$router.back()
+      }
+    },
+
+    onClickDelete() {},
+
+    onClickUpdate() {
+      this.isEditMode = false
+    }
   }
 }
 </script>
@@ -118,6 +194,9 @@ export default {
     }
 
     &-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 24px;
       height: 24px;
       border-radius: 4px;
@@ -128,7 +207,14 @@ export default {
   }
 
   &-content {
+    position: relative;
     height: calc(100% - 64px);
+
+    .edit-btn {
+      position: absolute;
+      top: 37px;
+      right: 32px;
+    }
   }
 }
 

@@ -11,7 +11,11 @@ import {
   ExternalLinkIcon,
   CheveronRightIcon,
   ShareIcon,
-  ClipboardCopyIcon
+  ClipboardCopyIcon,
+  PencilIcon,
+  DuplicateIcon,
+  EyeIcon,
+  EyeOffIcon
 } from '@vue-hero-icons/solid'
 Vue.component(LogoutIcon.name, LogoutIcon)
 Vue.component(StarIcon.name, StarIcon)
@@ -24,6 +28,10 @@ Vue.component(ExternalLinkIcon.name, ExternalLinkIcon)
 Vue.component(CheveronRightIcon.name, CheveronRightIcon)
 Vue.component(ShareIcon.name, ShareIcon)
 Vue.component(ClipboardCopyIcon.name, ClipboardCopyIcon)
+Vue.component(DuplicateIcon.name, DuplicateIcon)
+Vue.component(PencilIcon.name, PencilIcon)
+Vue.component(EyeIcon.name, EyeIcon)
+Vue.component(EyeOffIcon.name, EyeOffIcon)
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)

@@ -15,7 +15,7 @@
           v-for="i in 20"
           :key="i"
           :data="{ id: i, url: 'spotify.com', email: 'a.kemalakcay@gmail.com' }"
-          @click="onClickItem({ id: i, url: 'spotify.com', email: 'a.kemalakcay@gmail.com' })"
+          @click="onClickItem({ id: i, url: 'spotify.com' + i, email: 'a.kemalakcay@gmail.com', password: '12456' })"
         />
       </perfect-scrollbar>
     </div>

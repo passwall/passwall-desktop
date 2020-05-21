@@ -14,6 +14,8 @@ export default {
   Trash: 'Trash',
   Share: 'Share',
   Delete: 'Delete',
+  HidePassword: 'Hide Password',
+  ShowPassword: 'Show Password',
   ClickToFill: 'Click to fill',
   Copy: 'Copy',
   'Search passwords, websites, notes': 'Search passwords, websites, notes'
