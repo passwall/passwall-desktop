@@ -9,7 +9,7 @@
       <!-- Info -->
       <div class="account-info">
         <span class="account-info-name" v-text="user.name" />
-        <span class="account-info-plan" v-text="'Free'" />
+        <span class="account-info-plan" v-text="user.plan" />
       </div>
       <!-- Logout -->
       <button @click="onClickLogout" v-tooltip="$t('Logout')">
@@ -18,13 +18,13 @@
     </div>
 
     <!-- All Items -->
-    <router-link :to="{ name: 'AllItems' }" class="sidebar-menu-item mt-7">
+    <!-- <router-link :to="{ name: 'AllItems' }" class="sidebar-menu-item mt-7">
       <StarIcon size="14" />
       {{ $t('AllItems') }}
-    </router-link>
+    </router-link> -->
 
     <!-- Categories -->
-    <span class="c-gray-300 pl-5 fs-big py-2 mt-3 mb-4">
+    <span class="c-gray-300 pl-5 fs-big py-2 mt-7 mb-4">
       {{ $t('Categories') }}
     </span>
 

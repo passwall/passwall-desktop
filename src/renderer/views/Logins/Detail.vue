@@ -11,15 +11,15 @@
         <span v-text="form.email" class="email" />
       </div>
       <!-- Share -->
-      <button class="detail-page-header-icon ml-auto" v-tooltip="$t('Share')">
+      <!-- <button class="detail-page-header-icon ml-auto" v-tooltip="$t('Share')">
         <ShareIcon size="14" />
-      </button>
+      </button> -->
       <!-- Delete -->
       <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
         <TrashIcon size="14" />
       </button>
       <!-- Copy -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Copy')">
+      <button class="detail-page-header-icon" v-tooltip="$t('Copy')" v-clipboard:copy="loginCopyContent">
         <DuplicateIcon size="14" />
       </button>
     </div>
@@ -132,6 +132,14 @@ export default {
 
   created() {
     this.init(this.$route.params)
+  },
+
+  computed: {
+    loginCopyContent() {
+      return `URL: ${this.form.url}
+Username: ${this.form.username}
+Password: ${this.form.password}`
+    }
   },
 
   methods: {

@@ -17,13 +17,13 @@ const router = new Router({
     {
       path: '/',
       name: 'Home',
-      redirect: '/all-items',
+      redirect: '/logins',
       component: require('@/views/Home/index').default,
       children: [
         {
-          path: '/all-items',
-          name: 'AllItems',
-          component: require('@/views/AllItems/index').default,
+          path: '/logins',
+          name: 'Logins',
+          component: require('@/views/Logins/index').default,
           children: [
             {
               path: ':id',
@@ -31,11 +31,6 @@ const router = new Router({
               component: require('@/views/Logins/Detail').default
             }
           ]
-        },
-        {
-          path: '/logins',
-          name: 'Logins',
-          component: require('@/views/Logins/index').default
         },
         {
           path: '/private-notes',
