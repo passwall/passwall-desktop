@@ -21,6 +21,18 @@
           @click="onClickItem(item.id)"
         />
       </PerfectScrollbar>
+
+      <!-- Add Item Menu -->
+      <AddItemMenu :active="itemMenuActive" @hide="itemMenuActive = false" />
+
+      <!-- Add Btn -->
+      <button
+        class="add-item-menu-btn"
+        :class="{ '--active': itemMenuActive }"
+        @click="itemMenuActive = !itemMenuActive"
+      >
+        <PlusIcon class="c-white" size="18" />
+      </button>
     </div>
     <!-- Detail -->
     <router-view />
@@ -33,13 +45,10 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      searchQuery: ''
+      searchQuery: '',
+      itemMenuActive: false
     }
   },
-
-  // beforeRouteUpdate(to, from, next) {
-  //   next()
-  // },
 
   async created() {
     await this.fetchAll()
@@ -81,6 +90,7 @@ export default {
 }
 
 .items-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 295px;

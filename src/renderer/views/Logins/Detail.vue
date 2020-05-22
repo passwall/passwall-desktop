@@ -68,20 +68,22 @@
         <!-- Password -->
         <div class="form-row">
           <label v-text="$t('Password')" />
-          <VFormText
-            v-if="isEditMode"
-            type="password"
-            v-model="form.password"
-            :placeholder="$t('ClickToFill')"
-            theme="no-border"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
-            <ClipboardButton :copy="form.password" />
+          <div class="d-flex">
+            <VFormText
+              v-if="isEditMode"
+              :type="showPass ? 'text' : 'password '"
+              v-model="form.password"
+              :placeholder="$t('ClickToFill')"
+              theme="no-border"
+            />
+            <!-- Text -->
+            <div v-else class="d-flex flex-items-center px-3 py-2">
+              <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
+              <ClipboardButton :copy="form.password" />
+            </div>
             <!-- Show/Hide Pass -->
             <button
-              class="detail-page-header-icon ml-2"
+              class="detail-page-header-icon mt-2 ml-n1"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
@@ -113,6 +115,8 @@ export default {
   },
 
   beforeRouteUpdate(to, from, next) {
+    this.isEditMode = false
+    this.showPass = false
     this.init(to.params)
     next()
   },
@@ -229,32 +233,6 @@ export default {
       position: absolute;
       top: 37px;
       right: 32px;
-    }
-  }
-}
-
-.form {
-  padding: $spacer-3;
-  height: 100%;
-
-  &,
-  &-row {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &-row {
-    border-bottom: 1px solid $color-gray-500;
-
-    label {
-      font-weight: $font-weight-medium;
-      font-size: $font-size-small;
-      line-height: 16px;
-      margin: $spacer-2 $spacer-3 0 $spacer-3;
-    }
-
-    &:last-of-type {
-      border: 0;
     }
   }
 }

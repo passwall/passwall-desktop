@@ -26,6 +26,11 @@ const router = new Router({
           component: require('@/views/Logins/index').default,
           children: [
             {
+              path: 'create',
+              name: 'LoginCreate',
+              component: require('@/views/Logins/Create').default
+            },
+            {
               path: ':id',
               name: 'LoginDetail',
               component: require('@/views/Logins/Detail').default

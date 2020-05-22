@@ -7,21 +7,9 @@
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.url" class="url" />
-        <span v-text="form.email" class="email" />
+        <span v-text="$t('NewLogin')" class="url" />
+        <span v-text="$t('Please fill all the necessary fields')" class="email" />
       </div>
-      <!-- Share -->
-      <button class="detail-page-header-icon ml-auto" v-tooltip="$t('Share')">
-        <ShareIcon size="14" />
-      </button>
-      <!-- Delete -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Delete')">
-        <TrashIcon size="14" />
-      </button>
-      <!-- Copy -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Copy')">
-        <ClipboardCopyIcon size="14" />
-      </button>
     </div>
     <!-- Content -->
     <div class="detail-page-content">
@@ -29,26 +17,24 @@
         <!-- URL -->
         <div class="form-row">
           <label v-text="$t('URL')" />
-          <VFormText :placeholder="$t('ClickToFill')" theme="no-border" />
-        </div>
-        <!-- E-Mail Address -->
-        <div class="form-row">
-          <label v-text="$t('EMailAddress')" />
-          <VFormText :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText v-model="form.url" :placeholder="$t('ClickToFill')" theme="no-border" />
         </div>
         <!-- Username -->
         <div class="form-row">
           <label v-text="$t('Username')" />
-          <VFormText :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText v-model="form.username" :placeholder="$t('ClickToFill')" theme="no-border" />
         </div>
         <!-- Password -->
         <div class="form-row">
           <label v-text="$t('Password')" />
           <!-- <VFormPassword :placeholder="$t('ClickToFill')" theme="no-border" /> -->
+          <GeneratePassword v-model="form.password" />
         </div>
 
         <!-- Save -->
-        <VButton type="submit" class="mt-auto mb-5 mx-3">{{ $t('Save') }}</VButton>
+        <VButton type="submit" class="mt-auto mb-5 mx-3" @click="onClickSave">
+          {{ $t('Save') }}
+        </VButton>
       </div>
     </div>
   </div>
@@ -60,10 +46,15 @@ export default {
     return {
       form: {
         url: '',
-        email: '',
         username: '',
         password: ''
       }
+    }
+  },
+
+  methods: {
+    onClickSave() {
+      console.log(this.form)
     }
   },
 
@@ -123,31 +114,6 @@ export default {
       background-color: $color-gray-500;
       margin-left: $spacer-3;
       color: $color-gray-300;
-    }
-  }
-}
-
-.form {
-  padding: $spacer-3;
-
-  &,
-  &-row {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &-row {
-    border-bottom: 1px solid $color-gray-500;
-
-    label {
-      font-weight: $font-weight-medium;
-      font-size: $font-size-small;
-      line-height: 16px;
-      margin: $spacer-2 $spacer-3 0 $spacer-3;
-    }
-
-    &:last-of-type {
-      border: 0;
     }
   }
 }

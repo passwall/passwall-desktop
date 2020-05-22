@@ -81,10 +81,6 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
-  data() {
-    return {}
-  },
-
   computed: {
     ...mapState('Auth', ['user'])
   },
@@ -218,21 +214,21 @@ export default {
     // &[disabled] {
     //   pointer-events: none;
     // }
+  }
+}
 
-    .premium-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      margin-left: $spacer-2;
-      background-color: $color-gray-400;
+.premium-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  margin-left: $spacer-2;
+  background-color: $color-gray-400;
 
-      svg {
-        margin: 0;
-      }
-    }
+  svg {
+    margin: 0;
   }
 }
 </style>

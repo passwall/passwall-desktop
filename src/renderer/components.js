@@ -15,7 +15,10 @@ import {
   PencilIcon,
   DuplicateIcon,
   EyeIcon,
-  EyeOffIcon
+  EyeOffIcon,
+  PlusIcon,
+  LocationMarkerIcon,
+  RefreshIcon
 } from '@vue-hero-icons/solid'
 Vue.component(LogoutIcon.name, LogoutIcon)
 Vue.component(StarIcon.name, StarIcon)
@@ -32,6 +35,9 @@ Vue.component(DuplicateIcon.name, DuplicateIcon)
 Vue.component(PencilIcon.name, PencilIcon)
 Vue.component(EyeIcon.name, EyeIcon)
 Vue.component(EyeOffIcon.name, EyeOffIcon)
+Vue.component(PlusIcon.name, PlusIcon)
+Vue.component(LocationMarkerIcon.name, LocationMarkerIcon)
+Vue.component(RefreshIcon.name, RefreshIcon)
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)

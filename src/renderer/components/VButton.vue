@@ -56,6 +56,14 @@ export default {
   }
 
   /* size */
+  &.--mini {
+    height: 24px;
+    border-radius: 4px;
+    padding: 2px 16px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
   &.--small {
     height: 34px;
     padding: 4px 16px;

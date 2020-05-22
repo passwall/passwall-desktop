@@ -87,6 +87,32 @@ html {
   }
 }
 
+.form {
+  padding: $spacer-3;
+  height: 100%;
+
+  &,
+  &-row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-row {
+    border-bottom: 1px solid $color-gray-500;
+
+    label {
+      font-weight: $font-weight-medium;
+      font-size: $font-size-small;
+      line-height: 16px;
+      margin: 12px $spacer-3 0 $spacer-3;
+    }
+
+    &:last-of-type {
+      border: 0;
+    }
+  }
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
