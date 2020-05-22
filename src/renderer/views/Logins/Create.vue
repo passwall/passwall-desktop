@@ -17,18 +17,49 @@
         <!-- URL -->
         <div class="form-row">
           <label v-text="$t('URL')" />
-          <VFormText v-model="form.url" :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText
+            v-model="form.url"
+            v-validate="'required'"
+            name="URL"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
         </div>
         <!-- Username -->
         <div class="form-row">
           <label v-text="$t('Username')" />
-          <VFormText v-model="form.username" :placeholder="$t('ClickToFill')" theme="no-border" />
+          <VFormText
+            v-model="form.username"
+            v-validate="'required'"
+            name="Username"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
         </div>
         <!-- Password -->
         <div class="form-row">
           <label v-text="$t('Password')" />
-          <!-- <VFormPassword :placeholder="$t('ClickToFill')" theme="no-border" /> -->
-          <GeneratePassword v-model="form.password" />
+          <div class="d-flex">
+            <VFormText
+              v-model="form.password"
+              v-validate="'required'"
+              name="Password"
+              :type="showPass ? 'text' : 'password'"
+              :placeholder="$t('ClickToFill')"
+              theme="no-border"
+            />
+            <!-- Generate -->
+            <GeneratePassword class="mt-2 mr-3" v-model="form.password" />
+            <!-- Show/Hide -->
+            <button
+              class="detail-page-header-icon mt-2 ml-n1"
+              style="width: 20px; height: 20px;"
+              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+            >
+              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
+              <EyeIcon v-else size="12" @click="showPass = true" />
+            </button>
+          </div>
         </div>
 
         <!-- Save -->
@@ -41,9 +72,11 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   data() {
     return {
+      showPass: false,
       form: {
         url: '',
         username: '',
@@ -53,14 +86,21 @@ export default {
   },
 
   methods: {
-    onClickSave() {
-      console.log(this.form)
-    }
-  },
+    ...mapActions('Logins', ['Create', 'FetchAll']),
 
-  computed: {
-    data() {
-      return this.$route.params.data
+    onClickSave() {
+      this.$validator.validate().then(async result => {
+        if (!result) return
+        console.log(this.form)
+
+        try {
+          await this.Create(this.form)
+          this.FetchAll()
+          this.$router.push({ name: 'Logins', params: { refresh: true } })
+        } catch (error) {
+          console.log(error)
+        }
+      })
     }
   }
 }

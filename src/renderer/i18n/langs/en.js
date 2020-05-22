@@ -17,9 +17,16 @@ export default {
   Trash: 'Trash',
   Share: 'Share',
   Delete: 'Delete',
+  Login: 'Login',
+  Password: 'Password',
+  Address: 'Address',
+  Save: 'Save',
   HidePassword: 'Hide Password',
   ShowPassword: 'Show Password',
   ClickToFill: 'Click to fill',
   Copy: 'Copy',
+  Edit: 'Edit',
+  Username: 'Username',
+  URL: 'URL',
   'Search passwords, websites, notes': 'Search passwords, websites, notes'
 }

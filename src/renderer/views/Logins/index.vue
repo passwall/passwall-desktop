@@ -50,6 +50,13 @@ export default {
     }
   },
 
+  beforeRouteUpdate(to, from, next) {
+    if (to.params.refresh) {
+      this.fetchAll()
+    }
+    next()
+  },
+
   async created() {
     await this.fetchAll()
   },

@@ -67,7 +67,7 @@
     </router-link>
 
     <!-- Feedback -->
-    <button class="btn-feedback">
+    <button class="btn-feedback" @click="onClickFeedback">
       <VIcon name="right-corner" class="right-corner" size="15" />
       <VIcon name="right-corner" class="left-corner rot-180" size="15" />
 
@@ -87,6 +87,10 @@ export default {
 
   methods: {
     ...mapActions(['Logout']),
+
+    onClickFeedback() {
+      open('https://passwall.typeform.com/to/GAv1h2')
+    },
 
     onClickLogout() {
       this.Logout()

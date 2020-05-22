@@ -26,8 +26,6 @@ const AuthCheck = async () => {
       try {
         const { data } = await AuthService.Check()
         store.state.user = data
-        store.state.access_token = data.access_token
-        store.state.refresh_token = data.refresh_token
       } catch (error) {
         console.log('Auth Check error: ', error)
 

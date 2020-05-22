@@ -74,16 +74,16 @@ export default {
       color: $color-gray-300;
     }
 
-    &.--error {
-      border: 1px solid #ff0000;
-    }
-
     // themes
     &.--default {
       color: $color-gray-300;
       border: 1px solid #151c27;
       background-color: transparent;
       caret-color: $color-primary;
+
+      &.--error {
+        border: 1px solid #ff0000;
+      }
 
       &:focus {
         border: 1px solid $color-primary;
@@ -96,6 +96,10 @@ export default {
       border: 1px solid black;
       caret-color: $color-primary;
 
+      &.--error {
+        border: 1px solid #ff0000;
+      }
+
       &:focus {
         border: 1px solid $color-primary;
       }
@@ -104,6 +108,10 @@ export default {
     &.--no-border {
       caret-color: $color-primary;
       background-color: transparent;
+
+      & + .error {
+        margin: 0 0 $spacer-1 $spacer-3;
+      }
     }
 
     // sizes

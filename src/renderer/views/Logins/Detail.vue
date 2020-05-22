@@ -79,11 +79,14 @@
             <!-- Text -->
             <div v-else class="d-flex flex-items-center px-3 py-2">
               <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
-              <ClipboardButton :copy="form.password" />
             </div>
+            <!-- Copy -->
+            <ClipboardButton :copy="form.password" class="mt-2" />
+            <!-- Generate -->
+            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.password" />
             <!-- Show/Hide Pass -->
             <button
-              class="detail-page-header-icon mt-2 ml-n1"
+              class="detail-page-header-icon mt-2 ml-2"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
@@ -144,7 +147,7 @@ export default {
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
-        this.$router.back()
+        this.$router.push({ name: 'Logins', params: { refresh: true } })
       } catch (err) {
         console.log(err)
       }

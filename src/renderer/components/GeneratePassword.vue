@@ -6,9 +6,9 @@
 
     <template slot="popover">
       <div class="generate-password">
-        <span v-text="value" />
+        <span v-text="password" />
         <hr />
-        <VButton type="submit" size="mini" @click="onClickGenerate">
+        <VButton type="submit" size="mini" @click="onClickUseThis">
           {{ $t('UseThis') }}
         </VButton>
       </div>
@@ -27,6 +27,12 @@ export default {
     value: String
   },
 
+  data() {
+    return {
+      password: ''
+    }
+  },
+
   created() {
     this.onClickGenerate()
   },
@@ -37,10 +43,14 @@ export default {
       this.$emit('hide')
     },
 
+    async onClickUseThis() {
+      this.$emit('input', this.password)
+    },
+
     async onClickGenerate() {
       try {
-        // const { data } = await SystemService.GeneratePassword()
-        this.$emit('input', 'data')
+        const { data } = await SystemService.GeneratePassword()
+        this.password = data.message
       } catch (err) {
         console.log(err)
       }
@@ -60,6 +70,7 @@ export default {
 }
 
 .generate-password {
+  text-align: center;
   border-radius: 4px;
   padding: $spacer-3;
   background-color: black;
