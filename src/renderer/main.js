@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import AuthService from '@/api/services/Auth'
 import HTTPClient from '@/api/HTTPClient'
+import AuthService from '@/api/services/Auth'
 
 import '@/styles/app.scss'
 import '@/components'
@@ -24,21 +24,27 @@ const AuthCheck = async () => {
       HTTPClient.setHeader('Authorization', `Bearer ${store.state.access_token}`)
 
       try {
-        await AuthService.Check()
+        const { data } = await AuthService.Check()
+        store.state.user = data
+        store.state.access_token = data.access_token
+        store.state.refresh_token = data.refresh_token
       } catch (error) {
         try {
-          const { data } = await AuthService.Refresh({
+          await AuthService.Refresh({
             refresh_token: store.state.refresh_token
           })
 
+          const { data } = await AuthService.Check()
+          store.state.user = data
           store.state.access_token = data.access_token
           store.state.refresh_token = data.refresh_token
-          localStorage.setItem('access_token', data.access_token)
-          localStorage.setItem('refresh_token', data.refresh_token)
         } catch (error) {
           await goToLogin()
         }
       }
+
+      localStorage.setItem('access_token', store.state.access_token)
+      localStorage.setItem('refresh_token', store.state.refresh_token)
     }
   } catch (error) {
     await goToLogin()
@@ -47,10 +53,10 @@ const AuthCheck = async () => {
 
 ;(async () => {
   await AuthCheck()
-  setInterval(AuthCheck, 30e3)
+  setInterval(AuthCheck, 60e3)
 
   /* eslint-disable no-new */
-  new Vue({
+  window.vm = new Vue({
     router,
     store,
     i18n,

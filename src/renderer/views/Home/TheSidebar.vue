@@ -35,35 +35,35 @@
     </router-link>
 
     <!-- Private Notes -->
-    <router-link :to="{ name: 'PrivateNotes' }" class="sidebar-menu-item" disabled>
+    <router-link :to="{ name: 'PrivateNotes' }" event="" class="sidebar-menu-item" disabled>
       <ClipboardCheckIcon size="14" />
       {{ $t('PrivateNotes') }}
       <!-- Premium -->
-      <div class="premium-icon"><StarIcon size="8" /></div>
+      <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
     </router-link>
 
     <!-- Credit Cards -->
-    <router-link :to="{ name: 'CreditCards' }" class="sidebar-menu-item" disabled>
+    <router-link :to="{ name: 'CreditCards' }" event="" class="sidebar-menu-item" disabled>
       <CreditCardIcon size="14" />
       {{ $t('CreditCards') }}
       <!-- Premium -->
-      <div class="premium-icon"><StarIcon size="8" /></div>
+      <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
     </router-link>
 
     <!-- Identities -->
-    <router-link :to="{ name: 'Identities' }" class="sidebar-menu-item" disabled>
+    <router-link :to="{ name: 'Identities' }" event="" class="sidebar-menu-item" disabled>
       <UserIcon size="14" />
       {{ $t('Identities') }}
       <!-- Premium -->
-      <div class="premium-icon"><StarIcon size="8" /></div>
+      <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
     </router-link>
 
     <!-- Trash -->
-    <router-link :to="{ name: 'Trash' }" class="sidebar-menu-item mt-7" disabled>
+    <router-link :to="{ name: 'Trash' }" event="" class="sidebar-menu-item mt-7" disabled>
       <TrashIcon size="14" />
       {{ $t('Trash') }}
       <!-- Premium -->
-      <div class="premium-icon"><StarIcon size="8" /></div>
+      <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
     </router-link>
 
     <!-- Feedback -->
@@ -86,7 +86,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['user'])
+    ...mapState('Auth', ['user'])
   },
 
   methods: {
@@ -215,9 +215,9 @@ export default {
       }
     }
 
-    &:disabled {
-      pointer-events: none;
-    }
+    // &[disabled] {
+    //   pointer-events: none;
+    // }
 
     .premium-icon {
       display: flex;

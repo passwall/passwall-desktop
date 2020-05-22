@@ -1,4 +1,5 @@
 import AuthService from '@/api/services/Auth'
+import HTTPClient from '@/api/HTTPClient'
 
 export default {
   namespaced: true,
@@ -8,9 +9,10 @@ export default {
       const { data } = await AuthService.Login(payload)
       state.access_token = data.access_token
       state.refresh_token = data.refresh_token
-      state.user = data
-      localStorage.setItem('access_token', data.access_token)
-      localStorage.setItem('refresh_token', data.refresh_token)
+      state.user = data || {}
+      localStorage.access_token = data.access_token
+      localStorage.refresh_token = data.refresh_token
+      HTTPClient.setHeader('Authorization', `Bearer ${state.access_token}`)
     },
 
     Logout({ state }) {

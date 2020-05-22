@@ -6,18 +6,18 @@ export default class LoginsService {
   }
 
   static async Get(id) {
-    return HTTPClient.get(`/api/login/${id}`)
+    return HTTPClient.get(`/api/logins/${id}`)
   }
 
   static async Create(payload) {
-    return HTTPClient.post(`/api/login`, payload)
+    return HTTPClient.post(`/api/logins`, payload)
   }
 
   static async Update(id, payload) {
-    return HTTPClient.put(`/api/login/${id}`, payload)
+    return HTTPClient.put(`/api/logins/${id}`, payload)
   }
 
   static async Delete(id) {
-    return HTTPClient.delete(`/api/login/${id}`)
+    return HTTPClient.delete(`/api/logins/${id}`)
   }
 }

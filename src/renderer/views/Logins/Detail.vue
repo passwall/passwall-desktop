@@ -8,18 +8,18 @@
       <!-- Summary -->
       <div class="detail-page-header-summary">
         <span v-text="form.url" class="url" />
-        <span v-text="form.email" class="email" />
+        <span v-text="form.username" class="email" />
       </div>
-      <!-- Share -->
-      <!-- <button class="detail-page-header-icon ml-auto" v-tooltip="$t('Share')">
-        <ShareIcon size="14" />
-      </button> -->
       <!-- Delete -->
       <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
         <TrashIcon size="14" />
       </button>
       <!-- Copy -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Copy')" v-clipboard:copy="loginCopyContent">
+      <button
+        class="detail-page-header-icon"
+        v-tooltip="$t('Copy')"
+        v-clipboard:copy="loginCopyContent"
+      >
         <DuplicateIcon size="14" />
       </button>
     </div>
@@ -48,21 +48,6 @@
           <div v-else class="d-flex flex-items-center px-3 py-2">
             <span v-text="form.url" class="mr-2" />
             <ClipboardButton :copy="form.url" />
-          </div>
-        </div>
-        <!-- E-Mail Address -->
-        <div class="form-row">
-          <label v-text="$t('EMailAddress')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.email"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.email" class="mr-2" />
-            <ClipboardButton :copy="form.email" />
           </div>
         </div>
         <!-- Username -->
@@ -107,7 +92,7 @@
         </div>
 
         <!-- Save -->
-        <VButton type="submit" v-if="isEditMode" class="mt-auto mb-5 mx-3">
+        <VButton v-if="isEditMode" @click="onClickUpdate" class="mt-auto mb-5 mx-3">
           {{ $t('Save') }}
         </VButton>
       </div>
@@ -116,6 +101,8 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
+
 export default {
   data() {
     return {
@@ -134,27 +121,47 @@ export default {
     this.init(this.$route.params)
   },
 
-  computed: {
-    loginCopyContent() {
-      return `URL: ${this.form.url}
-Username: ${this.form.username}
-Password: ${this.form.password}`
-    }
-  },
-
   methods: {
-    init(params) {
-      if (params.data) {
-        this.form = params.data
-      } else {
+    ...mapActions('Logins', ['Get', 'Delete', 'Update']),
+
+    async init(params) {
+      try {
+        await this.Get(params.id)
+        this.form = { ...this.Detail }
+      } catch (error) {
         this.$router.back()
       }
     },
 
-    onClickDelete() {},
+    async onClickDelete() {
+      try {
+        await this.Delete(this.form.id)
+        const index = this.ItemList.findIndex(item => item.id == this.form.id)
+        if (index !== -1) {
+          this.ItemList.splice(index, 1)
+        }
+        this.$router.back()
+      } catch (err) {
+        console.log(err)
+      }
+    },
 
-    onClickUpdate() {
-      this.isEditMode = false
+    async onClickUpdate() {
+      try {
+        await this.Update(this.form)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        this.isEditMode = false
+      }
+    }
+  },
+
+  computed: {
+    ...mapState('Logins', ['Detail', 'ItemList']),
+
+    loginCopyContent() {
+      return `URL: ${this.form.url}\nUsername: ${this.form.username}\nPassword: ${this.form.password}`
     }
   }
 }

@@ -6,16 +6,18 @@
         <VFormText
           :placeholder="$t('Search passwords, websites, notes')"
           theme="black"
+          v-model="searchQuery"
           class="w-100"
         />
       </div>
       <!-- Items -->
       <PerfectScrollbar class="logins">
         <LoginItem
-          v-for="i in 20"
-          :key="i"
-          :data="{ id: i, url: 'spotify.com', email: 'a.kemalakcay@gmail.com' }"
-          @click="onClickItem({ id: i, url: 'spotify.com' + i, email: 'a.kemalakcay@gmail.com', password: '12456' })"
+          v-for="item in ItemList"
+          :key="item.id"
+          :active="$route.params.id == item.id"
+          :data="item"
+          @click="onClickItem(item.id)"
         />
       </PerfectScrollbar>
     </div>
@@ -25,18 +27,48 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
+
 export default {
   data() {
-    return {}
+    return {
+      searchQuery: ''
+    }
+  },
+
+  // beforeRouteUpdate(to, from, next) {
+  //   next()
+  // },
+
+  async created() {
+    this.init()
   },
 
   methods: {
-    onClickItem(data) {
+    ...mapActions('Logins', ['FetchAll']),
+
+    async init() {
+      try {
+        await this.FetchAll()
+
+        if (this.ItemList.length > 0) {
+          this.onClickItem(this.ItemList[0].id)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    onClickItem(id) {
       this.$router.push({
         name: 'LoginDetail',
-        params: { id: data.id, data }
+        params: { id }
       })
     }
+  },
+
+  computed: {
+    ...mapState('Logins', ['ItemList'])
   }
 }
 </script>

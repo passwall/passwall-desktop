@@ -1,5 +1,5 @@
 <template>
-  <div class="login-item" @click="$emit('click')">
+  <div class="login-item" :class="{ '--active': active }" @click="$emit('click')">
     <!-- Avatar -->
     <div class="login-item-avatar">
       <img v-if="data.src" :src="data.src" />
@@ -7,7 +7,7 @@
     <!-- Summary -->
     <div class="login-item-summary">
       <span v-text="data.url" class="url" />
-      <span v-text="data.email" class="email" />
+      <span v-text="data.username" class="username" />
     </div>
     <!-- Detail -->
     <button class="login-item-detail">
@@ -24,6 +24,10 @@ export default {
     data: {
       type: Object,
       default: () => ({})
+    },
+    active: {
+      type: Boolean,
+      default: false
     }
   }
 }
@@ -63,7 +67,7 @@ export default {
       line-height: 16px;
     }
 
-    .email {
+    .username {
       font-weight: normal;
       font-size: 10px;
       line-height: 16px;

@@ -6,30 +6,32 @@ export default {
   state() {
     return {
       Query: {},
-      ItemList: []
+      ItemList: [],
+      Detail: {}
     }
   },
 
   actions: {
     async FetchAll({ state }) {
-      const { data } = await LoginsService.FetchAll(state.query)
+      const { data } = await LoginsService.FetchAll(state.Query)
       state.ItemList = data
     },
 
     async Get({ state }, id) {
       const { data } = await LoginsService.Get(id)
+      state.Detail = data
     },
 
     async Delete({ state }, id) {
-      const { data } = await LoginsService.Delete(id)
+      await LoginsService.Delete(id)
     },
 
     async Create({ state }, payload) {
-      const { data } = await LoginsService.Create(payload)
+      await LoginsService.Create(payload)
     },
 
     async Update({ state }, payload) {
-      const { data } = await LoginsService.Create(payload)
+      await LoginsService.Update(payload.id, payload)
     }
   }
 }
