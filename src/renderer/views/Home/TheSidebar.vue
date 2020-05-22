@@ -82,11 +82,11 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   computed: {
-    ...mapState('Auth', ['user'])
+    ...mapState(['user'])
   },
 
   methods: {
-    ...mapActions('Auth', ['Logout']),
+    ...mapActions(['Logout']),
 
     onClickLogout() {
       this.Logout()

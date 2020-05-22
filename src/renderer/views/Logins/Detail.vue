@@ -71,7 +71,7 @@
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
-              :type="showPass ? 'text' : 'password '"
+              :type="showPass ? 'text' : 'password'"
               v-model="form.password"
               :placeholder="$t('ClickToFill')"
               theme="no-border"

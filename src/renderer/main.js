@@ -25,16 +25,24 @@ const AuthCheck = async () => {
 
       try {
         const { data } = await AuthService.Check()
-        store.state.user =  {}
+        store.state.user = data
         store.state.access_token = data.access_token
         store.state.refresh_token = data.refresh_token
       } catch (error) {
-        console.log(error)
-        await goToLogin()
-      }
+        console.log('Auth Check error: ', error)
 
-      localStorage.setItem('access_token', store.state.access_token)
-      localStorage.setItem('refresh_token', store.state.refresh_token)
+        try {
+          const { data } = await AuthService.Refresh({
+            refresh_token: store.state.refresh_token
+          })
+          store.state.user = data
+          store.state.access_token = data.access_token
+          store.state.refresh_token = data.refresh_token
+        } catch (error) {
+          console.log('Auth Refresh error: ', error)
+          await goToLogin()
+        }
+      }
     }
   } catch (error) {
     await goToLogin()
