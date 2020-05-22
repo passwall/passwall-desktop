@@ -5,15 +5,14 @@ export default {
 
   state() {
     return {
-      Query: {},
       ItemList: [],
       Detail: {}
     }
   },
 
   actions: {
-    async FetchAll({ state }) {
-      const { data } = await LoginsService.FetchAll(state.Query)
+    async FetchAll({ state }, query) {
+      const { data } = await LoginsService.FetchAll(query)
       state.ItemList = data
     },
 

@@ -7,6 +7,7 @@
           :placeholder="$t('Search passwords, websites, notes')"
           theme="black"
           v-model="searchQuery"
+          v-debounce:300="fetchAll"
           class="w-100"
         />
       </div>
@@ -41,15 +42,15 @@ export default {
   // },
 
   async created() {
-    this.init()
+    await this.fetchAll()
   },
 
   methods: {
     ...mapActions('Logins', ['FetchAll']),
 
-    async init() {
+    async fetchAll() {
       try {
-        await this.FetchAll()
+        await this.FetchAll({ Search: this.searchQuery })
 
         if (this.ItemList.length > 0) {
           this.onClickItem(this.ItemList[0].id)

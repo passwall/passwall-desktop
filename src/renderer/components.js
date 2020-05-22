@@ -43,6 +43,11 @@ Vue.use(VuePerfectScrollbar)
 import VeeValidate from 'vee-validate'
 Vue.use(VeeValidate, { events: 'input|blur' })
 
+import VueDebounce from 'vue-debounce'
+Vue.use(VueDebounce, {
+  defaultTime: '700ms'
+})
+
 import VTooltip from 'v-tooltip'
 Vue.use(VTooltip)
 

@@ -11568,6 +11568,11 @@ vue-clipboard2@^0.3.1:
   dependencies:
     clipboard "^2.0.0"
 
+vue-debounce@^2.5.4:
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/vue-debounce/-/vue-debounce-2.5.4.tgz#352e71df9aeec290857468425c1b53252345b15e"
+  integrity sha512-Vj8SIDb0bmoGAYO7fv/2sYL0u/dZyuhrLzItX8dlaN7dH71jf2W0o0P0jRfFOqtXLwIeB5v1hU4+XXbsO9FWsg==
+
 vue-hot-reload-api@^2.3.0:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
