@@ -19,5 +19,10 @@ export default {
       mode: CryptoJS.mode.CBC
     })
     return CryptoJS.enc.Utf8.stringify(cipher).toString()
+  },
+
+  sha256Encrypt(value) {  
+    return CryptoJS.SHA256(value).toString()
   }
+
 }

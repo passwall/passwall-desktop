@@ -74,11 +74,6 @@
 <script>
 import { mapActions } from 'vuex'
 
-// TODO
-import format from 'date-fns/format'
-const apiKey = '123xxxyyyzzz' // change to your api key
-const reqTime = format(new Date(), 'yyyyMMddHHmmss')
-
 export default {
   data() {
     return {

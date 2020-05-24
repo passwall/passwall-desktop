@@ -66,7 +66,7 @@ export default {
         if (!result) return
 
         try {
-          await this.Login(this.LoginForm)
+          await this.Login({ ...this.LoginForm})
           this.$router.push({ name: 'Home' })
         } catch (error) {
           console.log(error)
