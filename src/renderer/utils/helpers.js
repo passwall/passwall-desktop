@@ -18,7 +18,6 @@ export default {
       iv: CryptoJS.enc.Utf8.parse(iv),
       mode: CryptoJS.mode.CBC
     })
-
     return CryptoJS.enc.Utf8.stringify(cipher).toString()
   }
 }

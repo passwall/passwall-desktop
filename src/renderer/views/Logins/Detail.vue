@@ -155,8 +155,7 @@ export default {
 
     async onClickUpdate() {
       try {
-        await this.Update(this.form)
-        // res.form.password = this._vm.$helpers.aesDecrypt(res.form.password)
+        await this.Update({ ...this.form })
       } catch (err) {
         console.log(err)
       } finally {
