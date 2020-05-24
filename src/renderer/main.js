@@ -4,12 +4,13 @@ import AuthService from '@/api/services/Auth'
 
 import '@/styles/app.scss'
 import '@/components'
+import Helpers from '@/utils/helpers'
 import App from './App'
 import router from './router'
 import store from './store'
 import i18n from './i18n'
 
-Vue.config.productionTip = false
+Vue.prototype.$helpers = Helpers
 
 const AuthCheck = async () => {
   const goToLogin = async () => {
@@ -51,6 +52,7 @@ const AuthCheck = async () => {
   await AuthCheck()
   setInterval(AuthCheck, 60e3)
 
+  Vue.config.productionTip = false
   /* eslint-disable no-new */
   window.vm = new Vue({
     router,

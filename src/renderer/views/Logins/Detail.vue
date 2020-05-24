@@ -109,12 +109,7 @@
 import { mapState, mapActions } from 'vuex'
 
 // TODO
-import CryptoJS from 'crypto-js'
 import format from 'date-fns/format'
-
-// TODO
-const key = '82f2ceed4c503896c8a291e560bd4325' // change to your key
-const iv = 'sinasinasisinaaa' // change to your iv
 const apiKey = '123xxxyyyzzz' // change to your api key
 const reqTime = format(new Date(), 'yyyyMMddHHmmss')
 
@@ -138,16 +133,6 @@ export default {
     this.init(this.$route.params)
   },
 
-  // TODO
-   aesDencrypt(txt) {
-      const cipher = CryptoJS.AES.decrypt(txt, CryptoJS.enc.Utf8.parse(key), {
-        iv: CryptoJS.enc.Utf8.parse(iv),
-        mode: CryptoJS.mode.CBC
-      })
-
-      return CryptoJS.enc.Utf8.stringify(cipher).toString()
-    },
-
   methods: {
     ...mapActions('Logins', ['Get', 'Delete', 'Update']),
 
@@ -155,9 +140,6 @@ export default {
       try {
         await this.Get(params.id)
         this.form = { ...this.Detail }
-        
-        // TODO
-        // this.form.password = this.aesDencrypt(this.form.password)
       } catch (error) {
         this.$router.back()
       }
