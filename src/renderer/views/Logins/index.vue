@@ -13,6 +13,12 @@
       </div>
       <!-- Items -->
       <PerfectScrollbar class="logins">
+        <!-- Add Item Menu -->
+        <!-- <EmptyCenterState 
+          :active = true
+        
+        /> -->
+
         <LoginItem
           v-for="item in ItemList"
           :key="item.id"
@@ -46,7 +52,8 @@ export default {
   data() {
     return {
       searchQuery: '',
-      itemMenuActive: false
+      itemMenuActive: false,
+      emptyCenterStateActive: false
     }
   },
 
