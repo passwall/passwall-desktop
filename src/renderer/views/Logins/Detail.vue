@@ -108,11 +108,6 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 
-// TODO
-import format from 'date-fns/format'
-const apiKey = '123xxxyyyzzz' // change to your api key
-const reqTime = format(new Date(), 'yyyyMMddHHmmss')
-
 export default {
   data() {
     return {
@@ -161,6 +156,7 @@ export default {
     async onClickUpdate() {
       try {
         await this.Update(this.form)
+        // res.form.password = this._vm.$helpers.aesDecrypt(res.form.password)
       } catch (err) {
         console.log(err)
       } finally {

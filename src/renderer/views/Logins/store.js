@@ -27,11 +27,12 @@ export default {
     },
 
     async Create(_, payload) {
-      payload = this._vm.$helpers.aesEncrypt(this.form.password)
+      payload.password = this._vm.$helpers.aesEncrypt(payload.password)
       await LoginsService.Create(payload)
     },
 
     async Update(_, payload) {
+      payload.password = this._vm.$helpers.aesEncrypt(payload.password)
       await LoginsService.Update(payload.id, payload)
     }
   }
