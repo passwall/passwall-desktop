@@ -73,6 +73,18 @@
 
 <script>
 import { mapActions } from 'vuex'
+
+// TODO
+import CryptoJS from 'crypto-js'
+import format from 'date-fns/format'
+
+// TODO
+const key = '82f2ceed4c503896c8a291e560bd4325' // change to your key
+const iv = 'sinasinasisinaaa' // change to your iv
+const apiKey = '123xxxyyyzzz' // change to your api key
+const reqTime = format(new Date(), 'yyyyMMddHHmmss')
+
+
 export default {
   data() {
     return {
@@ -88,12 +100,36 @@ export default {
   methods: {
     ...mapActions('Logins', ['Create', 'FetchAll']),
 
+    // TODO
+    aesEncrypt(txt) {
+      const cipher = CryptoJS.AES.encrypt(txt, CryptoJS.enc.Utf8.parse(key), {
+        iv: CryptoJS.enc.Utf8.parse(iv),
+        mode: CryptoJS.mode.CBC
+      })
+
+      return cipher.toString()
+    },
+
+    // TODO
+    aesDencrypt(txt) {
+      const cipher = CryptoJS.AES.decrypt(txt, CryptoJS.enc.Utf8.parse(key), {
+        iv: CryptoJS.enc.Utf8.parse(iv),
+        mode: CryptoJS.mode.CBC
+      })
+
+      return CryptoJS.enc.Utf8.stringify(cipher).toString()
+    },
+
     onClickSave() {
       this.$validator.validate().then(async result => {
         if (!result) return
         console.log(this.form)
-
+        
         try {
+
+          // TODO
+          this.form.password = this.aesEncrypt(this.form.password)
+
           await this.Create(this.form)
           this.FetchAll()
           this.$router.push({ name: 'Logins', params: { refresh: true } })

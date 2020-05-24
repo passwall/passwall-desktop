@@ -61,6 +61,7 @@ export default {
     ...mapActions(['Login']),
 
     onLogin() {
+
       this.$validator.validate().then(async result => {
         if (!result) return
 

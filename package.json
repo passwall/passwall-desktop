@@ -58,6 +58,8 @@
     "@vue-hero-icons/outline": "^1.2.0",
     "@vue-hero-icons/solid": "^1.2.0",
     "axios": "^0.18.0",
+    "crypto-js": "^4.0.0",
+    "date-fns": "^2.14.0",
     "v-tooltip": "^2.0.3",
     "vee-validate": "2.2.15",
     "vue": "^2.5.16",
