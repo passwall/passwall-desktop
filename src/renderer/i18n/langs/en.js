@@ -28,5 +28,6 @@ export default {
   Edit: 'Edit',
   Username: 'Username',
   URL: 'URL',
-  'Search passwords, websites, notes': 'Search passwords, websites, notes'
+  'Search passwords, websites, notes': 'Search passwords, websites, notes',
+  'There is nothing here, yet...': 'There is nothing here, yet...'
 }

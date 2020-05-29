@@ -13,19 +13,21 @@
       </div>
       <!-- Items -->
       <PerfectScrollbar class="logins">
-        <!-- Add Item Menu -->
-        <!-- <EmptyCenterState 
-          :active = true
-        
-        /> -->
-
-        <LoginItem
-          v-for="item in ItemList"
-          :key="item.id"
-          :active="$route.params.id == item.id"
-          :data="item"
-          @click="onClickItem(item.id)"
-        />
+        <!-- List -->
+        <template v-if="ItemList.length > 0">
+          <LoginItem
+            v-for="item in ItemList"
+            :key="item.id"
+            :active="$route.params.id == item.id"
+            :data="item"
+            @click="onClickItem(item.id)"
+          />
+        </template>
+        <!-- Empty State -->
+        <div v-else class="flex-center flex-column c-gray-700 h-100">
+          <VIcon name="logo-outline" size="48" class="mt-n7" />
+          <span class="fs-big mt-3" v-text="$t('There is nothing here, yet...')" />
+        </div>
       </PerfectScrollbar>
 
       <!-- Add Item Menu -->
@@ -41,6 +43,12 @@
       </button>
     </div>
     <!-- Detail -->
+    <div
+      class="w-100 h-100 flex-center c-gray-700"
+      v-if="ItemList.length > 0 && $route.name != 'LoginDetail'"
+    >
+      {{ $t('Select one item to see it’s details...') }}
+    </div>
     <router-view />
   </div>
 </template>
@@ -112,7 +120,7 @@ export default {
   height: 100vh;
 }
 
-.logins  {
+.logins {
   height: 100%;
 }
 
