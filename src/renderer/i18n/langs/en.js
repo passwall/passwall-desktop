@@ -28,6 +28,7 @@ export default {
   Edit: 'Edit',
   Username: 'Username',
   URL: 'URL',
+  'There is an update available.': 'There is an update available.',
   'Search passwords, websites, notes': 'Search passwords, websites, notes',
   'There is nothing here, yet...': 'There is nothing here, yet...'
 }

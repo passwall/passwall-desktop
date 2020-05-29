@@ -59,12 +59,17 @@
     </router-link>
 
     <!-- Trash -->
-    <router-link :to="{ name: 'Trash' }" event="" class="sidebar-menu-item mt-7" disabled>
+    <router-link :to="{ name: 'Trash' }" event="" class="sidebar-menu-item mt-7 mb-auto" disabled>
       <TrashIcon size="14" />
       {{ $t('Trash') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
     </router-link>
+
+    <!-- Update -->
+    <button @click="onClickUpdate" href="" class="update-box flex-center" v-if="hasUpdate">
+      {{ $t('There is an update available.') }}
+    </button>
 
     <!-- Feedback -->
     <button class="btn-feedback" @click="onClickFeedback">
@@ -79,14 +84,42 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import HTTPClient from '@/api/HTTPClient'
 
 export default {
+  data() {
+    return {
+      hasUpdate: false,
+      updateLink: null
+    }
+  },
+
+  async created() {
+    await this.checkUpdate()
+  },
+
   computed: {
     ...mapState(['user'])
   },
 
   methods: {
     ...mapActions(['Logout']),
+
+    onClickUpdate() {
+      open(this.updateLink || 'https://passwall.io')
+    },
+
+    async checkUpdate() {
+      const { version } = require('../../../../package.json')
+      try {
+        const { data } = await HTTPClient.get('/web/check-update/1')
+
+        this.hasUpdate = data.latest_version != version
+        this.updateLink = data.download_url
+      } catch (err) {
+        console.log(err)
+      }
+    },
 
     onClickFeedback() {
       open('https://passwall.typeform.com/to/GAv1h2')
@@ -147,10 +180,19 @@ export default {
     }
   }
 
+  .update-box {
+    height: 30px;
+    color: #fff;
+    background-color: $color-primary;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
   .btn-feedback {
     position: relative;
     height: 40px;
-    margin-top: auto;
     background-color: $color-gray-500;
     font-size: 11px;
     color: #fff;
