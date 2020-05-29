@@ -65,3 +65,6 @@ requireComponent.keys().forEach(fileName => {
     import(`@/components/${fileName.replace('./', '')}`)
   )
 })
+
+import Notifications from 'vue-notification'
+Vue.use(Notifications)

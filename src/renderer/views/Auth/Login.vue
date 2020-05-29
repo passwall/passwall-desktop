@@ -61,15 +61,21 @@ export default {
     ...mapActions(['Login']),
 
     onLogin() {
-
       this.$validator.validate().then(async result => {
         if (!result) return
 
         try {
-          await this.Login({ ...this.LoginForm})
+          await this.Login({ ...this.LoginForm })
           this.$router.push({ name: 'Home' })
         } catch (error) {
-          console.log(error)
+          if (error.response && error.response.data) {
+            this.$notify({
+              type: 'error',
+              duration: 40020,
+              title: this.$t('Error'),
+              text: error.response.data.message
+            })
+          }
         }
       })
     }

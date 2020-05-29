@@ -113,6 +113,15 @@ html {
   }
 }
 
+.vue-notification-group {
+  top: 10px !important;
+  border-radius: 4px;
+}
+
+.vue-notification {
+  border-radius: 2px;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
