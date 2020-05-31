@@ -24,9 +24,9 @@
     </router-link> -->
 
     <!-- Categories -->
-    <span class="c-gray-300 pl-5 fs-big py-2 mt-7 mb-4">
+    <!-- <span class="c-gray-300 pl-5 fs-big py-2 mt-7 mb-4">
       {{ $t('Categories') }}
-    </span>
+    </span> -->
 
     <!-- Logins -->
     <router-link :to="{ name: 'Logins' }" class="sidebar-menu-item">
@@ -59,7 +59,7 @@
     </router-link>
 
     <!-- Trash -->
-    <router-link :to="{ name: 'Trash' }" event="" class="sidebar-menu-item mt-7 mb-auto" disabled>
+    <router-link :to="{ name: 'Trash' }" event="" class="sidebar-menu-item" disabled>
       <TrashIcon size="14" />
       {{ $t('Trash') }}
       <!-- Premium -->
@@ -142,7 +142,7 @@ export default {
   flex-direction: column;
 
   .account {
-    margin-top: 32px;
+    margin: 32px 0px;
     width: 100%;
     height: 40px;
     display: flex;
@@ -184,6 +184,7 @@ export default {
     height: 30px;
     color: #fff;
     background-color: $color-primary;
+    margin-bottom: auto;
 
     &:hover {
       opacity: 0.9;
@@ -194,7 +195,7 @@ export default {
     position: relative;
     height: 40px;
     background-color: $color-gray-500;
-    font-size: 11px;
+    font-size: $font-size-normal;
     color: #fff;
 
     &,
@@ -205,8 +206,8 @@ export default {
     }
 
     .icon {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       border-radius: 4px;
       margin-left: $spacer-2;
       background-color: $color-gray-400;
@@ -237,11 +238,16 @@ export default {
     padding-left: $spacer-3;
     height: 40px;
     color: $color-gray-300;
-    font-size: $font-size-small;
+    font-size: $font-size-normal;
     border-bottom: 1px solid $color-gray-600;
+
+    &:nth-last-child(3) {
+      margin-bottom: auto;
+    }
 
     &:last-of-type {
       border-bottom: 0;
+      margin-bottom: 20px;
     }
 
     svg {

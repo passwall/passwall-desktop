@@ -1,8 +1,7 @@
 import Axios from 'axios'
 
 const client = Axios.create({
-  baseURL: 'http://89.252.131.83:3625',
-  // baseURL: 'http://localhost:3625',
+  baseURL: 'https://vault.passwall.io',
   headers: {
     'Content-Type': 'application/json; charset=utf-8',
     Accept: 'application/json, text/plain, */*'

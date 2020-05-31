@@ -39,12 +39,12 @@ export default {
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  background-color: $color-gray-600;
+  background-color: black;
   cursor: pointer;
   border-bottom: 1px solid black;
 
   &.--active {
-    background: black;
+    background: $color-gray-600;
   }
 
   &-avatar {
@@ -62,14 +62,14 @@ export default {
     flex-direction: column;
 
     .url {
-      font-weight: bold;
-      font-size: 12px;
+      font-weight: 600;
+      font-size: $font-size-normal;
       line-height: 16px;
     }
 
     .username {
       font-weight: normal;
-      font-size: 10px;
+      font-size: $font-size-mini;
       line-height: 16px;
     }
   }

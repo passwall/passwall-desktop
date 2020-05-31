@@ -10,10 +10,7 @@
         <span v-text="form.url" class="url" />
         <span v-text="form.username" class="email" />
       </div>
-      <!-- Delete -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
-        <TrashIcon size="14" />
-      </button>
+      
       <!-- Copy -->
       <button
         class="detail-page-header-icon"
@@ -21,6 +18,10 @@
         v-clipboard:copy="loginCopyContent"
       >
         <DuplicateIcon size="14" />
+      </button>
+      <!-- Delete -->
+      <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
+        <TrashIcon size="14" />
       </button>
     </div>
     <!-- Content -->
@@ -204,13 +205,13 @@ export default {
 
       .url {
         font-weight: bold;
-        font-size: 12px;
+        font-size: $font-size-normal;
         line-height: 16px;
       }
 
       .email {
         font-weight: normal;
-        font-size: 10px;
+        font-size: $font-size-mini;
         line-height: 16px;
       }
     }
@@ -223,7 +224,7 @@ export default {
       height: 24px;
       border-radius: 4px;
       background-color: $color-gray-500;
-      margin-left: $spacer-3;
+      margin-left: $spacer-2;
       color: $color-gray-300;
     }
   }

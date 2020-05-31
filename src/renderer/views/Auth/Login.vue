@@ -51,8 +51,8 @@ export default {
   data() {
     return {
       LoginForm: {
-        email: 'hello@passwall.io',
-        master_password: 'password'
+        email: '',
+        master_password: ''
       }
     }
   },

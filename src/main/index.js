@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron' // eslint-disable-line
+import { app, BrowserWindow, Tray } from 'electron' // eslint-disable-line
 
 /**
  * Set `__static` path to static files in production
@@ -13,16 +13,19 @@ const winURL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:9080'
   : `file://${__dirname}/index.html`;
 
+
 function createWindow() {
   /**
    * Initial window options
    */
+
   mainWindow = new BrowserWindow({
     height: 540,
     width: 900,
     minWidth: 900,
     minHeight: 540,
     useContentSize: true,
+    icon: require('path').join(__dirname, 'assets/icons/png/logo.png')
   });
 
   mainWindow.loadURL(winURL);
@@ -30,6 +33,7 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
 }
 
 app.on('ready', createWindow);

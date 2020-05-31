@@ -45,7 +45,7 @@
     <!-- Detail -->
     <div
       class="w-100 h-100 flex-center c-gray-700"
-      v-if="ItemList.length > 0 && $route.name != 'LoginDetail'"
+      v-if="ItemList.length > 0 && $route.name != 'LoginDetail' && $route.name != 'LoginCreate'"
     >
       {{ $t('Select one item to see it’s details...') }}
     </div>
