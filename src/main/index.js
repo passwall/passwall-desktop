@@ -25,7 +25,7 @@ function createWindow() {
     minWidth: 900,
     minHeight: 540,
     useContentSize: true,
-    icon: require('path').join(__dirname, 'assets/icons/png/logo.png')
+    icon: require('path').join(__dirname, '/static/img/logo.png')
   });
 
   mainWindow.loadURL(winURL);
