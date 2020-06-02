@@ -49,6 +49,8 @@ const AuthCheck = async () => {
 }
 
 ;(async () => {
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('refresh_token')
   await AuthCheck()
   setInterval(AuthCheck, 60e3)
 

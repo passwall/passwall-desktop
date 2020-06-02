@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray } from 'electron' // eslint-disable-line
+import { app, BrowserWindow, Menu} from 'electron' // eslint-disable-line
 
 /**
  * Set `__static` path to static files in production
@@ -25,7 +25,6 @@ function createWindow() {
     minWidth: 900,
     minHeight: 540,
     useContentSize: true,
-    icon: require('path').join(__dirname, '/static/img/logo.png')
   });
 
   mainWindow.loadURL(winURL);
@@ -33,6 +32,8 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  createMenu();
 
 }
 
@@ -49,6 +50,29 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+function createMenu() {
+  var template = [{
+    label: "Application",
+    submenu: [
+        { label: "About PassWall", selector: "orderFrontStandardAboutPanel:" },
+        { type: "separator" },
+        { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }}
+    ]}, {
+    label: "Edit",
+    submenu: [
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+    ]}
+  ];
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+}
 
 /**
  * Auto Updater

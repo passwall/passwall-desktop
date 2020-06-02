@@ -1,8 +1,8 @@
 {
-  "name": "passwall-desktop",
+  "name": "passwall",
   "version": "0.1.0",
-  "author": "Oguzhan INAN <oguzhan3488@gmail.com>",
-  "description": "PassWall Desktop",
+  "author": "PassWall <hello@passwall.io>",
+  "description": "PassWall Desktop MacOS Version",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "passwall-desktop",
+    "productName": "PassWall",
     "appId": "io.passwalll.desktop",
     "directories": {
       "output": "build"
