@@ -1,6 +1,10 @@
 # Changelog PassWall Desktop
 
-## [0.1.1] (31-05-2020)
+## [0.1.-] (03-06-2020)
+### Added
+- Changed the size of stars
+
+## [0.1.1] (03-06-2020)
 ### Added
 - Keyboard shortcuts like CMD + V etc.
 - Logout on quitting app

@@ -39,7 +39,7 @@
       <ClipboardCheckIcon size="14" />
       {{ $t('PrivateNotes') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>
 
     <!-- Credit Cards -->
@@ -47,7 +47,7 @@
       <CreditCardIcon size="14" />
       {{ $t('CreditCards') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>
 
     <!-- Identities -->
@@ -55,7 +55,7 @@
       <UserIcon size="14" />
       {{ $t('Identities') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>
 
     <!-- Trash -->
@@ -63,7 +63,7 @@
       <TrashIcon size="14" />
       {{ $t('Trash') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>
 
     <!-- Update -->
