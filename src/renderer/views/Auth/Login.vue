@@ -72,7 +72,6 @@ export default {
             this.$notify({
               type: 'error',
               duration: 40020,
-              title: this.$t('Error'),
               text: error.response.data.message
             })
           }

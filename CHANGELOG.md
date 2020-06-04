@@ -3,6 +3,8 @@
 ## [0.1.-] (03-06-2020)
 ### Added
 - Changed the size of stars
+### Updated
+- Updated notification
 
 ## [0.1.1] (03-06-2020)
 ### Added
