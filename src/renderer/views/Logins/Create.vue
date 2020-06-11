@@ -86,20 +86,19 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState(['secure_key']), // bu şekilde root state değerlein alabilirsin this.secure_key olarak kullanaiblirsin
+    ...mapState('Logins', ['Detail']) // bu şekilde de sadece logins için alırsın abi bu iki satır kullanılmıyor burda kaldırabilirsin
+  },
+
   methods: {
     ...mapActions('Logins', ['Create', 'FetchAll']),
 
     onClickSave() {
       this.$validator.validate().then(async result => {
         if (!result) return
-        console.log(this.form)
-
         try {
-          var payload = {data: this._vm.$helpers.aesEncrypt(this.form)}
-          // encPayload = this._vm.$helpers.aesEncrypt(this.form)
-      // console.log(encPayload)
-      // var veri = {data: encPayload}
-          await this.Create(payload)
+          await this.Create({ ...this.form })
           this.FetchAll()
           this.$router.push({ name: 'Logins', params: { refresh: true } })
         } catch (error) {

@@ -32,7 +32,7 @@ export default new Vuex.Store({
 
       localStorage.access_token  = data.access_token
       localStorage.refresh_token = data.refresh_token
-      
+    
       HTTPClient.setHeader('Authorization', `Bearer ${state.access_token}`)
     },
 
