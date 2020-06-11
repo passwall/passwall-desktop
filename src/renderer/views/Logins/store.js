@@ -1,4 +1,5 @@
 import LoginsService from '@/api/services/Logins'
+import store from '@/store'
 
 export default {
   namespaced: true,
@@ -27,7 +28,7 @@ export default {
     },
 
     async Create(_, payload) {
-      payload.password = this._vm.$helpers.aesEncrypt(payload.password)
+      payload.password = this._vm.$helpers.aesEncrypt(payload.password, state.user.secure_key)
       await LoginsService.Create(payload)
     },
 

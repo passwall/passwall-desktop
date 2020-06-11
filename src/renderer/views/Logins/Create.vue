@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data() {
@@ -95,7 +95,11 @@ export default {
         console.log(this.form)
 
         try {
-          await this.Create(this.form)
+          var payload = {data: this._vm.$helpers.aesEncrypt(this.form)}
+          // encPayload = this._vm.$helpers.aesEncrypt(this.form)
+      // console.log(encPayload)
+      // var veri = {data: encPayload}
+          await this.Create(payload)
           this.FetchAll()
           this.$router.push({ name: 'Logins', params: { refresh: true } })
         } catch (error) {
