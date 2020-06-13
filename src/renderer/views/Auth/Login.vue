@@ -51,8 +51,8 @@ export default {
   data() {
     return {
       LoginForm: {
-        email: '',
-        master_password: ''
+        email: 'yakuter@gmail.com',
+        master_password: '123456'
       }
     }
   },

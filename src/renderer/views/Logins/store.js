@@ -12,15 +12,29 @@ export default {
   },
 
   actions: {
-    async FetchAll({ state }, query) {
+    async FetchAll({ state, rootState }, query) {
       const { data } = await LoginsService.FetchAll(query)
+
+      var dLen, i
+      dLen = data.length
+      for (i = 0; i < dLen; i++) {
+        data[i].url      = this._vm.$helpers.decrypt(data[i].url,      rootState.master_hash)
+        data[i].username = this._vm.$helpers.decrypt(data[i].username, rootState.master_hash)
+        data[i].password = this._vm.$helpers.decrypt(data[i].password, rootState.master_hash)
+      }
+      
       state.ItemList = data
     },
 
-    async Get({ state }, id) {
+    async Get({ state, rootState }, id) {
       const { data } = await LoginsService.Get(id)
-      // data.password = this._vm.$helpers.aesDecrypt(data.password)
-      state.Detail = this._vm.$helpers.aesDecrypt(data)
+
+      data.url      = this._vm.$helpers.decrypt(data.url,      rootState.master_hash)
+      data.username = this._vm.$helpers.decrypt(data.username, rootState.master_hash)
+      data.password = this._vm.$helpers.decrypt(data.password, rootState.master_hash)
+
+      // state.Detail = this._vm.$helpers.aesDecrypt(data)
+      state.Detail = data
     },
 
     async Delete(_, id) {
@@ -28,27 +42,34 @@ export default {
     },
 
     async Create({ rootState }, data) {
-      // her modulün kendi statei var abi store/index.js dosyasında en altta modules var orada şuan
-      // Logins var mesela ona ulaşmak için Logins/key şeklinde kullanıyorsun yada o modluün içinden direk
-      // burda rootstate diyerek ana storedaki bilgilere ulaşabilirsin
-      // yada component içinden ulaşmak için mapState kullanabilirsin onun örneğni koyucam logins create syfasına
-      // ama onu kullanmıyoruz burda yapman daha doğru burası logic ilerin yeri aslında 
-      // ben örnek koyucam inceleyip silersin.
-      // burda loginde aldığımız key değeri ile tüm payloadı şfreleyip göndeiroyruz
-      // password alaının ayrıca yapmadım eğer yapıcaksan önce onu yapyıp sonra hepsinide yapabilirsin
-      //  data.password = this._vm.$helpers.aesDecrypt(data.password)
-      const payload = {
-        data: this._vm.$helpers.aesEncrypt(data, rootState.secure_key)
-      }
-      await LoginsService.Create(payload)
+      // console.log("Raw: "+ data.url)
+      // console.log("MasterHash: "+ rootState.master_hash)
+      // data.url      = this._vm.$helpers.encrypt(data.url, rootState.master_hash)
+      // console.log("Encrypted: "+ data.url)
+      // var sonuc = this._vm.$helpers.decrypt(data.url, rootState.master_hash)
+      // console.log("Decrypted: "+ this._vm.$helpers.encToString(sonuc))
+      
+      data.url      = this._vm.$helpers.encrypt(data.url,      rootState.master_hash)
+      data.username = this._vm.$helpers.encrypt(data.username, rootState.master_hash)
+      data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
+      
+      // const payload = {
+      //   data: this._vm.$helpers.aesEncrypt(data, rootState.secure_key)
+      // }
+      await LoginsService.Create(data)
     },
 
-    async Update(_, data) {
+    async Update({ rootState }, data) {
       // payload.password = this._vm.$helpers.aesEncrypt(payload.password)
-      const payload = {
-        data: this._vm.$helpers.aesEncrypt(data, rootState.secure_key)
-      }
-      await LoginsService.Update(data.id, payload)
+
+      data.url      = this._vm.$helpers.encrypt(data.url,      rootState.master_hash)
+      data.username = this._vm.$helpers.encrypt(data.username, rootState.master_hash)
+      data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
+
+      // const payload = {
+      //   data: this._vm.$helpers.aesEncrypt(data, rootState.secure_key)
+      // }
+      await LoginsService.Update(data.id, data)
     }
   }
 }

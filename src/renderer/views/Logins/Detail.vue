@@ -157,6 +157,7 @@ export default {
     async onClickUpdate() {
       try {
         await this.Update({ ...this.form })
+        this.$router.push({ name: 'Logins', params: { refresh: true } })
       } catch (err) {
         console.log(err)
       } finally {
