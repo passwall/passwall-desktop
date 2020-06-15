@@ -27,11 +27,11 @@ export default new Vuex.Store({
     
       const { data } = await AuthService.Login(payload)
 
-      state.master_hash   = this._vm.$helpers.pbkdf2Encrypt(master_password, data.secret)
-      state.access_token  = data.access_token
-      state.refresh_token = data.refresh_token
-      state.transmission_key    = data.transmission_key.substr(0, 32)
-      state.user          = data
+      state.master_hash      = this._vm.$helpers.pbkdf2Encrypt(master_password, data.secret)
+      state.access_token     = data.access_token
+      state.refresh_token    = data.refresh_token
+      state.transmission_key = data.transmission_key.substr(0, 32)
+      state.user             = data
 
       localStorage.access_token  = data.access_token
       localStorage.refresh_token = data.refresh_token
