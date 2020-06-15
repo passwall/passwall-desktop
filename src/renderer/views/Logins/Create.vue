@@ -87,8 +87,8 @@ export default {
   },
 
   computed: {
-    ...mapState(['secure_key']), // bu şekilde root state değerlein alabilirsin this.secure_key olarak kullanaiblirsin
-    ...mapState('Logins', ['Detail']) // bu şekilde de sadece logins için alırsın abi bu iki satır kullanılmıyor burda kaldırabilirsin
+    // ...mapState(['']), // bu şekilde root state değerlein alabilirsin this.transmission_key olarak kullanaiblirsin
+    // ...mapState('Logins', ['Detail']) // bu şekilde de sadece logins için alırsın abi bu iki satır kullanılmıyor burda kaldırabilirsin
   },
 
   methods: {

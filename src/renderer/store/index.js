@@ -12,7 +12,7 @@ export default new Vuex.Store({
     return {
       access_token: localStorage.access_token,
       refresh_token: localStorage.refresh_token,
-      secure_key: '',
+      transmission_key: '',
       master_hash: '',
       user: {}
     }
@@ -30,7 +30,7 @@ export default new Vuex.Store({
       state.master_hash   = this._vm.$helpers.pbkdf2Encrypt(master_password, data.secret)
       state.access_token  = data.access_token
       state.refresh_token = data.refresh_token
-      state.secure_key    = data.secure_key.substr(0, 32)
+      state.transmission_key    = data.transmission_key.substr(0, 32)
       state.user          = data
 
       localStorage.access_token  = data.access_token
@@ -45,7 +45,7 @@ export default new Vuex.Store({
       state.user = null
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
-      localStorage.removeItem('secure_key')
+      localStorage.removeItem('transmission_key')
     }
   },
 
