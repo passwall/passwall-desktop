@@ -9,7 +9,7 @@
       </button>
 
       <!-- Credit Cards -->
-      <button class="add-item-menu-item" disabled>
+      <button @click="onClickItem('CreditCardCreate')" class="add-item-menu-item">
         <CreditCardIcon size="14" class="icon" />
         {{ $t('CreditCards') }}
         <!-- Premium -->

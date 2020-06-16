@@ -6,6 +6,7 @@ import AuthService from '@/api/services/Auth'
 import HTTPClient from '@/api/HTTPClient'
 
 import Logins from '@/views/Logins/store'
+import CreditCards from '@/views/CreditCards/store'
 
 export default new Vuex.Store({
   state() {
@@ -20,6 +21,8 @@ export default new Vuex.Store({
 
   actions: {
     async Login({ state }, payload) {
+      console.log(this._vm.$helpers.hmac("erhan", "R7T6LABSNX8AYk7pNsP7123456789012"))
+      
 
       var master_password = payload.master_password
       
@@ -50,6 +53,7 @@ export default new Vuex.Store({
   },
 
   modules: {
-    Logins
+    Logins,
+    CreditCards
   }
 })

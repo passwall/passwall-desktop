@@ -38,14 +38,26 @@ const router = new Router({
           ]
         },
         {
+          path: '/credit-cards',
+          name: 'CreditCards',
+          component: require('@/views/CreditCards/index').default,
+          children: [
+            {
+              path: 'create',
+              name: 'CreditCardCreate',
+              component: require('@/views/CreditCards/Create').default
+            },
+            {
+              path: ':id',
+              name: 'CreditCardDetail',
+              component: require('@/views/CreditCards/Detail').default
+            }
+          ]
+        },
+        {
           path: '/private-notes',
           name: 'PrivateNotes',
           component: require('@/views/PrivateNotes/index').default
-        },
-        {
-          path: '/credit-cards',
-          name: 'CreditCards',
-          component: require('@/views/CreditCards/index').default
         },
         {
           path: '/identities',

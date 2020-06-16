@@ -6,6 +6,12 @@ var iterations = 100;
 
 export default {
 
+  hmac (msg, transmission_key) {
+    var encrypted = CryptoJS.HmacSHA256(msg, transmission_key);
+    return encrypted.toString();
+  },
+  
+
   encrypt (msg, pass) {
     var salt = CryptoJS.lib.WordArray.random(128/8);
     

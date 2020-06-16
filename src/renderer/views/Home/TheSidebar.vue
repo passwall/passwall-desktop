@@ -34,18 +34,18 @@
       {{ $t('Logins') }}
     </router-link>
 
-    <!-- Private Notes -->
-    <router-link :to="{ name: 'PrivateNotes' }" event="" class="sidebar-menu-item" disabled>
-      <ClipboardCheckIcon size="14" />
-      {{ $t('PrivateNotes') }}
+    <!-- Credit Cards -->
+    <router-link :to="{ name: 'CreditCards' }" class="sidebar-menu-item">
+      <CreditCardIcon size="14" />
+      {{ $t('CreditCards') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>
 
-    <!-- Credit Cards -->
-    <router-link :to="{ name: 'CreditCards' }" event="" class="sidebar-menu-item" disabled>
-      <CreditCardIcon size="14" />
-      {{ $t('CreditCards') }}
+    <!-- Private Notes -->
+    <router-link :to="{ name: 'PrivateNotes' }" event="" class="sidebar-menu-item" disabled>
+      <ClipboardCheckIcon size="14" />
+      {{ $t('PrivateNotes') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>
