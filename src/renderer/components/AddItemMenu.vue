@@ -11,7 +11,15 @@
       <!-- Credit Cards -->
       <button @click="onClickItem('CreditCardCreate')" class="add-item-menu-item">
         <CreditCardIcon size="14" class="icon" />
-        {{ $t('CreditCards') }}
+        {{ $t('Credit Cards') }}
+        <!-- Premium -->
+        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+      </button>
+
+      <!-- Bank Accounts -->
+      <button @click="onClickItem('BankAccountCreate')" class="add-item-menu-item">
+        <CreditCardIcon size="14" class="icon" />
+        {{ $t('Bank Accounts') }}
         <!-- Premium -->
         <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
       </button>

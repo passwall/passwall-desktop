@@ -1,6 +1,6 @@
 import HTTPClient from '@/api/HTTPClient'
 
-export default class LoginsService {
+export default class CreditCardsService {
   static async FetchAll(query) {
     return HTTPClient.get(`/api/credit-cards`, query)
   }

@@ -55,6 +55,23 @@ const router = new Router({
           ]
         },
         {
+          path: '/bank-accounts',
+          name: 'BankAccounts',
+          component: require('@/views/BankAccounts/index').default,
+          children: [
+            {
+              path: 'create',
+              name: 'BankAccountCreate',
+              component: require('@/views/BankAccounts/Create').default
+            },
+            {
+              path: ':id',
+              name: 'BankAccountDetail',
+              component: require('@/views/BankAccounts/Detail').default
+            }
+          ]
+        },
+        {
           path: '/private-notes',
           name: 'PrivateNotes',
           component: require('@/views/PrivateNotes/index').default

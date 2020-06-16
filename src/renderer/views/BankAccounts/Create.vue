@@ -7,7 +7,7 @@
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="$t('New Credit Card')" class="url" />
+        <span v-text="$t('New Bank Account')" class="url" />
         <span v-text="$t('Please fill all the necessary fields')" class="email" />
       </div>
     </div>
@@ -15,74 +15,86 @@
     <div class="detail-page-content">
       <div class="form">
 
-        <!-- CardName -->
+        <!-- BankName -->
         <div class="form-row">
-          <label v-text="$t('Card Name')" />
+          <label v-text="$t('Bank Name')" />
           <VFormText
-            v-model="form.card_name"
+            v-model="form.bank_name"
             v-validate="'required'"
-            name="CardName"
+            name="BankName"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
         </div>
 
-        <!-- CardholderName -->
+        <!-- BankCode -->
         <div class="form-row">
-          <label v-text="$t('Cardholder Name')" />
+          <label v-text="$t('Bank Code')" />
           <VFormText
-            v-model="form.cardholder_name"
+            v-model="form.bank_code"
             v-validate="'required'"
-            name="CardholderName"
+            name="BankCode"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
         </div>
 
-        <!-- Type -->
+        <!-- AccountName -->
         <div class="form-row">
-          <label v-text="$t('Type')" />
+          <label v-text="$t('Account Name')" />
           <VFormText
-            v-model="form.type"
+            v-model="form.account_name"
             v-validate="'required'"
-            name="Type"
+            name="AccountName"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
         </div>
 
-        <!-- Number -->
+        <!-- AccountNumber -->
         <div class="form-row">
-          <label v-text="$t('Number')" />
+          <label v-text="$t('Account Number')" />
           <VFormText
-            v-model="form.number"
+            v-model="form.account_number"
             v-validate="'required'"
-            name="Number"
+            name="AccountNumber"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
         </div>
 
-        <!-- ExpiryDate -->
+        <!-- IBAN -->
         <div class="form-row">
-          <label v-text="$t('Expiry Date')" />
+          <label v-text="$t('IBAN')" />
           <VFormText
-            v-model="form.expiry_date"
+            v-model="form.iban"
             v-validate="'required'"
-            name="ExpiryDate"
+            name="IBAN"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
         </div>
 
-        <!-- VerificationNumber -->
+        <!-- Currency -->
         <div class="form-row">
-          <label v-text="$t('Verification Number')" />
+          <label v-text="$t('Currency')" />
+          <VFormText
+            v-model="form.currency"
+            v-validate="'required'"
+            name="Currency"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
+        </div>
+
+        <!-- Password -->
+        <div class="form-row">
+          <label v-text="$t('Password')" />
           <div class="d-flex">
             <VFormText
-              v-model="form.verification_number"
+              v-model="form.password"
               v-validate="'required'"
-              name="VerificationNumber"
+              name="Password"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
               theme="no-border"
@@ -117,12 +129,13 @@ export default {
     return {
       showPass: false,
       form: {
-        card_name: '',
-        cardholder_name: '',
-        type: '',
-        number: '',
-        expiry_date: '',
-        verification_number: ''
+        bank_name: '',
+        bank_code: '',
+        account_name: '',
+        account_number: '',
+        iban: '',
+        currency: '',
+        password: ''
       }
     }
   },
@@ -133,7 +146,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('CreditCards', ['Create', 'FetchAll']),
+    ...mapActions('BankAccounts', ['Create', 'FetchAll']),
 
     onClickSave() {
       this.$validator.validate().then(async result => {
@@ -141,7 +154,7 @@ export default {
         try {
           await this.Create({ ...this.form })
           this.FetchAll()
-          this.$router.push({ name: 'CreditCards', params: { refresh: true } })
+          this.$router.push({ name: 'BankAccounts', params: { refresh: true } })
         } catch (error) {
           console.log(error)
         }

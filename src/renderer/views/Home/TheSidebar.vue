@@ -37,7 +37,15 @@
     <!-- Credit Cards -->
     <router-link :to="{ name: 'CreditCards' }" class="sidebar-menu-item">
       <CreditCardIcon size="14" />
-      {{ $t('CreditCards') }}
+      {{ $t('Credit Cards') }}
+      <!-- Premium -->
+      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
+    </router-link>
+
+    <!-- Bank Accounts -->
+    <router-link :to="{ name: 'BankAccounts' }" class="sidebar-menu-item">
+      <CreditCardIcon size="14" />
+      {{ $t('Bank Accounts') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>

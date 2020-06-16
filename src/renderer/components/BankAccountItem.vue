@@ -1,16 +1,16 @@
 <template>
-  <div class="credit_card-item" :class="{ '--active': active }" @click="$emit('click')">
+  <div class="bank_account-item" :class="{ '--active': active }" @click="$emit('click')">
     <!-- Avatar -->
-    <div class="credit_card-item-avatar">
+    <div class="bank_account-item-avatar">
       <img v-if="data.src" :src="data.src" />
     </div>
     <!-- Summary -->
-    <div class="credit_card-item-summary">
-      <span v-text="data.card_name" class="url" />
-      <span v-text="data.number" class="username" />
+    <div class="bank_account-item-summary">
+      <span v-text="data.bank_name" class="url" />
+      <span v-text="data.account_name" class="username" />
     </div>
     <!-- Detail -->
-    <button class="credit_card-item-detail">
+    <button class="bank_account-item-detail">
       <CheveronRightIcon size="14" />
     </button>
   </div>
@@ -18,7 +18,7 @@
 
 <script>
 export default {
-  name: 'CreditCardItem',
+  name: 'BankAccountItem',
 
   props: {
     data: {
@@ -34,7 +34,7 @@ export default {
 </script>
 
 <style lang="scss">
-.credit_card-item {
+.bank_account-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
