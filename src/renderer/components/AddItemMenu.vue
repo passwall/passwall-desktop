@@ -32,6 +32,14 @@
         <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
       </button>
 
+      <!-- Private Notes -->
+      <button @click="onClickItem('NoteCreate')" class="add-item-menu-item">
+        <ClipboardCheckIcon size="14" class="icon" />
+        {{ $t('Private Notes') }}
+        <!-- Premium -->
+        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+      </button>
+
       <!-- Identities -->
       <button class="add-item-menu-item" disabled>
         <UserIcon size="14" class="icon" />
@@ -48,13 +56,6 @@
         <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
       </button>
 
-      <!-- Private Notes -->
-      <button class="add-item-menu-item" disabled>
-        <ClipboardCheckIcon size="14" class="icon" />
-        {{ $t('PrivateNotes') }}
-        <!-- Premium -->
-        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
-      </button>
     </div>
   </div>
 </template>

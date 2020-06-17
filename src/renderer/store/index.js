@@ -9,6 +9,7 @@ import Logins from '@/views/Logins/store'
 import CreditCards from '@/views/CreditCards/store'
 import BankAccounts from '@/views/BankAccounts/store'
 import Emails from '@/views/Emails/store'
+import Notes from '@/views/Notes/store'
 
 export default new Vuex.Store({
   state() {
@@ -58,6 +59,7 @@ export default new Vuex.Store({
     Logins,
     CreditCards,
     BankAccounts,
-    Emails
+    Emails,
+    Notes
   }
 })

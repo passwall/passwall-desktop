@@ -59,9 +59,9 @@
     </router-link>
 
     <!-- Private Notes -->
-    <router-link :to="{ name: 'PrivateNotes' }" event="" class="sidebar-menu-item" disabled>
+    <router-link :to="{ name: 'Notes' }" class="sidebar-menu-item">
       <ClipboardCheckIcon size="14" />
-      {{ $t('PrivateNotes') }}
+      {{ $t('Private Notes') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>

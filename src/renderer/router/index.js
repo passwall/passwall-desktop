@@ -89,9 +89,21 @@ const router = new Router({
           ]
         },
         {
-          path: '/private-notes',
-          name: 'PrivateNotes',
-          component: require('@/views/PrivateNotes/index').default
+          path: '/notes',
+          name: 'Notes',
+          component: require('@/views/Notes/index').default,
+          children: [
+            {
+              path: 'create',
+              name: 'NoteCreate',
+              component: require('@/views/Notes/Create').default
+            },
+            {
+              path: ':id',
+              name: 'NoteDetail',
+              component: require('@/views/Notes/Detail').default
+            }
+          ]
         },
         {
           path: '/identities',
