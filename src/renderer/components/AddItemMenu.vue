@@ -40,22 +40,6 @@
         <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
       </button>
 
-      <!-- Identities -->
-      <button class="add-item-menu-item" disabled>
-        <UserIcon size="14" class="icon" />
-        {{ $t('Identities') }}
-        <!-- Premium -->
-        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
-      </button>
-
-      <!-- Address -->
-      <button class="add-item-menu-item" disabled>
-        <LocationMarkerIcon size="14" class="icon" />
-        {{ $t('Address') }}
-        <!-- Premium -->
-        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
-      </button>
-
     </div>
   </div>
 </template>

@@ -66,13 +66,6 @@
       <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>
 
-    <!-- Identities -->
-    <router-link :to="{ name: 'Identities' }" event="" class="sidebar-menu-item" disabled>
-      <UserIcon size="14" />
-      {{ $t('Identities') }}
-      <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
-    </router-link>
 
     <!-- Trash -->
     <router-link :to="{ name: 'Trash' }" event="" class="sidebar-menu-item" disabled>
