@@ -72,6 +72,23 @@ const router = new Router({
           ]
         },
         {
+          path: '/emails',
+          name: 'Emails',
+          component: require('@/views/Emails/index').default,
+          children: [
+            {
+              path: 'create',
+              name: 'EmailCreate',
+              component: require('@/views/Emails/Create').default
+            },
+            {
+              path: ':id',
+              name: 'EmailDetail',
+              component: require('@/views/Emails/Detail').default
+            }
+          ]
+        },
+        {
           path: '/private-notes',
           name: 'PrivateNotes',
           component: require('@/views/PrivateNotes/index').default

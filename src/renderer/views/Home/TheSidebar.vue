@@ -50,6 +50,14 @@
       <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>
 
+    <!-- Emails -->
+    <router-link :to="{ name: 'Emails' }" class="sidebar-menu-item">
+      <CreditCardIcon size="14" />
+      {{ $t('Emails') }}
+      <!-- Premium -->
+      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
+    </router-link>
+
     <!-- Private Notes -->
     <router-link :to="{ name: 'PrivateNotes' }" event="" class="sidebar-menu-item" disabled>
       <ClipboardCheckIcon size="14" />

@@ -24,6 +24,14 @@
         <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
       </button>
 
+      <!-- Emails -->
+      <button @click="onClickItem('EmailCreate')" class="add-item-menu-item">
+        <CreditCardIcon size="14" class="icon" />
+        {{ $t('Emails') }}
+        <!-- Premium -->
+        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+      </button>
+
       <!-- Identities -->
       <button class="add-item-menu-item" disabled>
         <UserIcon size="14" class="icon" />

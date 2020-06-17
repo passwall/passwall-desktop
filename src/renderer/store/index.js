@@ -8,6 +8,7 @@ import HTTPClient from '@/api/HTTPClient'
 import Logins from '@/views/Logins/store'
 import CreditCards from '@/views/CreditCards/store'
 import BankAccounts from '@/views/BankAccounts/store'
+import Emails from '@/views/Emails/store'
 
 export default new Vuex.Store({
   state() {
@@ -56,6 +57,7 @@ export default new Vuex.Store({
   modules: {
     Logins,
     CreditCards,
-    BankAccounts
+    BankAccounts,
+    Emails
   }
 })
