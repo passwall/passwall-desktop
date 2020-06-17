@@ -7,7 +7,7 @@
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.url" class="url" />
+        <span v-text="form.title" class="url" />
         <span v-text="form.username" class="email" />
       </div>
       
@@ -36,6 +36,21 @@
         <PencilIcon size="14" />
       </button>
       <div class="form">
+        <!-- Title -->
+        <div class="form-row">
+          <label v-text="$t('Title')" />
+          <VFormText
+            v-if="isEditMode"
+            v-model="form.title"
+            theme="no-border"
+            :placeholder="$t('ClickToFill')"
+          />
+          <!-- Text -->
+          <div v-else class="d-flex flex-items-center px-3 py-2">
+            <span v-text="form.title" class="mr-2" />
+            <ClipboardButton :copy="form.title" />
+          </div>
+        </div>
         <!-- URL -->
         <div class="form-row">
           <label v-text="$t('URL')" />
@@ -170,7 +185,7 @@ export default {
     ...mapState('Logins', ['Detail', 'ItemList']),
 
     loginCopyContent() {
-      return `URL: ${this.form.url}\nUsername: ${this.form.username}\nPassword: ${this.form.password}`
+      return `Title: ${this.form.title}\nURL: ${this.form.url}\nUsername: ${this.form.username}\nPassword: ${this.form.password}`
     }
   }
 }

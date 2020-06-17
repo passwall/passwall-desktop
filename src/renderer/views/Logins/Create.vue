@@ -7,13 +7,24 @@
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="$t('NewLogin')" class="url" />
+        <span v-text="$t('New Login')" class="url" />
         <span v-text="$t('Please fill all the necessary fields')" class="email" />
       </div>
     </div>
     <!-- Content -->
     <div class="detail-page-content">
       <div class="form">
+        <!-- Title -->
+        <div class="form-row">
+          <label v-text="$t('Title')" />
+          <VFormText
+            v-model="form.title"
+            v-validate="'required'"
+            name="Title"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
+        </div>
         <!-- URL -->
         <div class="form-row">
           <label v-text="$t('URL')" />

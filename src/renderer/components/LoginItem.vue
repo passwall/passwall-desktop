@@ -6,7 +6,7 @@
     </div>
     <!-- Summary -->
     <div class="login-item-summary">
-      <span v-text="data.url" class="url" />
+      <span v-text="data.title" class="url" />
       <span v-text="data.username" class="username" />
     </div>
     <!-- Detail -->
