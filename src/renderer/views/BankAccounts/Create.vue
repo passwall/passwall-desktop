@@ -32,7 +32,7 @@
           <label v-text="$t('Bank Code')" />
           <VFormText
             v-model="form.bank_code"
-            v-validate="'required'"
+            v-validate=""
             name="BankCode"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -44,7 +44,7 @@
           <label v-text="$t('Account Name')" />
           <VFormText
             v-model="form.account_name"
-            v-validate="'required'"
+            v-validate=""
             name="AccountName"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -56,7 +56,7 @@
           <label v-text="$t('Account Number')" />
           <VFormText
             v-model="form.account_number"
-            v-validate="'required'"
+            v-validate=""
             name="AccountNumber"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -68,7 +68,7 @@
           <label v-text="$t('IBAN')" />
           <VFormText
             v-model="form.iban"
-            v-validate="'required'"
+            v-validate=""
             name="IBAN"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -80,7 +80,7 @@
           <label v-text="$t('Currency')" />
           <VFormText
             v-model="form.currency"
-            v-validate="'required'"
+            v-validate=""
             name="Currency"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -93,7 +93,7 @@
           <div class="d-flex">
             <VFormText
               v-model="form.password"
-              v-validate="'required'"
+              v-validate=""
               name="Password"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"

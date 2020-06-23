@@ -39,6 +39,14 @@
         <!-- Premium -->
         <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
       </button>
+      
+      <!-- Servers -->
+      <button @click="onClickItem('ServerCreate')" class="add-item-menu-item">
+        <ClipboardCheckIcon size="14" class="icon" />
+        {{ $t('Servers') }}
+        <!-- Premium -->
+        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+      </button>
 
     </div>
   </div>

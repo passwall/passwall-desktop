@@ -7,87 +7,61 @@
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="$t('New Credit Card')" class="url" />
+        <span v-text="$t('New Server')" class="url" />
         <span v-text="$t('Please fill all the necessary fields')" class="email" />
       </div>
     </div>
     <!-- Content -->
     <div class="detail-page-content">
       <div class="form">
-
-        <!-- CardName -->
+        <!-- Title -->
         <div class="form-row">
-          <label v-text="$t('Card Name')" />
+          <label v-text="$t('Title')" />
           <VFormText
-            v-model="form.card_name"
+            v-model="form.title"
             v-validate="'required'"
-            name="CardName"
+            name="Title"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
         </div>
-
-        <!-- CardholderName -->
+        <!-- IP -->
         <div class="form-row">
-          <label v-text="$t('Cardholder Name')" />
+          <label v-text="$t('IP Address')" />
           <VFormText
-            v-model="form.cardholder_name"
+            v-model="form.ip"
             v-validate=""
-            name="CardholderName"
+            name="IP"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
         </div>
-
-        <!-- Type -->
+        <!-- Username -->
         <div class="form-row">
-          <label v-text="$t('Type')" />
+          <label v-text="$t('Username')" />
           <VFormText
-            v-model="form.type"
+            v-model="form.username"
             v-validate=""
-            name="Type"
+            name="Username"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
         </div>
-
-        <!-- Number -->
+        
+        <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Number')" />
-          <VFormText
-            v-model="form.number"
-            v-validate=""
-            name="Number"
-            :placeholder="$t('ClickToFill')"
-            theme="no-border"
-          />
-        </div>
-
-        <!-- ExpiryDate -->
-        <div class="form-row">
-          <label v-text="$t('Expiry Date')" />
-          <VFormText
-            v-model="form.expiry_date"
-            v-validate=""
-            name="ExpiryDate"
-            :placeholder="$t('ClickToFill')"
-            theme="no-border"
-          />
-        </div>
-
-        <!-- VerificationNumber -->
-        <div class="form-row">
-          <label v-text="$t('Verification Number')" />
+          <label v-text="$t('Password')" />
           <div class="d-flex">
             <VFormText
-              v-model="form.verification_number"
+              v-model="form.password"
               v-validate=""
-              name="VerificationNumber"
+              name="Password"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
               theme="no-border"
             />
-            
+            <!-- Generate -->
+            <GeneratePassword class="mt-2 mr-3" v-model="form.password" />
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-2 ml-n1"
@@ -99,7 +73,95 @@
             </button>
           </div>
         </div>
-      
+
+        <!-- URL -->
+        <div class="form-row">
+          <label v-text="$t('URL')" />
+          <VFormText
+            v-model="form.url"
+            v-validate=""
+            name="URL"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
+        </div>
+
+        <!-- HostingUsername -->
+        <div class="form-row">
+          <label v-text="$t('Hosting Username')" />
+          <VFormText
+            v-model="form.hosting_username"
+            v-validate=""
+            name="HostingUsername"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
+        </div>
+
+        <!-- HostingPassword -->
+        <div class="form-row">
+          <label v-text="$t('Hosting Password')" />
+          <div class="d-flex">
+            <VFormText
+              v-model="form.hosting_password"
+              v-validate=""
+              name="HostingPassword"
+              :type="showPass ? 'text' : 'password'"
+              :placeholder="$t('ClickToFill')"
+              theme="no-border"
+            />
+            <!-- Generate -->
+            <GeneratePassword class="mt-2 mr-3" v-model="form.hosting_password" />
+            <!-- Show/Hide -->
+            <button
+              class="detail-page-header-icon mt-2 ml-n1"
+              style="width: 20px; height: 20px;"
+              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+            >
+              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
+              <EyeIcon v-else size="12" @click="showPass = true" />
+            </button>
+          </div>
+        </div>
+
+        <!-- AdminUsername -->
+        <div class="form-row">
+          <label v-text="$t('Admin Username')" />
+          <VFormText
+            v-model="form.admin_username"
+            v-validate=""
+            name="AdminUsername"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
+        </div>
+
+         <!-- AdminPassword -->
+        <div class="form-row">
+          <label v-text="$t('Admin Password')" />
+          <div class="d-flex">
+            <VFormText
+              v-model="form.admin_password"
+              v-validate=""
+              name="AdminPassword"
+              :type="showPass ? 'text' : 'password'"
+              :placeholder="$t('ClickToFill')"
+              theme="no-border"
+            />
+            <!-- Generate -->
+            <GeneratePassword class="mt-2 mr-3" v-model="form.admin_password" />
+            <!-- Show/Hide -->
+            <button
+              class="detail-page-header-icon mt-2 ml-n1"
+              style="width: 20px; height: 20px;"
+              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+            >
+              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
+              <EyeIcon v-else size="12" @click="showPass = true" />
+            </button>
+          </div>
+        </div>
+
         <!-- Save -->
         <VButton type="submit" class="mt-auto mb-5 mx-3" @click="onClickSave">
           {{ $t('Save') }}
@@ -117,23 +179,26 @@ export default {
     return {
       showPass: false,
       form: {
-        card_name: '',
-        cardholder_name: '',
-        type: '',
-        number: '',
-        expiry_date: '',
-        verification_number: ''
+        title: '',
+        ip: '',
+        username: '',
+        password: '',
+        url: '',
+        hosting_username: '',
+        hosting_password: '',
+        admin_username: '',
+        admin_password: ''
       }
     }
   },
 
   computed: {
     // ...mapState(['']), // bu şekilde root state değerlein alabilirsin this.transmission_key olarak kullanaiblirsin
-    // ...mapState('CreditCards', ['Detail']) // bu şekilde de sadece logins için alırsın abi bu iki satır kullanılmıyor burda kaldırabilirsin
+    // ...mapState('Servers', ['Detail']) // bu şekilde de sadece servers için alırsın abi bu iki satır kullanılmıyor burda kaldırabilirsin
   },
 
   methods: {
-    ...mapActions('CreditCards', ['Create', 'FetchAll']),
+    ...mapActions('Servers', ['Create', 'FetchAll']),
 
     onClickSave() {
       this.$validator.validate().then(async result => {
@@ -141,7 +206,7 @@ export default {
         try {
           await this.Create({ ...this.form })
           this.FetchAll()
-          this.$router.push({ name: 'CreditCards', params: { refresh: true } })
+          this.$router.push({ name: 'Servers', params: { refresh: true } })
         } catch (error) {
           console.log(error)
         }

@@ -1,6 +1,12 @@
 # Changelog PassWall Desktop
 
-## [0.1.-] (03-06-2020)
+## [0.1.3] (23-06-2020)
+### Added
+- Servers type
+### Fixed
+- Email password store
+
+## [0.1.2] (03-06-2020)
 ### Added
 - Changed the size of stars
 ### Updated

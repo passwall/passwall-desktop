@@ -33,7 +33,7 @@
           <div class="d-flex">
             <VFormText
               v-model="form.password"
-              v-validate="'required'"
+              v-validate=""
               name="Password"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"

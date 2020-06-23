@@ -51,8 +51,8 @@ export default {
   data() {
     return {
       LoginForm: {
-        email: 'yakuter@gmail.com',
-        master_password: '123456'
+        email: '',
+        master_password: ''
       }
     }
   },
@@ -72,7 +72,8 @@ export default {
             this.$notify({
               type: 'error',
               duration: 40020,
-              text: error.response.data.message
+              text: "Ooops! Something went wrong!"
+              //text: error.response.data.message
             })
           }
         }

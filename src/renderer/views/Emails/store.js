@@ -17,7 +17,7 @@ export default {
       var dLen, i
       dLen = data.length
       for (i = 0; i < dLen; i++) {
-        data[i].password = this._vm.$helpers.decrypt(data[i].email, rootState.master_hash)
+        data[i].password = this._vm.$helpers.decrypt(data[i].password, rootState.master_hash)
       }
       
       state.ItemList = data

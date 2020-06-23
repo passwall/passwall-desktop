@@ -10,6 +10,7 @@ import CreditCards from '@/views/CreditCards/store'
 import BankAccounts from '@/views/BankAccounts/store'
 import Emails from '@/views/Emails/store'
 import Notes from '@/views/Notes/store'
+import Servers from '@/views/Servers/store'
 
 export default new Vuex.Store({
   state() {
@@ -24,9 +25,7 @@ export default new Vuex.Store({
 
   actions: {
     async Login({ state }, payload) {
-      console.log(this._vm.$helpers.hmac("erhan", "R7T6LABSNX8AYk7pNsP7123456789012"))
       
-
       var master_password = payload.master_password
       
       payload.master_password = this._vm.$helpers.sha256Encrypt(payload.master_password)
@@ -60,6 +59,7 @@ export default new Vuex.Store({
     CreditCards,
     BankAccounts,
     Emails,
-    Notes
+    Notes,
+    Servers
   }
 })

@@ -106,6 +106,23 @@ const router = new Router({
           ]
         },
         {
+          path: '/servers',
+          name: 'Servers',
+          component: require('@/views/Servers/index').default,
+          children: [
+            {
+              path: 'create',
+              name: 'ServerCreate',
+              component: require('@/views/Servers/Create').default
+            },
+            {
+              path: ':id',
+              name: 'ServerDetail',
+              component: require('@/views/Servers/Detail').default
+            }
+          ]
+        },
+        {
           path: '/identities',
           name: 'Identities',
           component: require('@/views/Identities/index').default

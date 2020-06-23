@@ -66,6 +66,14 @@
       <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
     </router-link>
 
+    <!-- Servers -->
+    <router-link :to="{ name: 'Servers' }" class="sidebar-menu-item">
+      <ClipboardCheckIcon size="14" />
+      {{ $t('Servers') }}
+      <!-- Premium -->
+      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
+    </router-link>
+
 
     <!-- Trash -->
     <router-link :to="{ name: 'Trash' }" event="" class="sidebar-menu-item" disabled>
