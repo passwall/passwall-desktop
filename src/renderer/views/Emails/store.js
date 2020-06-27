@@ -17,7 +17,8 @@ export default {
       var dLen, i
       dLen = data.length
       for (i = 0; i < dLen; i++) {
-        data[i].password = this._vm.$helpers.decrypt(data[i].password, rootState.master_hash)
+        data[i].email     = this._vm.$helpers.decrypt(data[i].email, rootState.master_hash)
+        data[i].password  = this._vm.$helpers.decrypt(data[i].password, rootState.master_hash)
       }
       
       state.ItemList = data
@@ -25,8 +26,9 @@ export default {
 
     async Get({ state, rootState }, id) {
       const { data } = await EmailsService.Get(id)
+      data.email    = this._vm.$helpers.decrypt(data.email, rootState.master_hash)
       data.password = this._vm.$helpers.decrypt(data.password, rootState.master_hash)
-      state.Detail = data
+      state.Detail  = data
     },
 
     async Delete(_, id) {
@@ -34,11 +36,13 @@ export default {
     },
 
     async Create({ rootState }, data) {
+      data.email    = this._vm.$helpers.encrypt(data.email, rootState.master_hash)
       data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
       await EmailsService.Create(data)
     },
 
     async Update({ rootState }, data) {
+      data.email    = this._vm.$helpers.encrypt(data.email, rootState.master_hash)
       data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
       await EmailsService.Update(data.id, data)
     }

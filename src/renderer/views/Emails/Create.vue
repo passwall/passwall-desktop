@@ -14,6 +14,17 @@
     <!-- Content -->
     <div class="detail-page-content">
       <div class="form">
+        <!-- Title -->
+        <div class="form-row">
+          <label v-text="$t('Title')" />
+          <VFormText
+            v-model="form.title"
+            v-validate="'required'"
+            name="Title"
+            :placeholder="$t('ClickToFill')"
+            theme="no-border"
+          />
+        </div>
 
         <!-- Email -->
         <div class="form-row">
@@ -33,7 +44,7 @@
           <div class="d-flex">
             <VFormText
               v-model="form.password"
-              v-validate=""
+              v-validate="'required'"
               name="Password"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
@@ -70,15 +81,11 @@ export default {
     return {
       showPass: false,
       form: {
+        title: '',
         email: '',
         password: ''
       }
     }
-  },
-
-  computed: {
-    // ...mapState(['']), // bu şekilde root state değerlein alabilirsin this.transmission_key olarak kullanaiblirsin
-    // ...mapState('CreditCards', ['Detail']) // bu şekilde de sadece logins için alırsın abi bu iki satır kullanılmıyor burda kaldırabilirsin
   },
 
   methods: {

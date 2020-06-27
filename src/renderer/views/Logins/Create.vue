@@ -90,16 +90,12 @@ export default {
     return {
       showPass: false,
       form: {
+        title: '',
         url: '',
         username: '',
         password: ''
       }
     }
-  },
-
-  computed: {
-    // ...mapState(['']), // bu şekilde root state değerlein alabilirsin this.transmission_key olarak kullanaiblirsin
-    // ...mapState('Logins', ['Detail']) // bu şekilde de sadece logins için alırsın abi bu iki satır kullanılmıyor burda kaldırabilirsin
   },
 
   methods: {

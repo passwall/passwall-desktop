@@ -192,11 +192,6 @@ export default {
     }
   },
 
-  computed: {
-    // ...mapState(['']), // bu şekilde root state değerlein alabilirsin this.transmission_key olarak kullanaiblirsin
-    // ...mapState('Servers', ['Detail']) // bu şekilde de sadece servers için alırsın abi bu iki satır kullanılmıyor burda kaldırabilirsin
-  },
-
   methods: {
     ...mapActions('Servers', ['Create', 'FetchAll']),
 

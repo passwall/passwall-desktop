@@ -17,18 +17,25 @@ export default {
       var dLen, i
       dLen = data.length
       for (i = 0; i < dLen; i++) {
-        /* data[i].expiry_date         = this._vm.$helpers.decrypt(data[i].expiry_date, rootState.master_hash)
-        data[i].verification_number = this._vm.$helpers.decrypt(data[i].verification_number, rootState.master_hash) */
+        data[i].account_name = this._vm.$helpers.decrypt(data[i].account_name, rootState.master_hash)
+        data[i].account_number = this._vm.$helpers.decrypt(data[i].account_number, rootState.master_hash)
+        data[i].iban = this._vm.$helpers.decrypt(data[i].iban, rootState.master_hash)
+        data[i].currency = this._vm.$helpers.decrypt(data[i].currency, rootState.master_hash)
+        data[i].password = this._vm.$helpers.decrypt(data[i].password, rootState.master_hash)
       }
+
       
       state.ItemList = data
     },
 
     async Get({ state, rootState }, id) {
       const { data } = await BankAccountsService.Get(id)
-
-      /* data.expiry_date         = this._vm.$helpers.decrypt(data.expiry_date, rootState.master_hash)
-      data.verification_number = this._vm.$helpers.decrypt(data.verification_number, rootState.master_hash) */
+      
+      data.account_name = this._vm.$helpers.decrypt(data.account_name, rootState.master_hash) 
+      data.account_number = this._vm.$helpers.decrypt(data.account_number, rootState.master_hash) 
+      data.iban = this._vm.$helpers.decrypt(data.iban, rootState.master_hash) 
+      data.currency = this._vm.$helpers.decrypt(data.currency, rootState.master_hash) 
+      data.password = this._vm.$helpers.decrypt(data.password, rootState.master_hash) 
 
       state.Detail = data
     },
@@ -38,15 +45,21 @@ export default {
     },
 
     async Create({ rootState }, data) {
-      /* data.expiry_date         = this._vm.$helpers.encrypt(data.expiry_date, rootState.master_hash)
-      data.verification_number = this._vm.$helpers.encrypt(data.verification_number, rootState.master_hash) */
+      data.account_name = this._vm.$helpers.encrypt(data.account_name, rootState.master_hash)
+      data.account_number = this._vm.$helpers.encrypt(data.account_number, rootState.master_hash)
+      data.iban = this._vm.$helpers.encrypt(data.iban, rootState.master_hash)
+      data.currency = this._vm.$helpers.encrypt(data.currency, rootState.master_hash)
+      data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
       
       await BankAccountsService.Create(data)
     },
 
     async Update({ rootState }, data) {
-      /* data.expiry_date         = this._vm.$helpers.encrypt(data.expiry_date, rootState.master_hash)
-      data.verification_number = this._vm.$helpers.encrypt(data.verification_number, rootState.master_hash) */
+      data.account_name = this._vm.$helpers.encrypt(data.account_name, rootState.master_hash)
+      data.account_number = this._vm.$helpers.encrypt(data.account_number, rootState.master_hash)
+      data.iban = this._vm.$helpers.encrypt(data.iban, rootState.master_hash)
+      data.currency = this._vm.$helpers.encrypt(data.currency, rootState.master_hash)
+      data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
 
       await BankAccountsService.Update(data.id, data)
     }

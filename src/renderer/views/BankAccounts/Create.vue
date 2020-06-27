@@ -140,11 +140,6 @@ export default {
     }
   },
 
-  computed: {
-    // ...mapState(['']), // bu şekilde root state değerlein alabilirsin this.transmission_key olarak kullanaiblirsin
-    // ...mapState('CreditCards', ['Detail']) // bu şekilde de sadece logins için alırsın abi bu iki satır kullanılmıyor burda kaldırabilirsin
-  },
-
   methods: {
     ...mapActions('BankAccounts', ['Create', 'FetchAll']),
 
