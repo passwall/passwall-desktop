@@ -36,6 +36,7 @@ export default {
     },
 
     async Create({ rootState }, data) {
+      console.log(data)
       data.email    = this._vm.$helpers.encrypt(data.email, rootState.master_hash)
       data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
       await EmailsService.Create(data)

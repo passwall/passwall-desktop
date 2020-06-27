@@ -152,7 +152,7 @@ export default {
   computed: {
     ...mapState('Notes', ['Detail', 'ItemList']),
 
-    loginCopyContent() {
+    noteCopyContent() {
       return `Title: ${this.form.title}\nNote: ${this.form.note}\n`
     }
   }

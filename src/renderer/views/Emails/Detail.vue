@@ -7,8 +7,8 @@
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.email" class="url" />
-        <!-- <span v-text="form.account_name" class="email" /> -->
+        <span v-text="form.title" class="url" />
+        <span v-text="form.email" class="email" />
       </div>
       
       <!-- Copy -->
@@ -171,8 +171,8 @@ export default {
   computed: {
     ...mapState('Emails', ['Detail', 'ItemList']),
 
-    bankAccountCopyContent() {
-      return `Email: ${this.form.bank_name}\n`
+    emailCopyContent() {
+      return `Title: ${this.form.title}\nEmail: ${this.form.email}\n`
     }
   }
 }
