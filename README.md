@@ -9,6 +9,8 @@
 
 ## Build/Run
 
+If you want to use this client with official PassWall Server, please first sign up via [PassWall Signup](https://signup.passwall.io)
+
 ### Requirements
 
 - [Node.js](https://nodejs.org)
