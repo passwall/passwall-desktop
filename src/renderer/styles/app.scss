@@ -89,7 +89,7 @@ html {
 
 .form {
   padding: $spacer-3;
-  height: 100%;
+  height: auto;
 
   &,
   &-row {
@@ -178,4 +178,22 @@ hr {
   &-leave-to {
     transform: translateX(100%);
   }
+}
+
+
+::-webkit-scrollbar-track
+{
+  border-radius: 10px;
+  background-color:transparent;
+}
+::-webkit-scrollbar
+{
+  width: 5px;
+  margin-right: $spacer-3;
+  background-color:transparent;
+}
+::-webkit-scrollbar-thumb
+{
+  border-radius: 5px;
+  background-color:$color-primary;
 }
