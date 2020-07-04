@@ -300,6 +300,8 @@ export default {
   &-content {
     position: relative;
     height: calc(100% - 64px);
+    overflow-x: auto;
+    width: 99%;
 
     .edit-btn {
       position: absolute;
