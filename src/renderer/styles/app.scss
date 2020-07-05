@@ -180,22 +180,6 @@ hr {
   }
 }
 
-.vtext-area {
-  background-color: $color-gray-500;
-  color: white;
-  border-radius: 5px;
-  padding: $spacer-2;
-  resize: none;
-  min-height: 100px;
-  border: solid 1px $color-primary;
-
-  &:disabled {
-    border: 0;
-  }
-  &:not(:placeholder-shown){
-    resize: vertical;
-  }
-}
 
 ::-webkit-scrollbar-track
 {

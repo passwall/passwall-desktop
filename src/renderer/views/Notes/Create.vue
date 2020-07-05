@@ -27,16 +27,8 @@
         </div>
         <!-- Note -->
         <div class="form-row">
-          <label v-text="$t('Private Note')" />
-          <div class="d-flex">
-            <VFormText
-              v-model="form.note"
-              v-validate="'required'"
-              name="Password"
-              :type="showPass ? 'text' : 'password'"
-              :placeholder="$t('ClickToFill')"
-              theme="no-border"
-            />
+          <div class="d-flex flex-content-between">
+            <label v-text="$t('Private Note')" />
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-2 ml-n1"
@@ -47,12 +39,11 @@
               <EyeIcon v-else size="12" @click="showPass = true" />
             </button>
           </div>
+          <VTextArea :placeholder="$t('ClickToFill')" v-model="form.note" v-validate="'required'" name="Note"/>
         </div>
 
         <!-- Save -->
-        <VButton type="submit" class="mt-auto mb-5 mx-3" @click="onClickSave">
-          {{ $t('Save') }}
-        </VButton>
+        <VButton type="submit" class="mt-auto mb-5 mx-3" @click="onClickSave">{{ $t('Save') }}</VButton>
       </div>
     </div>
   </div>

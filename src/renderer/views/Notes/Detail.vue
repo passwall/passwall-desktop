@@ -68,22 +68,13 @@
             </button>
           </div>
           <div class="d-flex">
-            <div v-if="isEditMode" class="px-3 py-2 w-100">
-              <textarea
-                v-model="form.note"
-                :placeholder="$t('ClickToFill')"
-                class="vtext-area w-100"
-              />
-            </div>
-
-            <div v-else class="px-3 py-2 w-100">
-              <textarea
-                v-text="showPass ? form.note : ''"
-                class="vtext-area w-100"
-                :placeholder="$t('contentHidden')"
-                disabled
-              />
-            </div>
+            <VTextArea v-if="isEditMode" v-model="form.note" :placeholder="$t('ClickToFill')" />
+            <VTextArea
+              v-else
+              :value="showPass ? form.note : ''"
+              :placeholder="$t('contentHidden')"
+              disabled
+            />
           </div>
         </div>
 
