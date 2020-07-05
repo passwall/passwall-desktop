@@ -10,7 +10,7 @@
         <span v-text="form.title" class="url" />
         <!-- <span v-text="form.username" class="email" /> -->
       </div>
-      
+
       <!-- Copy -->
       <button
         class="detail-page-header-icon"
@@ -53,19 +53,8 @@
         </div>
         <!-- Note -->
         <div class="form-row">
-          <label v-text="$t('Private Note')" />
-          <div class="d-flex">
-            <VFormText
-              v-if="isEditMode"
-              :type="showPass ? 'text' : 'password'"
-              v-model="form.note"
-              :placeholder="$t('ClickToFill')"
-              theme="no-border"
-            />
-            <!-- Text -->
-            <div v-else class="d-flex flex-items-center px-3 py-2">
-              <span v-text="showPass ? form.note : '●●●●●●'" class="mr-2" />
-            </div>
+          <div class="d-flex flex-content-between">
+            <label v-text="$t('Private Note')" />
             <!-- Copy -->
             <ClipboardButton :copy="form.note" class="mt-2" />
             <!-- Show/Hide Pass -->
@@ -78,12 +67,28 @@
               <EyeIcon v-else size="12" @click="showPass = true" />
             </button>
           </div>
+          <div class="d-flex">
+            <div v-if="isEditMode" class="px-3 py-2 w-100">
+              <textarea
+                v-model="form.note"
+                :placeholder="$t('ClickToFill')"
+                class="vtext-area w-100"
+              />
+            </div>
+
+            <div v-else class="px-3 py-2 w-100">
+              <textarea
+                v-text="showPass ? form.note : ''"
+                class="vtext-area w-100"
+                :placeholder="$t('contentHidden')"
+                disabled
+              />
+            </div>
+          </div>
         </div>
 
         <!-- Save -->
-        <VButton v-if="isEditMode" @click="onClickUpdate" class="mt-auto mb-5 mx-3">
-          {{ $t('Save') }}
-        </VButton>
+        <VButton v-if="isEditMode" @click="onClickUpdate" class="mt-auto mb-5 mx-3">{{ $t('Save') }}</VButton>
       </div>
     </div>
   </div>
