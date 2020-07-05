@@ -19,15 +19,7 @@ export default {
 
   props: {
     name: String,
-    value: String,
-    theme: {
-      type: String,
-      default: 'default'
-    },
-    size: {
-      type: String,
-      default: 'small'
-    }
+    value: String
   },
 
   computed: {
@@ -57,7 +49,7 @@ export default {
     padding: $spacer-2;
     resize: none;
     min-height: 100px;
-    border: solid 1px $color-primary;
+    border: solid 1px $color-gray-700;
     width: 100%;
 
     &:disabled {
