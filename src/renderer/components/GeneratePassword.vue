@@ -8,7 +8,7 @@
       <div class="generate-password">
         <span v-text="password" />
         <hr />
-        <VButton type="submit" size="mini" @click="onClickUseThis">
+        <VButton type="submit" size="mini" v-close-popover @click="onClickUseThis">
           {{ $t('UseThis') }}
         </VButton>
       </div>
