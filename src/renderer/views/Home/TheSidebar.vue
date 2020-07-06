@@ -2,10 +2,7 @@
   <div class="sidebar">
     <div class="account">
       <!-- Avatar -->
-      <!-- <img src="" class="account-avatar rounded" /> -->
-      <div class="account-avatar">
-        <UserIcon size="22" />
-      </div>
+      <div class="account-avatar">{{ firstLettersOfName }}</div>
       <!-- Info -->
       <div class="account-info">
         <span class="account-info-name" v-text="user.name" />
@@ -116,7 +113,13 @@ export default {
   },
 
   computed: {
-    ...mapState(['user'])
+    ...mapState(['user']),
+    
+    firstLettersOfName() {
+      const [firstName, lastName] = this.user.name.split(' ')
+      return `${firstName[0]}${lastName[0]}`
+    }
+
   },
 
   methods: {
@@ -174,7 +177,9 @@ export default {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background-color: $color-gray-600;
+      background-color: $color-primary;
+      font-weight: 700;
+      color: #fff;
     }
 
     &-info {
