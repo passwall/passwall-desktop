@@ -1,7 +1,7 @@
 <template>
   <v-popover offset="16">
     <button class="btn-generate-pass">
-      <RefreshIcon size="14" />
+      <RefreshIcon @click="onClickGenerate" size="14" />
     </button>
 
     <template slot="popover">
