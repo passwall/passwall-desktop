@@ -68,3 +68,6 @@ requireComponent.keys().forEach(fileName => {
 
 import Notifications from 'vue-notification'
 Vue.use(Notifications)
+
+import CompanyLogoItem from './components/CompanyLogoItem.vue'
+Vue.use(CompanyLogoItem)
