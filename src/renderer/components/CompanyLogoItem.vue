@@ -29,7 +29,6 @@ export default {
   methods: {
     onLogoError(e) {
       this.logoIsAvailable = false
-      console.log('herre', e)
     }
   }
 
