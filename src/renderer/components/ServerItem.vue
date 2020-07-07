@@ -2,7 +2,7 @@
   <div class="server-item" :class="{ '--active': active }" @click="$emit('click')">
     <!-- Avatar -->
     <div class="server-item-avatar">
-      <img v-if="data.src" :src="data.src" />
+      <CompanyLogoItem :url="data.url" />
     </div>
     <!-- Summary -->
     <div class="server-item-summary">
