@@ -39,7 +39,7 @@
         :class="{ '--active': itemMenuActive }"
         @click="itemMenuActive = !itemMenuActive"
       >
-        <PlusIcon class="c-white" size="18" />
+        <VIcon name="plus" class="c-white" size="18" />
       </button>
     </div>
     <!-- Detail -->

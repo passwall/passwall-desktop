@@ -10,18 +10,18 @@
         <span v-text="form.title" class="url" />
         <span v-text="form.username" class="email" />
       </div>
-      
+
       <!-- Copy -->
       <button
         class="detail-page-header-icon"
         v-tooltip="$t('Copy')"
         v-clipboard:copy="serverCopyContent"
       >
-        <DuplicateIcon size="14" />
+        <VIcon name="duplicate" size="14" />
       </button>
       <!-- Delete -->
       <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
-        <TrashIcon size="14" />
+        <VIcon name="trash" size="14" />
       </button>
     </div>
     <!-- Content -->
@@ -33,7 +33,7 @@
         v-tooltip="$t('Edit')"
         @click="isEditMode = true"
       >
-        <PencilIcon size="14" />
+        <VIcon name="pencil" size="14" />
       </button>
       <div class="form">
         <!-- Title -->
@@ -106,8 +106,8 @@
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
-              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
-              <EyeIcon v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12" @click="showPass = true" />
             </button>
           </div>
         </div>
@@ -166,8 +166,8 @@
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
-              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
-              <EyeIcon v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12" @click="showPass = true" />
             </button>
           </div>
         </div>
@@ -211,15 +211,15 @@
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
-              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
-              <EyeIcon v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12" @click="showPass = true" />
             </button>
           </div>
         </div>
-        
+
 
         <!-- Save -->
-        <VButton v-if="isEditMode" @click="onClickUpdate" class="mt-auto mb-5 mx-3">
+        <VButton v-if="isEditMode" @click="onClickUpdate" class="mt-2 mb-5 mx-3">
           {{ $t('Save') }}
         </VButton>
       </div>

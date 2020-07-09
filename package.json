@@ -62,8 +62,6 @@
     }
   },
   "dependencies": {
-    "@vue-hero-icons/outline": "^1.2.0",
-    "@vue-hero-icons/solid": "^1.2.0",
     "axios": "^0.18.0",
     "crypto-js": "^4.0.0",
     "date-fns": "^2.14.0",
@@ -98,7 +96,7 @@
     "css-loader": "^0.28.11",
     "del": "^3.0.0",
     "devtron": "^1.4.0",
-    "electron": "2.0.4",
+    "electron": "6.0.12",
     "electron-builder": "21.2.0",
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",

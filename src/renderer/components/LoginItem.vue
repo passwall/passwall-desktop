@@ -11,7 +11,7 @@
     </div>
     <!-- Detail -->
     <button class="login-item-detail">
-      <CheveronRightIcon size="14" />
+      <VIcon name="chevron-right" size="14" />
     </button>
   </div>
 </template>

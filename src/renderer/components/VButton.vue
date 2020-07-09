@@ -6,6 +6,7 @@
     v-bind="$attrs"
     v-on="inputListeners"
   >
+<!--    v-if="loading"-->
     <slot />
   </button>
 </template>
@@ -22,6 +23,10 @@ export default {
     theme: {
       type: String,
       default: 'primary'
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
 

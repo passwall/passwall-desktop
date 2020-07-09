@@ -2,7 +2,9 @@ import Vue from 'vue'
 import HTTPClient from '@/api/HTTPClient'
 import AuthService from '@/api/services/Auth'
 
+console.log("...")
 import '@/styles/app.scss'
+import '@/icons'
 import '@/components'
 import Helpers from '@/utils/helpers'
 import App from './App'
@@ -49,11 +51,14 @@ const AuthCheck = async () => {
 }
 
 ;(async () => {
-  localStorage.removeItem('access_token')
-  localStorage.removeItem('refresh_token')
-  await AuthCheck()
-  setInterval(AuthCheck, 60e3)
+  if (process.env.NODE_ENV === 'production') {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+  } else {
+    await AuthCheck()
+  }
 
+  setInterval(AuthCheck, 60e3)
   Vue.config.productionTip = false
   /* eslint-disable no-new */
   window.vm = new Vue({

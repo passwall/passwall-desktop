@@ -4,48 +4,48 @@
     <div class="add-item-menu-items">
       <!-- Logins -->
       <button @click="onClickItem('LoginCreate')" class="add-item-menu-item">
-        <LockClosedIcon size="14" class="icon" />
+        <VIcon name="lock-closed" size="14" class="icon" />
         {{ $t('Login') }}
       </button>
 
       <!-- Credit Cards -->
       <button @click="onClickItem('CreditCardCreate')" class="add-item-menu-item">
-        <CreditCardIcon size="14" class="icon" />
+        <VIcon name="credit-card" size="14" class="icon" />
         {{ $t('Credit Cards') }}
         <!-- Premium -->
-        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+        <div class="premium-icon" v-tooltip=""><VIcon name="star" size="8" class="c-secondary" /></div>
       </button>
 
       <!-- Bank Accounts -->
       <button @click="onClickItem('BankAccountCreate')" class="add-item-menu-item">
-        <CreditCardIcon size="14" class="icon" />
+        <VIcon name="credit-card" size="14" class="icon" />
         {{ $t('Bank Accounts') }}
         <!-- Premium -->
-        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+        <div class="premium-icon" v-tooltip=""><VIcon name="star" size="8" class="c-secondary" /></div>
       </button>
 
       <!-- Emails -->
       <button @click="onClickItem('EmailCreate')" class="add-item-menu-item">
-        <CreditCardIcon size="14" class="icon" />
+        <VIcon name="credit-card" size="14" class="icon" />
         {{ $t('Emails') }}
         <!-- Premium -->
-        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+        <div class="premium-icon" v-tooltip=""><VIcon name="star" size="8" class="c-secondary" /></div>
       </button>
 
       <!-- Private Notes -->
       <button @click="onClickItem('NoteCreate')" class="add-item-menu-item">
-        <ClipboardCheckIcon size="14" class="icon" />
+        <VIcon name="clipboard-check" size="14" class="icon" />
         {{ $t('Private Notes') }}
         <!-- Premium -->
-        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+        <div class="premium-icon" v-tooltip=""><VIcon name="star" size="8" class="c-secondary" /></div>
       </button>
       
       <!-- Servers -->
       <button @click="onClickItem('ServerCreate')" class="add-item-menu-item">
-        <ClipboardCheckIcon size="14" class="icon" />
+        <VIcon name="clipboard-check" size="14" class="icon" />
         {{ $t('Servers') }}
         <!-- Premium -->
-        <div class="premium-icon" v-tooltip=""><StarIcon size="8" class="c-secondary" /></div>
+        <div class="premium-icon" v-tooltip=""><VIcon name="star" size="8" class="c-secondary" /></div>
       </button>
 
     </div>

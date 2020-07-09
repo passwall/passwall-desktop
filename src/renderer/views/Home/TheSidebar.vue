@@ -10,13 +10,14 @@
       </div>
       <!-- Logout -->
       <button @click="onClickLogout" v-tooltip="$t('Logout')">
-        <LogoutIcon size="14" class="c-danger rot-180" />
+        <!--        <LogoutIcon size="14" class="c-danger rot-180" />-->
+        <VIcon name="logout" size="14" rotation="180" class="c-danger" />
       </button>
     </div>
 
     <!-- All Items -->
     <!-- <router-link :to="{ name: 'AllItems' }" class="sidebar-menu-item mt-7">
-      <StarIcon size="14" />
+      <VIcon name="star" size="14" />
       {{ $t('AllItems') }}
     </router-link> -->
 
@@ -27,57 +28,68 @@
 
     <!-- Logins -->
     <router-link :to="{ name: 'Logins' }" class="sidebar-menu-item">
-      <LockClosedIcon size="14" />
+      <VIcon name="lock-closed" size="14" />
       {{ $t('Logins') }}
     </router-link>
 
     <!-- Credit Cards -->
     <router-link :to="{ name: 'CreditCards' }" class="sidebar-menu-item">
-      <CreditCardIcon size="14" />
+      <VIcon name="credit-card" size="14" />
       {{ $t('Credit Cards') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip="">
+        <VIcon name="star" size="11" class="c-secondary" />
+      </div>
     </router-link>
 
     <!-- Bank Accounts -->
     <router-link :to="{ name: 'BankAccounts' }" class="sidebar-menu-item">
-      <CreditCardIcon size="14" />
+      <VIcon name="credit-card" size="14" />
       {{ $t('Bank Accounts') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip="">
+        <VIcon name="star" size="11" class="c-secondary" />
+      </div>
     </router-link>
 
     <!-- Emails -->
     <router-link :to="{ name: 'Emails' }" class="sidebar-menu-item">
-      <CreditCardIcon size="14" />
+      <VIcon name="credit-card" size="14" />
       {{ $t('Emails') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip="">
+        <VIcon name="star" size="11" class="c-secondary" />
+      </div>
     </router-link>
 
     <!-- Private Notes -->
     <router-link :to="{ name: 'Notes' }" class="sidebar-menu-item">
-      <ClipboardCheckIcon size="14" />
+      <VIcon name="clipboard-check" size="14" />
       {{ $t('Private Notes') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip="">
+        <VIcon name="star" size="11" class="c-secondary" />
+      </div>
     </router-link>
 
     <!-- Servers -->
     <router-link :to="{ name: 'Servers' }" class="sidebar-menu-item">
-      <ClipboardCheckIcon size="14" />
+      <VIcon name="clipboard-check" size="14" />
       {{ $t('Servers') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip="">
+        <VIcon name="star" size="11" class="c-secondary" />
+      </div>
     </router-link>
-
 
     <!-- Trash -->
     <router-link :to="{ name: 'Trash' }" event="" class="sidebar-menu-item" disabled>
-      <TrashIcon size="14" />
+      <VIcon name="trash" size="14" />
       {{ $t('Trash') }}
       <!-- Premium -->
-      <div class="premium-icon" v-tooltip=""><StarIcon size="11" class="c-secondary" /></div>
+      <div class="premium-icon" v-tooltip="">
+        <VIcon name="star" size="11" class="c-secondary" />
+      </div>
     </router-link>
 
     <!-- Update -->
@@ -91,7 +103,7 @@
       <VIcon name="right-corner" class="left-corner rot-180" size="15" />
 
       {{ $t('GiveFeedback') }}
-      <div class="icon"><ExternalLinkIcon size="8" /></div>
+      <div class="icon"><VIcon name="external-link" size="8" /></div>
     </button>
   </div>
 </template>
@@ -114,12 +126,11 @@ export default {
 
   computed: {
     ...mapState(['user']),
-    
+
     firstLettersOfName() {
       const [firstName, lastName] = this.user.name.split(' ')
-      return `${firstName[0]}${lastName[0]}`
+      return `${firstName[0]}${(lastName || ' ')[0]}`
     }
-
   },
 
   methods: {

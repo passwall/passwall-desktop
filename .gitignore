@@ -10,3 +10,5 @@ npm-debug.log.*
 thumbs.db
 !.gitkeep
 installers
+.idea/
+package-lock.json

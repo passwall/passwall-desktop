@@ -25,6 +25,9 @@ function createWindow() {
     minWidth: 900,
     minHeight: 540,
     useContentSize: true,
+    webPreferences: {
+      nodeIntegration: true,
+    },
   });
 
   mainWindow.loadURL(winURL);
