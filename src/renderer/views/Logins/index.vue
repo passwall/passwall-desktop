@@ -40,7 +40,6 @@
         @click="itemMenuActive = !itemMenuActive"
       >
         <VIcon name="plus" class="c-white" size="18" />
-<!--        <heroicon name="plus" fill="white" height="28" />-->
       </button>
     </div>
     <!-- Detail -->
