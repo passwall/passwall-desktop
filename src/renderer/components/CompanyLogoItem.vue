@@ -22,7 +22,13 @@ export default {
 
   computed: {
     companyLogo() {
-      return `http://logo.clearbit.com/${this.url}`
+      return `http://logo.clearbit.com/${this.domainFromURL}`
+    },
+
+    domainFromURL() {
+      // Regex is from: https://stackoverflow.com/a/33651369/10991790
+      const matches = this.url.match(/^(?:https?:)?(?:\/\/)?([^\/\?]+)/i)
+      return matches && matches[1]
     }
   },
 
