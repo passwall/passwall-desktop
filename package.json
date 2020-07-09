@@ -74,6 +74,7 @@
     "vue-notification": "^1.3.20",
     "vue-router": "^3.0.1",
     "vue-snotify": "^3.2.1",
+    "vue-wait": "^1.4.8",
     "vue2-perfect-scrollbar": "^1.5.0",
     "vuex": "^3.0.1"
   },

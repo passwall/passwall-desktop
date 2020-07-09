@@ -180,7 +180,6 @@ hr {
   }
 }
 
-
 ::-webkit-scrollbar-track
 {
   border-radius: 10px;
@@ -196,4 +195,8 @@ hr {
 {
   border-radius: 5px;
   background-color:$color-primary;
+}
+
+.spin {
+  animation: spin 2s linear infinite;
 }

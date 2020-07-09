@@ -1,13 +1,14 @@
 <template>
   <button
     :type="$attrs.type || 'button'"
-    :class="[`--${size}`, `--${theme}`]"
+    :class="[`--${size}`, `--${theme}`, { '--loading': loading }]"
     class="btn"
     v-bind="$attrs"
     v-on="inputListeners"
+    :disabled="loading"
   >
-<!--    v-if="loading"-->
     <slot />
+    <VIcon v-if="loading" name="refresh" size="14" class="spin c-white ml-2" />
   </button>
 </template>
 
@@ -55,6 +56,11 @@ export default {
   color: #fff;
   font-weight: 600;
   cursor: pointer;
+
+  &.--loading {
+    opacity: 0.6;
+    cursor: no-drop;
+  }
 
   &.--primary {
     background-color: $color-primary;

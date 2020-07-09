@@ -2,17 +2,12 @@ import Vue from 'vue'
 import HTTPClient from '@/api/HTTPClient'
 import AuthService from '@/api/services/Auth'
 
-console.log("...")
 import '@/styles/app.scss'
-import '@/icons'
-import '@/components'
-import Helpers from '@/utils/helpers'
+import '@/config'
 import App from './App'
 import router from './router'
 import store from './store'
 import i18n from './i18n'
-
-Vue.prototype.$helpers = Helpers
 
 const AuthCheck = async () => {
   const goToLogin = async () => {
@@ -59,12 +54,14 @@ const AuthCheck = async () => {
   }
 
   setInterval(AuthCheck, 60e3)
+
   Vue.config.productionTip = false
   /* eslint-disable no-new */
   window.vm = new Vue({
     router,
     store,
     i18n,
+    wait: window.wait,
     render: h => h(App)
   }).$mount('#app')
 })()
