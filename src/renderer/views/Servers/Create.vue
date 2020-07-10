@@ -47,7 +47,7 @@
             theme="no-border"
           />
         </div>
-        
+
         <!-- Password -->
         <div class="form-row">
           <label v-text="$t('Password')" />
@@ -68,8 +68,8 @@
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
-              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
-              <EyeIcon v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12" @click="showPass = true" />
             </button>
           </div>
         </div>
@@ -118,8 +118,8 @@
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
-              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
-              <EyeIcon v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12" @click="showPass = true" />
             </button>
           </div>
         </div>
@@ -156,14 +156,14 @@
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
-              <EyeOffIcon v-if="showPass" size="12" @click="showPass = false" />
-              <EyeIcon v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12" @click="showPass = true" />
             </button>
           </div>
         </div>
 
         <!-- Save -->
-        <VButton type="submit" class="mt-auto mb-5 mx-3" @click="onClickSave">
+        <VButton type="submit" class="mt-3 mb-5 mx-3" @click="onClickSave">
           {{ $t('Save') }}
         </VButton>
       </div>

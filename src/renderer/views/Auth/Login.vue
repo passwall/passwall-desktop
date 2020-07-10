@@ -39,7 +39,9 @@
         />
       </div>
       <!-- Login Btn -->
-      <VButton type="submit" size="medium">{{ $t('Login') }}</VButton>
+      <VButton type="submit" :loading="$wait.is($waiters.Auth.Login)" size="medium">
+        {{ $t('Login') }}
+      </VButton>
     </form>
   </div>
 </template>
@@ -64,19 +66,20 @@ export default {
       this.$validator.validate().then(async result => {
         if (!result) return
 
-        try {
+        const onError = error => {
+          let text = this.$t('Ooops! Something went wrong!')
+          if (error.response.status == 401) {
+            text = this.$t('Incorrect email or password!')
+          }
+          this.$notify({ type: 'error', text })
+        }
+
+        const onSuccess = async () => {
           await this.Login({ ...this.LoginForm })
           this.$router.push({ name: 'Home' })
-        } catch (error) {
-          if (error.response && error.response.data) {
-            this.$notify({
-              type: 'error',
-              duration: 40020,
-              text: "Ooops! Something went wrong!"
-              //text: error.response.data.message
-            })
-          }
         }
+
+        this.$request(onSuccess, this.$waiters.Auth.Login, onError)
       })
     }
   }

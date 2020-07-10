@@ -12,7 +12,7 @@
     </div>
     <!-- Detail -->
     <button class="email-item-detail">
-      <CheveronRightIcon size="14" />
+      <VIcon name="chevron-right" size="14" />
     </button>
   </div>
 </template>

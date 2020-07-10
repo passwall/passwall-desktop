@@ -3,14 +3,11 @@ import HTTPClient from '@/api/HTTPClient'
 import AuthService from '@/api/services/Auth'
 
 import '@/styles/app.scss'
-import '@/components'
-import Helpers from '@/utils/helpers'
+import '@/config'
 import App from './App'
 import router from './router'
 import store from './store'
 import i18n from './i18n'
-
-Vue.prototype.$helpers = Helpers
 
 const AuthCheck = async () => {
   const goToLogin = async () => {
@@ -49,9 +46,13 @@ const AuthCheck = async () => {
 }
 
 ;(async () => {
-  localStorage.removeItem('access_token')
-  localStorage.removeItem('refresh_token')
-  await AuthCheck()
+  if (process.env.NODE_ENV === 'production') {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+  } else {
+    await AuthCheck()
+  }
+
   setInterval(AuthCheck, 60e3)
 
   Vue.config.productionTip = false
@@ -60,6 +61,7 @@ const AuthCheck = async () => {
     router,
     store,
     i18n,
+    wait: window.wait,
     render: h => h(App)
   }).$mount('#app')
 })()
