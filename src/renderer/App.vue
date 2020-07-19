@@ -37,12 +37,37 @@ export default {
           const fileContent = fs.readFileSync(files[0]).toString()
           // TODO: Parse fileContent (CSV data) to array
           console.log(fileContent)
+          const parsedCSV = this.parseCSV(fileContent)
+          console.log('parsedCSV', parsedCSV)
         } catch (error) {
           console.log(error)
         }
       })
+    },
+
+    parseCSV(csv) {
+      const arr = []
+      let lines = csv.split("\n")
+      
+      // Get headers like ["URL", "Username", "Password"]
+      let headers = lines[0].split(",")
+      
+      for (let i = 1; i < lines.length; i++) {
+        let obj = {}
+
+        if(!lines[i] || !lines[i].trim()) continue
+
+        const words = lines[i].split(",")
+
+        words.forEach((word, j) => {
+          obj[headers[j].trim()] = words[j]
+        })
+
+        arr.push(obj)
+      }
+      return arr
     }
-  }
+  },
 }
 </script>
 
