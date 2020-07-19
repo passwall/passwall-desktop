@@ -35,6 +35,7 @@ export default {
 
         try {
           const fileContent = fs.readFileSync(files[0]).toString()
+          // TODO: Parse fileContent (CSV data) to array
           console.log(fileContent)
           const parsedCSV = this.parseCSV(fileContent)
           console.log('parsedCSV', parsedCSV)

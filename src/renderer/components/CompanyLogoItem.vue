@@ -1,5 +1,5 @@
 <template>
-  <img v-if="url && logoIsAvailable" @error="onLogoError" :src="companyLogo" />
+  <img v-if="url && logoIsAvailable" @error="onLogoError" :src="companyLogo" class="company_logo" />
   <div v-else></div>
 </template>
 
@@ -42,5 +42,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+  .company_logo {
+    border-radius: 5px; 
+  }
 </style>
