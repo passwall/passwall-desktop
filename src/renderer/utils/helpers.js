@@ -66,6 +66,14 @@ export default {
 
   sha256Encrypt(value) {  
     return CryptoJS.SHA256(value).toString()
+  },
+
+  aesEncrypt(value, key) {  
+    return CryptoJS.AES.encrypt(value, key).toString()
+  },
+
+  aesDecrypt(value, key) {  
+    return CryptoJS.AES.decrypt(value, key).toString(CryptoJS.enc.Utf8)
   }
 
 }
