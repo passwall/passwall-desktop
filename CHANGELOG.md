@@ -5,12 +5,12 @@
 ### Added
 - First letters of user first and last names
 - Company logos
-- Loading state to form buttons
-- Text area componen to private notes
+- Loading state to signin button
+- Text area component to private notes
 - Added scroll bar on the detail column
+- Encryption to json
 ### Enhanced
 - Generate password button and "Use This" actions
-- 
 
 ## [0.1.3] (23-06-2020)
 ### Added
