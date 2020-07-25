@@ -14,21 +14,29 @@ export default {
     async FetchAll({ state, rootState }, query) {
       const { data } = await EmailsService.FetchAll(query)
 
+      // Decrypt payload with transmission key
+      const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
+
       var dLen, i
-      dLen = data.length
+      dLen = dataObj.length
       for (i = 0; i < dLen; i++) {
-        data[i].email     = this._vm.$helpers.decrypt(data[i].email, rootState.master_hash)
-        data[i].password  = this._vm.$helpers.decrypt(data[i].password, rootState.master_hash)
+        dataObj[i].email     = this._vm.$helpers.decrypt(dataObj[i].email, rootState.master_hash)
+        dataObj[i].password  = this._vm.$helpers.decrypt(dataObj[i].password, rootState.master_hash)
       }
       
-      state.ItemList = data
+      state.ItemList = dataObj
     },
 
     async Get({ state, rootState }, id) {
       const { data } = await EmailsService.Get(id)
-      data.email    = this._vm.$helpers.decrypt(data.email, rootState.master_hash)
-      data.password = this._vm.$helpers.decrypt(data.password, rootState.master_hash)
-      state.Detail  = data
+
+      // Decrypt payload with transmission key
+      const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
+
+      dataObj.email    = this._vm.$helpers.decrypt(dataObj.email, rootState.master_hash)
+      dataObj.password = this._vm.$helpers.decrypt(dataObj.password, rootState.master_hash)
+      
+      state.Detail  = dataObj
     },
 
     async Delete(_, id) {
@@ -36,16 +44,27 @@ export default {
     },
 
     async Create({ rootState }, data) {
-      console.log(data)
       data.email    = this._vm.$helpers.encrypt(data.email, rootState.master_hash)
       data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
-      await EmailsService.Create(data)
+      
+      // Encrypt payload with transmission key
+      const payload = {
+        data: this._vm.$helpers.aesEncrypt(JSON.stringify(data), rootState.transmission_key)
+      }
+
+      await EmailsService.Create(payload)
     },
 
     async Update({ rootState }, data) {
       data.email    = this._vm.$helpers.encrypt(data.email, rootState.master_hash)
       data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
-      await EmailsService.Update(data.id, data)
+
+      // Encrypt payload with transmission key
+      const payload = {
+        data: this._vm.$helpers.aesEncrypt(JSON.stringify(data), rootState.transmission_key)
+      }
+
+      await EmailsService.Update(data.id, payload)
     }
   }
 }

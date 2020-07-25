@@ -13,7 +13,8 @@ export default {
   actions: {
     async FetchAll({ state, rootState }, query) {
       const { data } = await LoginsService.FetchAll(query)
-
+      
+      // Decrypt payload with transmission key
       const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
 
       var dLen, i
@@ -29,6 +30,7 @@ export default {
     async Get({ state, rootState }, id) {
       const { data } = await LoginsService.Get(id)
 
+      // Decrypt payload with transmission key
       const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
 
       dataObj.username = this._vm.$helpers.decrypt(dataObj.username, rootState.master_hash)
@@ -49,6 +51,7 @@ export default {
       const payload = {
         data: this._vm.$helpers.aesEncrypt(JSON.stringify(data), rootState.transmission_key)
       }
+
       await LoginsService.Create(payload)
     },
 
