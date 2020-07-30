@@ -8,7 +8,7 @@
     <!-- Summary -->
     <div class="email-item-summary">
       <span v-text="data.title" class="url" />
-      <span v-text="data.email" class="username" />
+      <!-- <span v-text="data.email" class="username" /> -->
     </div>
     <!-- Detail -->
     <button class="email-item-detail">

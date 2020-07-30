@@ -14,8 +14,6 @@ export default {
     async FetchAll({ state, rootState }, query) {
       const { data } = await NotesService.FetchAll(query)
 
-      console.log(rootState.transmission_key)
-
       // Decrypt payload with transmission key
       const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
 

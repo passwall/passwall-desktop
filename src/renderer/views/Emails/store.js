@@ -17,12 +17,12 @@ export default {
       // Decrypt payload with transmission key
       const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
 
-      var dLen, i
-      dLen = dataObj.length
-      for (i = 0; i < dLen; i++) {
-        dataObj[i].email     = this._vm.$helpers.decrypt(dataObj[i].email, rootState.master_hash)
-        dataObj[i].password  = this._vm.$helpers.decrypt(dataObj[i].password, rootState.master_hash)
-      }
+      // var dLen, i
+      // dLen = dataObj.length
+      // for (i = 0; i < dLen; i++) {
+      //   dataObj[i].email     = this._vm.$helpers.decrypt(dataObj[i].email, rootState.master_hash)
+      //   dataObj[i].password  = this._vm.$helpers.decrypt(dataObj[i].password, rootState.master_hash)
+      // }
       
       state.ItemList = dataObj
     },

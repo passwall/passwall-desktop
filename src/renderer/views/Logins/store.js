@@ -17,12 +17,13 @@ export default {
       // Decrypt payload with transmission key
       const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
 
-      var dLen, i
-      dLen = dataObj.length
-      for (i = 0; i < dLen; i++) {
-        dataObj[i].username = this._vm.$helpers.decrypt(dataObj[i].username, rootState.master_hash)
-        dataObj[i].password = this._vm.$helpers.decrypt(dataObj[i].password, rootState.master_hash)
-      }
+      // We don't need to decrypt encrypted fields in FetchAll
+      // var dLen, i
+      // dLen = dataObj.length
+      // for (i = 0; i < dLen; i++) {
+      //   dataObj[i].username = this._vm.$helpers.decrypt(dataObj[i].username, rootState.master_hash)
+      //   dataObj[i].password = this._vm.$helpers.decrypt(dataObj[i].password, rootState.master_hash)
+      // }
       
       state.ItemList = dataObj
     },
