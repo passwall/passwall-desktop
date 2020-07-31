@@ -17,16 +17,15 @@ export default {
       // Decrypt payload with transmission key
       const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
 
-      var dLen, i
-      dLen = dataObj.length
-      for (i = 0; i < dLen; i++) {
-        dataObj[i].account_name = this._vm.$helpers.decrypt(dataObj[i].account_name, rootState.master_hash)
-        dataObj[i].account_number = this._vm.$helpers.decrypt(dataObj[i].account_number, rootState.master_hash)
-        dataObj[i].iban = this._vm.$helpers.decrypt(dataObj[i].iban, rootState.master_hash)
-        dataObj[i].currency = this._vm.$helpers.decrypt(dataObj[i].currency, rootState.master_hash)
-        dataObj[i].password = this._vm.$helpers.decrypt(dataObj[i].password, rootState.master_hash)
-      }
-
+      // var dLen, i
+      // dLen = dataObj.length
+      // for (i = 0; i < dLen; i++) {
+      //   dataObj[i].account_name = this._vm.$helpers.decrypt(dataObj[i].account_name, rootState.master_hash)
+      //   dataObj[i].account_number = this._vm.$helpers.decrypt(dataObj[i].account_number, rootState.master_hash)
+      //   dataObj[i].iban = this._vm.$helpers.decrypt(dataObj[i].iban, rootState.master_hash)
+      //   dataObj[i].currency = this._vm.$helpers.decrypt(dataObj[i].currency, rootState.master_hash)
+      //   dataObj[i].password = this._vm.$helpers.decrypt(dataObj[i].password, rootState.master_hash)
+      // }
       
       state.ItemList = dataObj
     },

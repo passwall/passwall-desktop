@@ -17,15 +17,15 @@ export default {
       // Decrypt payload with transmission key
       const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
 
-      var dLen, i
-      dLen = dataObj.length
-      for (i = 0; i < dLen; i++) {
-        dataObj[i].cardholder_name     = this._vm.$helpers.decrypt(dataObj[i].cardholder_name, rootState.master_hash)
-        dataObj[i].type                = this._vm.$helpers.decrypt(dataObj[i].type, rootState.master_hash)
-        dataObj[i].number              = this._vm.$helpers.decrypt(dataObj[i].number, rootState.master_hash)
-        dataObj[i].expiry_date         = this._vm.$helpers.decrypt(dataObj[i].expiry_date, rootState.master_hash)
-        dataObj[i].verification_number = this._vm.$helpers.decrypt(dataObj[i].verification_number, rootState.master_hash)
-      }
+      // var dLen, i
+      // dLen = dataObj.length
+      // for (i = 0; i < dLen; i++) {
+      //   dataObj[i].cardholder_name     = this._vm.$helpers.decrypt(dataObj[i].cardholder_name, rootState.master_hash)
+      //   dataObj[i].type                = this._vm.$helpers.decrypt(dataObj[i].type, rootState.master_hash)
+      //   dataObj[i].number              = this._vm.$helpers.decrypt(dataObj[i].number, rootState.master_hash)
+      //   dataObj[i].expiry_date         = this._vm.$helpers.decrypt(dataObj[i].expiry_date, rootState.master_hash)
+      //   dataObj[i].verification_number = this._vm.$helpers.decrypt(dataObj[i].verification_number, rootState.master_hash)
+      // }
       
       state.ItemList = dataObj
     },

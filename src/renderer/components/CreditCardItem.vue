@@ -7,7 +7,7 @@
     <!-- Summary -->
     <div class="credit_card-item-summary">
       <span v-text="data.card_name" class="url" />
-      <span v-text="data.number" class="username" />
+      <!-- <span v-text="data.number" class="username" /> -->
     </div>
     <!-- Detail -->
     <button class="credit_card-item-detail">

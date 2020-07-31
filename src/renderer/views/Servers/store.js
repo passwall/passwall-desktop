@@ -17,7 +17,7 @@ export default {
       // Decrypt payload with transmission key
       const dataObj = JSON.parse(this._vm.$helpers.aesDecrypt(data.data, rootState.transmission_key));
 
-      var dLen, i
+      /* var dLen, i
       dLen = dataObj.length
       for (i = 0; i < dLen; i++) {
         dataObj[i].ip = this._vm.$helpers.decrypt(dataObj[i].ip, rootState.master_hash)
@@ -27,7 +27,7 @@ export default {
         dataObj[i].hosting_password = this._vm.$helpers.decrypt(dataObj[i].hosting_password, rootState.master_hash)
         dataObj[i].admin_username = this._vm.$helpers.decrypt(dataObj[i].admin_username, rootState.master_hash)
         dataObj[i].admin_password = this._vm.$helpers.decrypt(dataObj[i].admin_password, rootState.master_hash)
-      }
+      } */
       
       state.ItemList = dataObj
     },

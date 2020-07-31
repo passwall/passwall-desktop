@@ -7,7 +7,7 @@
     <!-- Summary -->
     <div class="bank_account-item-summary">
       <span v-text="data.bank_name" class="url" />
-      <span v-text="data.account_name" class="username" />
+      <!-- <span v-text="data.account_name" class="username" /> -->
     </div>
     <!-- Detail -->
     <button class="bank_account-item-detail">

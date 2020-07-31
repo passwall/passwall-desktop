@@ -7,7 +7,7 @@
     <!-- Summary -->
     <div class="server-item-summary">
       <span v-text="data.title" class="url" />
-      <span v-text="data.username" class="username" />
+      <!-- <span v-text="data.username" class="username" /> -->
     </div>
     <!-- Detail -->
     <button class="server-item-detail">
