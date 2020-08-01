@@ -53,8 +53,8 @@ export default {
   data() {
     return {
       LoginForm: {
-        email: 'oguzhan3488@gmail.com',
-        master_password: 'oguzhan470'
+        email: '',
+        master_password: ''
       }
     }
   },
