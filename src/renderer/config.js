@@ -1,7 +1,8 @@
 import Vue from 'vue'
-import * as waiters from '@/utils/waiters'
+import * as Waiters from '@/utils/waiters'
+Vue.prototype.$waiters = Waiters
 
-import Helpers from '@/utils/helpers'
+import * as Helpers from '@/utils/helpers'
 Vue.prototype.$helpers = Helpers
 
 import VueClipboard from 'vue-clipboard2'
@@ -27,8 +28,6 @@ window.wait = new VueWait({
   registerComponent: false,
   registerDirective: false
 })
-
-Vue.prototype.$waiters = waiters
 
 // Auto register all components
 const requireComponent = require.context('./components', true, /\.(vue)$/)

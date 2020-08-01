@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
+import * as Helpers from '@/utils/helpers'
+
 import AuthService from '@/api/services/Auth'
 import HTTPClient from '@/api/HTTPClient'
 
@@ -28,11 +30,11 @@ export default new Vuex.Store({
       
       var master_password = payload.master_password
       
-      payload.master_password = this._vm.$helpers.sha256Encrypt(payload.master_password)
+      payload.master_password = Helpers.sha256Encrypt(payload.master_password)
     
       const { data } = await AuthService.Login(payload)
 
-      state.master_hash      = this._vm.$helpers.pbkdf2Encrypt(master_password, data.secret)
+      state.master_hash      = Helpers.pbkdf2Encrypt(master_password, data.secret)
       state.access_token     = data.access_token
       state.refresh_token    = data.refresh_token
       state.transmission_key = data.transmission_key.substr(0, 32)
