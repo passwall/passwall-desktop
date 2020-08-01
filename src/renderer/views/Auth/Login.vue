@@ -53,8 +53,8 @@ export default {
   data() {
     return {
       LoginForm: {
-        email: '',
-        master_password: ''
+        email: 'oguzhan3488@gmail.com',
+        master_password: 'oguzhan470'
       }
     }
   },
@@ -76,7 +76,7 @@ export default {
 
         const onSuccess = async () => {
           await this.Login({ ...this.LoginForm })
-          this.$router.push({ name: 'Home' })
+          this.$router.replace({ name: 'Home' })
         }
 
         this.$request(onSuccess, this.$waiters.Auth.Login, onError)

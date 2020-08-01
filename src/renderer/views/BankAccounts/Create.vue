@@ -13,8 +13,7 @@
     </div>
     <!-- Content -->
     <div class="detail-page-content">
-      <div class="form">
-
+      <form class="form" @submit.stop.prevent="onClickSave">
         <!-- BankName -->
         <div class="form-row">
           <label v-text="$t('Bank Name')" />
@@ -113,10 +112,14 @@
         </div>
 
         <!-- Save -->
-        <VButton type="submit" class="mt-3 mb-5 mx-3" @click="onClickSave">
+        <VButton
+          type="submit"
+          class="mt-3 mb-5 mx-3"
+          :loading="$wait.is($waiters.BankAccounts.Create)"
+        >
           {{ $t('Save') }}
         </VButton>
-      </div>
+      </form>
     </div>
   </div>
 </template>
@@ -146,68 +149,16 @@ export default {
     onClickSave() {
       this.$validator.validate().then(async result => {
         if (!result) return
-        try {
+
+        const onSuccess = async () => {
           await this.Create({ ...this.form })
           this.FetchAll()
           this.$router.push({ name: 'BankAccounts', params: { refresh: true } })
-        } catch (error) {
-          console.log(error)
         }
+
+        this.$request(onSuccess, this.$waiters.BankAccounts.Create)
       })
     }
   }
 }
 </script>
-
-<style lang="scss">
-.detail-page {
-  width: 100%;
-  height: 100vh;
-  border-left: 1px solid black;
-  background-color: $color-gray-600;
-
-  &-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    border-bottom: 1px solid black;
-    padding: 0 $spacer-5;
-
-    &-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background-color: $color-gray-400;
-    }
-
-    &-summary {
-      color: #fff;
-      margin: 0 auto 0 $spacer-3;
-      display: flex;
-      flex-direction: column;
-
-      .url {
-        font-weight: bold;
-        font-size: 12px;
-        line-height: 16px;
-      }
-
-      .email {
-        font-weight: normal;
-        font-size: 10px;
-        line-height: 16px;
-      }
-    }
-
-    &-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      background-color: $color-gray-500;
-      margin-left: $spacer-3;
-      color: $color-gray-300;
-    }
-  }
-}
-</style>
