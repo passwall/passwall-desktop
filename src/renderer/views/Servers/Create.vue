@@ -13,7 +13,7 @@
     </div>
     <!-- Content -->
     <div class="detail-page-content">
-      <div class="form">
+      <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
         <div class="form-row">
           <label v-text="$t('Title')" />
@@ -136,7 +136,7 @@
           />
         </div>
 
-         <!-- AdminPassword -->
+        <!-- AdminPassword -->
         <div class="form-row">
           <label v-text="$t('Admin Password')" />
           <div class="d-flex">
@@ -163,10 +163,10 @@
         </div>
 
         <!-- Save -->
-        <VButton type="submit" class="mt-3 mb-5 mx-3" @click="onClickSave">
+        <VButton type="submit" class="mt-3 mb-5 mx-3" :loading="$wait.is($waiters.Servers.Create)">
           {{ $t('Save') }}
         </VButton>
-      </div>
+      </form>
     </div>
   </div>
 </template>
@@ -198,13 +198,14 @@ export default {
     onClickSave() {
       this.$validator.validate().then(async result => {
         if (!result) return
-        try {
+
+        const onSuccess = async () => {
           await this.Create({ ...this.form })
           this.FetchAll()
           this.$router.push({ name: 'Servers', params: { refresh: true } })
-        } catch (error) {
-          console.log(error)
         }
+
+        this.$request(onSuccess, this.$waiters.Servers.Create)
       })
     }
   }

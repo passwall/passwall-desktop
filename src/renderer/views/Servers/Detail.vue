@@ -35,7 +35,8 @@
       >
         <VIcon name="pencil" size="14" />
       </button>
-      <div class="form">
+
+      <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
         <div class="form-row">
           <label v-text="$t('Title')" />
@@ -217,12 +218,16 @@
           </div>
         </div>
 
-
         <!-- Save -->
-        <VButton v-if="isEditMode" @click="onClickUpdate" class="mt-2 mb-5 mx-3">
+        <VButton
+          v-if="isEditMode"
+          type="submit"
+          :loading="$wait.is($waiters.Servers.Update)"
+          class="mt-4 mb-5 mx-3"
+        >
           {{ $t('Save') }}
         </VButton>
-      </div>
+      </form>
     </div>
   </div>
 </template>
@@ -242,48 +247,51 @@ export default {
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
-    this.init(to.params)
+    this.getDetail()
     next()
   },
 
   created() {
-    this.init(this.$route.params)
+    this.getDetail()
   },
 
   methods: {
     ...mapActions('Servers', ['Get', 'Delete', 'Update']),
 
-    async init(params) {
-      try {
-        await this.Get(params.id)
+    getDetail() {
+      const onSuccess = async () => {
+        await this.Get(this.$route.params.id)
         this.form = { ...this.Detail }
-      } catch (error) {
+      }
+
+      const onError = () => {
         this.$router.back()
       }
+
+      this.$request(onSuccess, this.$waiters.Servers.Get, onError)
     },
 
-    async onClickDelete() {
-      try {
+    onClickDelete() {
+      const onSuccess = async () => {
         await this.Delete(this.form.id)
         const index = this.ItemList.findIndex(item => item.id == this.form.id)
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
         this.$router.push({ name: 'Servers', params: { refresh: true } })
-      } catch (err) {
-        console.log(err)
       }
+
+      this.$request(onSuccess, this.$waiters.Servers.Delete)
     },
 
     async onClickUpdate() {
-      try {
+      const onSuccess = async () => {
         await this.Update({ ...this.form })
         this.$router.push({ name: 'Servers', params: { refresh: true } })
-      } catch (err) {
-        console.log(err)
-      } finally {
-        this.isEditMode = false
       }
+
+      await this.$request(onSuccess, this.$waiters.Servers.Update)
+      this.isEditMode = false
     }
   },
 
@@ -291,7 +299,17 @@ export default {
     ...mapState('Servers', ['Detail', 'ItemList']),
 
     serverCopyContent() {
-      return `Title: ${this.form.title}\nIP: ${this.form.ip}\nUsername: ${this.form.username}\nPassword: ${this.form.password}\nURL: ${this.form.url}\nHosting Username: ${this.form.hosting_username}\nHosting Password: ${this.form.hosting_password}\nAdmin Username: ${this.form.admin_username}\nAdmin Password: ${this.form.admin_password}\n`
+      return (
+        `Title: ${this.form.title}\n` +
+        `IP: ${this.form.ip}\n` +
+        `Username: ${this.form.username}\n` +
+        `Password: ${this.form.password}\n` +
+        `URL: ${this.form.url}\n` +
+        `Hosting Username: ${this.form.hosting_username}\n` +
+        `Hosting Password: ${this.form.hosting_password}\n` +
+        `Admin Username: ${this.form.admin_username}\n` +
+        `Admin Password: ${this.form.admin_password}`
+      )
     }
   }
 }

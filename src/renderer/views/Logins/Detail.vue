@@ -35,7 +35,8 @@
       >
         <VIcon name="pencil" size="14" />
       </button>
-      <div class="form">
+
+      <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
         <div class="form-row">
           <label v-text="$t('Title')" />
@@ -113,10 +114,14 @@
         </div>
 
         <!-- Save -->
-        <VButton v-if="isEditMode" @click="onClickUpdate" class="mt-2 mb-5 mx-3">
+        <VButton
+          v-if="isEditMode"
+          :loading="$wait.is($waiters.Logins.Update)"
+          class="mt-4 mb-5 mx-3"
+        >
           {{ $t('Save') }}
         </VButton>
-      </div>
+      </form>
     </div>
   </div>
 </template>
@@ -136,48 +141,51 @@ export default {
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
-    this.init(to.params)
+    this.getDetail(to.params)
     next()
   },
 
   created() {
-    this.init(this.$route.params)
+    this.getDetail()
   },
 
   methods: {
     ...mapActions('Logins', ['Get', 'Delete', 'Update']),
 
-    async init(params) {
-      try {
-        await this.Get(params.id)
+    getDetail() {
+      const onSuccess = async () => {
+        await this.Get(this.$route.params.id)
         this.form = { ...this.Detail }
-      } catch (error) {
+      }
+
+      const onError = () => {
         this.$router.back()
       }
+
+      this.$request(onSuccess, this.$waiters.Logins.Get, onError)
     },
 
-    async onClickDelete() {
-      try {
+    onClickDelete() {
+      const onSuccess = async () => {
         await this.Delete(this.form.id)
         const index = this.ItemList.findIndex(item => item.id == this.form.id)
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
         this.$router.push({ name: 'Logins', params: { refresh: true } })
-      } catch (err) {
-        console.log(err)
       }
+
+      this.$request(onSuccess, this.$waiters.Logins.Delete)
     },
 
     async onClickUpdate() {
-      try {
+      const onSuccess = async () => {
         await this.Update({ ...this.form })
         this.$router.push({ name: 'Logins', params: { refresh: true } })
-      } catch (err) {
-        console.log(err)
-      } finally {
-        this.isEditMode = false
       }
+
+      await this.$request(onSuccess, this.$waiters.Logins.Update)
+      this.isEditMode = false
     }
   },
 
@@ -185,75 +193,13 @@ export default {
     ...mapState('Logins', ['Detail', 'ItemList']),
 
     loginCopyContent() {
-      return `Title: ${this.form.title}\nURL: ${this.form.url}\nUsername: ${this.form.username}\nPassword: ${this.form.password}`
+      return (
+        `Title: ${this.form.title}\n` +
+        `URL: ${this.form.url}\n` +
+        `Username: ${this.form.username}\n` +
+        `Password: ${this.form.password}`
+      )
     }
   }
 }
 </script>
-
-<style lang="scss">
-.detail-page {
-  width: 100%;
-  height: 100vh;
-  border-left: 1px solid black;
-  background-color: $color-gray-600;
-
-  &-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    border-bottom: 1px solid black;
-    padding: 0 $spacer-5;
-
-    &-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background-color: $color-gray-400;
-    }
-
-    &-summary {
-      color: #fff;
-      margin: 0 auto 0 $spacer-3;
-      display: flex;
-      flex-direction: column;
-
-      .url {
-        font-weight: bold;
-        font-size: $font-size-normal;
-        line-height: 16px;
-      }
-
-      .email {
-        font-weight: normal;
-        font-size: $font-size-mini;
-        line-height: 16px;
-      }
-    }
-
-    &-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      background-color: $color-gray-500;
-      margin-left: $spacer-2;
-      color: $color-gray-300;
-    }
-  }
-
-  &-content {
-    position: relative;
-    height: calc(100% - 64px);
-
-    .edit-btn {
-      position: absolute;
-      top: 37px;
-      right: 32px;
-    }
-  }
-}
-</style>

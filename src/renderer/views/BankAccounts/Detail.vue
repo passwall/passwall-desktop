@@ -167,8 +167,9 @@
         <!-- Save -->
         <VButton
           v-if="isEditMode"
+          type="submit"
           :loading="$wait.is($waiters.BankAccounts.Update)"
-          class="mt-2 mb-5 mx-3"
+          class="mt-4 mb-5 mx-3"
         >
           {{ $t('Save') }}
         </VButton>
@@ -192,7 +193,7 @@ export default {
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
-    this.init(to.params)
+    this.getDetail()
     next()
   },
 

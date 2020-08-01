@@ -45,11 +45,7 @@
     <!-- Detail -->
     <div
       class="w-100 h-100 flex-center c-gray-700"
-      v-if="
-        ItemList.length > 0 &&
-          $route.name != 'BankAccountDetail' &&
-          $route.name != 'BankAccountCreate'
-      "
+      v-if="ItemList.length > 0 && $route.name == 'BankAccounts'"
     >
       {{ $t('Select one item to see it’s details...') }}
     </div>
@@ -80,7 +76,7 @@ export default {
     this.fetchAll()
   },
 
-  methods: { 
+  methods: {
     ...mapActions('BankAccounts', ['FetchAll']),
 
     fetchAll() {

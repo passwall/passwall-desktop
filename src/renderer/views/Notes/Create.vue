@@ -13,7 +13,7 @@
     </div>
     <!-- Content -->
     <div class="detail-page-content">
-      <div class="form">
+      <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
         <div class="form-row">
           <label v-text="$t('Title')" />
@@ -39,12 +39,19 @@
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
             </button>
           </div>
-          <VTextArea :placeholder="$t('ClickToFill')" v-model="form.note" v-validate="'required'" name="Note"/>
+          <VTextArea
+            :placeholder="$t('ClickToFill')"
+            v-model="form.note"
+            v-validate="'required'"
+            name="Note"
+          />
         </div>
 
         <!-- Save -->
-        <VButton type="submit" class="mt-3 mb-5 mx-3" @click="onClickSave">{{ $t('Save') }}</VButton>
-      </div>
+        <VButton type="submit" class="mt-3 mb-5 mx-3" :loading="$wait.is($waiters.Notes.Create)">{{
+          $t('Save')
+        }}</VButton>
+      </form>
     </div>
   </div>
 </template>
@@ -69,13 +76,14 @@ export default {
     onClickSave() {
       this.$validator.validate().then(async result => {
         if (!result) return
-        try {
+
+        const onSuccess = async () => {
           await this.Create({ ...this.form })
           this.FetchAll()
           this.$router.push({ name: 'Notes', params: { refresh: true } })
-        } catch (error) {
-          console.log(error)
         }
+
+        this.$request(onSuccess, this.$waiters.Notes.Create)
       })
     }
   }

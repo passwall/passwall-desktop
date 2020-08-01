@@ -214,8 +214,10 @@ hr {
     padding: 0 $spacer-5;
 
     &-avatar {
-      width: 32px;
-      height: 32px;
+      min-width: 32px;
+      min-height: 32px;
+      max-width: 32px;
+      max-height: 32px;
       border-radius: 8px;
       background-color: $color-gray-400;
     }
@@ -240,8 +242,10 @@ hr {
     }
 
     &-icon {
-      width: 24px;
-      height: 24px;
+      min-width: 24px;
+      min-height: 24px;
+      max-width: 24px;
+      max-height: 24px;
       border-radius: 4px;
       background-color: $color-gray-500;
       margin-left: $spacer-3;

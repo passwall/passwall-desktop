@@ -45,7 +45,7 @@
     <!-- Detail -->
     <div
       class="w-100 h-100 flex-center c-gray-700"
-      v-if="ItemList.length > 0 && $route.name != 'ServerDetail' && $route.name != 'ServerCreate'"
+      v-if="ItemList.length > 0 && $route.name == 'Servers'"
     >
       {{ $t('Select one item to see it’s details...') }}
     </div>
@@ -72,8 +72,8 @@ export default {
     next()
   },
 
-  async created() {
-    await this.fetchAll()
+  created() {
+    this.fetchAll()
   },
 
   methods: {

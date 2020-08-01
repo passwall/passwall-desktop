@@ -120,8 +120,8 @@ export default {
     }
   },
 
-  async created() {
-    await this.checkUpdate()
+  created() {
+    this.checkUpdate()
   },
 
   computed: {
