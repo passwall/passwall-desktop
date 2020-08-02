@@ -98,7 +98,7 @@ export default class CryptoUtils {
         try {
           data[key] = this.decrypt(data[key].toString(), encryptKey)
         } catch (err) {
-          console.log(err)
+          // console.log(err)
         }
       }
     })

@@ -1,6 +1,6 @@
 <template>
   <v-popover offset="16">
-    <button @click="onClickGenerate" class="btn-generate-pass">
+    <button type="button" @click="onClickGenerate" class="btn-generate-pass">
       <VIcon name="refresh" size="14" />
     </button>
 
@@ -19,6 +19,7 @@
 <script>
 import { mapActions } from 'vuex'
 import SystemService from '@/api/services/System'
+import CryptoUtils from '@/utils/crypto'
 
 export default {
   name: 'GeneratePassword',

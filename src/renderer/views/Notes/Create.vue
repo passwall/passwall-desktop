@@ -31,7 +31,7 @@
             <label v-text="$t('Private Note')" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-2 ml-n1"
+              class="detail-page-header-icon mt-1 ml-n1"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >

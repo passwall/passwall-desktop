@@ -64,7 +64,7 @@
             <GeneratePassword class="mt-2 mr-3" v-model="form.password" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-2 ml-n1"
+              class="detail-page-header-icon mt-1 ml-n1"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
@@ -114,7 +114,7 @@
             <GeneratePassword class="mt-2 mr-3" v-model="form.hosting_password" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-2 ml-n1"
+              class="detail-page-header-icon mt-1 ml-n1"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
@@ -152,7 +152,7 @@
             <GeneratePassword class="mt-2 mr-3" v-model="form.admin_password" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-2 ml-n1"
+              class="detail-page-header-icon mt-1 ml-n1"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
             >
