@@ -1,9 +1,8 @@
 import Vue from 'vue'
+import i18n from '@/i18n'
+
 import * as Waiters from '@/utils/waiters'
 Vue.prototype.$waiters = Waiters
-
-import * as Helpers from '@/utils/helpers'
-Vue.prototype.$helpers = Helpers
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
@@ -39,9 +38,7 @@ requireComponent.keys().forEach(fileName => {
 })
 
 import Notifications from 'vue-notification'
-Vue.use(Notifications, { duration: 4000 })
-
-import i18n from '@/i18n'
+Vue.use(Notifications, { duration: 2500 })
 
 Vue.prototype.$request = async (callback, waitKey, errorCallback = null) => {
   try {

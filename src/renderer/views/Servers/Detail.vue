@@ -103,6 +103,7 @@
             <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.password" />
             <!-- Show/Hide Pass -->
             <button
+              type="button"
               class="detail-page-header-icon mt-2 ml-2"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
@@ -163,6 +164,7 @@
             <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.hosting_password" />
             <!-- Show/Hide Pass -->
             <button
+              type="button"
               class="detail-page-header-icon mt-2 ml-2"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
@@ -208,6 +210,7 @@
             <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.admin_password" />
             <!-- Show/Hide Pass -->
             <button
+              type="button"
               class="detail-page-header-icon mt-2 ml-2"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
@@ -247,20 +250,20 @@ export default {
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
-    this.getDetail()
+    this.getDetail(to.params.id)
     next()
   },
 
   created() {
-    this.getDetail()
+    this.getDetail(this.$route.params.id)
   },
 
   methods: {
     ...mapActions('Servers', ['Get', 'Delete', 'Update']),
 
-    getDetail() {
+    getDetail(id) {
       const onSuccess = async () => {
-        await this.Get(this.$route.params.id)
+        await this.Get(id)
         this.form = { ...this.Detail }
       }
 

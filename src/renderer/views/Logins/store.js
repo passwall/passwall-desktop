@@ -1,5 +1,7 @@
 import LoginsService from '@/api/services/Logins'
-import * as Helpers from '@/utils/helpers'
+import CryptoUtils from '@/utils/crypto'
+
+const EncryptedFields = ['username', 'password']
 
 export default {
   namespaced: true,
@@ -12,60 +14,33 @@ export default {
   },
 
   actions: {
-    async FetchAll({ state, rootState }, query) {
+    async FetchAll({ state }, query) {
       const { data } = await LoginsService.FetchAll(query)
 
-      // Decrypt payload with transmission key
-      const dataObj = JSON.parse(Helpers.aesDecrypt(data.data, rootState.transmission_key))
-
-      // We don't need to decrypt encrypted fields in FetchAll
-      // var dLen, i
-      // dLen = dataObj.length
-      // for (i = 0; i < dLen; i++) {
-      //   dataObj[i].username = Helpers.decrypt(dataObj[i].username, rootState.master_hash)
-      //   dataObj[i].password = Helpers.decrypt(dataObj[i].password, rootState.master_hash)
-      // }
-
-      state.ItemList = dataObj
+      const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      state.ItemList = itemList
     },
 
-    async Get({ state, rootState }, id) {
+    async Get({ state }, id) {
       const { data } = await LoginsService.Get(id)
 
-      // Decrypt payload with transmission key
-      const dataObj = JSON.parse(Helpers.aesDecrypt(data.data, rootState.transmission_key))
+      const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      CryptoUtils.decryptFields(detail)
 
-      dataObj.username = Helpers.decrypt(dataObj.username, rootState.master_hash)
-      dataObj.password = Helpers.decrypt(dataObj.password, rootState.master_hash)
-
-      state.Detail = dataObj
+      state.Detail = detail
     },
 
     async Delete(_, id) {
       await LoginsService.Delete(id)
     },
 
-    async Create({ rootState }, data) {
-      data.username = Helpers.encrypt(data.username, rootState.master_hash)
-      data.password = Helpers.encrypt(data.password, rootState.master_hash)
-
-      // Encrypt payload with transmission key
-      const payload = {
-        data: Helpers.aesEncrypt(JSON.stringify(data), rootState.transmission_key)
-      }
-
+    async Create(_, data) {
+      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
       await LoginsService.Create(payload)
     },
 
-    async Update({ rootState }, data) {
-      data.username = Helpers.encrypt(data.username, rootState.master_hash)
-      data.password = Helpers.encrypt(data.password, rootState.master_hash)
-
-      // Encrypt payload with transmission key
-      const payload = {
-        data: Helpers.aesEncrypt(JSON.stringify(data), rootState.transmission_key)
-      }
-
+    async Update(_, data) {
+      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
       await LoginsService.Update(data.id, payload)
     }
   }

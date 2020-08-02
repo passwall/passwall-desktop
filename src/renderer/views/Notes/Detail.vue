@@ -60,6 +60,7 @@
             <ClipboardButton :copy="form.note" class="mt-2" />
             <!-- Show/Hide Pass -->
             <button
+              type="button"
               class="detail-page-header-icon mt-2 ml-2"
               style="width: 20px; height: 20px;"
               v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
@@ -85,8 +86,9 @@
           type="submit"
           :loading="$wait.is($waiters.Notes.Update)"
           class="mt-4 mb-5 mx-3"
-          >{{ $t('Save') }}</VButton
         >
+          {{ $t('Save') }}
+        </VButton>
       </form>
     </div>
   </div>
@@ -107,20 +109,20 @@ export default {
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
-    this.getDetail()
+    this.getDetail(to.params.id)
     next()
   },
 
   created() {
-    this.getDetail()
+    this.getDetail(this.$route.params.id)
   },
 
   methods: {
     ...mapActions('Notes', ['Get', 'Delete', 'Update']),
 
-    getDetail() {
+    getDetail(id) {
       const onSuccess = async () => {
-        await this.Get(this.$route.params.id)
+        await this.Get(id)
         this.form = { ...this.Detail }
       }
 

@@ -1,4 +1,5 @@
 import Axios from 'axios'
+import CryptoUtils from '@/utils/crypto'
 
 const client = Axios.create({
   baseURL: 'https://vault.passwall.io',
@@ -16,37 +17,32 @@ export default class HTTPClient {
 
   static async get(path, params = {}, headers = {}) {
     return client.get(path, {
-      requestId: Math.random().toString(32),
       params,
       headers
     })
   }
 
-  static async post(path, data = {}, headers = {}, onUploadProgress, cancelToken) {
+  static async post(path, data = {}, headers = {}, onUploadProgress) {
     return client.post(path, data, {
-      requestId: Math.random().toString(32),
       headers,
-      onUploadProgress,
-      cancelToken
+      onUploadProgress
     })
   }
 
   static async put(path, data = {}, headers = {}) {
     return client.put(path, data, {
-      requestId: Math.random().toString(32),
       headers
     })
   }
 
   static async delete(path, data = {}, headers = {}) {
     return client.delete(path, {
-      requestId: Math.random().toString(32),
       data,
       headers
     })
   }
 
-  static async setHeader(key, value) {
+  static setHeader(key, value) {
     client.defaults.headers.common[key] = value
   }
 }

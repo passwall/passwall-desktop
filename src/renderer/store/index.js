@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
-import * as Helpers from '@/utils/helpers'
+import CryptoUtils from '@/utils/crypto'
 
 import AuthService from '@/api/services/Auth'
 import HTTPClient from '@/api/HTTPClient'
@@ -16,43 +16,49 @@ import Servers from '@/views/Servers/store'
 
 export default new Vuex.Store({
   state() {
+    CryptoUtils.encryptKey = localStorage.master_hash
+    CryptoUtils.transmissionKey = localStorage.transmission_key
+
     return {
       access_token: localStorage.access_token,
       refresh_token: localStorage.refresh_token,
-      transmission_key: '',
-      master_hash: '',
+      transmission_key: localStorage.transmission_key,
+      master_hash: localStorage.master_hash,
       user: {}
     }
   },
 
   actions: {
     async Login({ state }, payload) {
-      
-      var master_password = payload.master_password
-      
-      payload.master_password = Helpers.sha256Encrypt(payload.master_password)
-    
+      const master_password = payload.master_password
+
+      payload.master_password = CryptoUtils.sha256Encrypt(payload.master_password)
+
       const { data } = await AuthService.Login(payload)
-
-      state.master_hash      = Helpers.pbkdf2Encrypt(master_password, data.secret)
-      state.access_token     = data.access_token
-      state.refresh_token    = data.refresh_token
+      state.master_hash = CryptoUtils.pbkdf2Encrypt(data.secret, master_password)
+      state.access_token = data.access_token
+      state.refresh_token = data.refresh_token
       state.transmission_key = data.transmission_key.substr(0, 32)
-      state.user             = data
+      state.user = data
 
-      localStorage.access_token  = data.access_token
-      localStorage.refresh_token = data.refresh_token
-    
+      localStorage.access_token = state.access_token
+      localStorage.refresh_token = state.refresh_token
+      localStorage.master_hash = state.master_hash
+      localStorage.transmission_key = state.transmission_key
+
+      CryptoUtils.encryptKey = state.master_hash
+      CryptoUtils.transmissionKey = state.transmission_key
+
       HTTPClient.setHeader('Authorization', `Bearer ${state.access_token}`)
     },
 
     Logout({ state }) {
       state.access_token = null
       state.refresh_token = null
+      state.transmission_key = null
+      state.master_hash = null
       state.user = null
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
-      localStorage.removeItem('transmission_key')
+      localStorage.clear()
     }
   },
 

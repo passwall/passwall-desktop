@@ -1,5 +1,7 @@
 import NotesService from '@/api/services/Notes'
-import * as Helpers from '@/utils/helpers'
+import CryptoUtils from '@/utils/crypto'
+
+const EncryptedFields = ['note']
 
 export default {
   namespaced: true,
@@ -12,54 +14,33 @@ export default {
   },
 
   actions: {
-    async FetchAll({ state, rootState }, query) {
+    async FetchAll({ state }, query) {
       const { data } = await NotesService.FetchAll(query)
 
-      // Decrypt payload with transmission key
-      const dataObj = JSON.parse(Helpers.aesDecrypt(data.data, rootState.transmission_key));
-
-      // var dLen, i
-      // dLen = dataObj.length
-      // for (i = 0; i < dLen; i++) {
-      //   dataObj[i].note = Helpers.decrypt(dataObj[i].note, rootState.master_hash)
-      // }
-      
-      state.ItemList = dataObj
+      const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      state.ItemList = itemList
     },
 
-    async Get({ state, rootState }, id) {
+    async Get({ state }, id) {
       const { data } = await NotesService.Get(id)
 
-      // Decrypt payload with transmission key
-      const dataObj = JSON.parse(Helpers.aesDecrypt(data.data, rootState.transmission_key));
+      const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      CryptoUtils.decryptFields(detail)
 
-      dataObj.note = Helpers.decrypt(dataObj.note, rootState.master_hash)
-      state.Detail = dataObj
+      state.Detail = detail
     },
 
     async Delete(_, id) {
       await NotesService.Delete(id)
     },
 
-    async Create({ rootState }, data) {
-      data.note = Helpers.encrypt(data.note, rootState.master_hash)
-
-      // Encrypt payload with transmission key
-      const payload = {
-        data: Helpers.aesEncrypt(JSON.stringify(data), rootState.transmission_key)
-      }
-
+    async Create(_, data) {
+      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
       await NotesService.Create(payload)
     },
 
-    async Update({ rootState }, data) {
-      data.note = Helpers.encrypt(data.note, rootState.master_hash)
-
-      // Encrypt payload with transmission key
-      const payload = {
-        data: Helpers.aesEncrypt(JSON.stringify(data), rootState.transmission_key)
-      }
-
+    async Update(_, data) {
+      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
       await NotesService.Update(data.id, payload)
     }
   }
