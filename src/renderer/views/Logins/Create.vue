@@ -72,6 +72,27 @@
             </button>
           </div>
         </div>
+        <!-- Extra -->
+        <div class="form-row">
+          <div class="d-flex flex-content-between">
+            <label v-text="$t('Extra')" />
+            <!-- Show/Hide -->
+            <button
+              class="detail-page-header-icon mt-1 ml-n1"
+              style="width: 20px; height: 20px;"
+              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+            >
+              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12" @click="showPass = true" />
+            </button>
+          </div>
+          <VTextArea
+            :placeholder="$t('ClickToFill')"
+            v-model="form.extra"
+            v-validate="'required'"
+            name="Extra"
+          />
+        </div>
 
         <!-- Save -->
         <VButton type="submit" class="mt-3 mb-5 mx-3" :loading="$wait.is($waiters.Logins.Create)">

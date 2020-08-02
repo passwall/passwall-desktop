@@ -1,7 +1,7 @@
 import LoginsService from '@/api/services/Logins'
 import CryptoUtils from '@/utils/crypto'
 
-const EncryptedFields = ['username', 'password']
+const EncryptedFields = ['username', 'password', 'extra']
 
 export default {
   namespaced: true,

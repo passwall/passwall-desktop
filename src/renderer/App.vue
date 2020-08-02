@@ -74,8 +74,8 @@ export default {
             return CryptoUtils.encryptPayload(item, ['username', 'password', 'extra'])
           })
           console.log('itemlist', itemList)
-          // await this.Import(itemList)
-          // this.FetchAll()
+          await this.Import(itemList)
+          this.FetchAll()
         } catch (error) {
           console.log(error)
         }

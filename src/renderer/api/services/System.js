@@ -6,6 +6,7 @@ export default class SystemService {
   }
 
   static async Import(data) {
+    console.log(data)
     return HTTPClient.post(`/api/system/import`, data)
   }
 
