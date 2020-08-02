@@ -5,6 +5,7 @@ Vue.use(Vuex)
 import CryptoUtils from '@/utils/crypto'
 
 import AuthService from '@/api/services/Auth'
+import SystemService from '@/api/services/System'
 import HTTPClient from '@/api/HTTPClient'
 
 import Logins from '@/views/Logins/store'
@@ -59,6 +60,15 @@ export default new Vuex.Store({
       state.master_hash = null
       state.user = null
       localStorage.clear()
+    },
+
+    async Import(_, data) {
+      return SystemService.Import(data)
+    },
+
+    async Export() {
+      const { data } = SystemService.Export()
+      return data
     }
   },
 
