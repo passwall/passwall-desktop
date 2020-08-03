@@ -1,7 +1,7 @@
 # Changelog PassWall Desktop
 
 
-## [0.1.4] (------2020)
+## [0.1.4] (04-08-2020)
 ### Added
 - First letters of user first and last names
 - Company logos
@@ -9,6 +9,7 @@
 - Text area component to private notes
 - Added scroll bar on the detail column
 - Encryption to json
+- Import
 ### Enhanced
 - Generate password button and "Use This" actions
 
