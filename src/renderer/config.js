@@ -32,13 +32,13 @@ window.wait = new VueWait({
 const requireComponent = require.context('./components', true, /\.(vue)$/)
 requireComponent.keys().forEach(fileName => {
   const componentConfig = requireComponent(fileName)
-  Vue.component(componentConfig.default.name, () =>
-    import(`@/components/${fileName.replace('./', '')}`)
-  )
+  Vue.component(componentConfig.default.name, componentConfig.default)
 })
 
 import Notifications from 'vue-notification'
 Vue.use(Notifications, { duration: 2500 })
+
+Vue.prototype.$notifyError = text => Vue.prototype.$notify({ type: 'error', text })
 
 Vue.prototype.$request = async (callback, waitKey, errorCallback = null) => {
   try {
@@ -46,24 +46,19 @@ Vue.prototype.$request = async (callback, waitKey, errorCallback = null) => {
     await callback()
   } catch (error) {
     console.log(error)
+
     if (error.response) {
       if (errorCallback) {
         errorCallback(error)
       } else {
         if (error.response.status >= 500) {
-          Vue.prototype.$notify({
-            type: 'error',
-            text: i18n.t('API500ErrorMessage')
-          })
+          Vue.prototype.$notifyError(i18n.t('API500ErrorMessage'))
         } else if (error.response.data.Message && error.response.status != 401) {
-          Vue.prototype.$notify({
-            type: 'error',
-            text: error.response.data.Message
-          })
+          Vue.prototype.$notifyError(error.response.data.Message)
         }
       }
     } else {
-      Vue.prototype.$notify({ type: 'error', text: 'Network Error !' })
+      Vue.prototype.$notifyError('Network Error !')
     }
   } finally {
     window.wait.end(waitKey)

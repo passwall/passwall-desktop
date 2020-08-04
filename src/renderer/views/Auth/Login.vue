@@ -71,7 +71,7 @@ export default {
           if (error.response.status == 401) {
             text = this.$t('Incorrect email or password!')
           }
-          this.$notify({ type: 'error', text })
+          this.$notifyError(text)
         }
 
         const onSuccess = async () => {

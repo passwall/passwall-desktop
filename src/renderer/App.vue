@@ -30,10 +30,7 @@ export default {
 
     checkAccess() {
       if (!this.access_token) {
-        this.$notify({
-          type: 'error',
-          text: this.$t('You are not logged in. Please log in and try again')
-        })
+        this.$notifyError(this.$t('You are not logged in. Please log in and try again'))
       }
       return Boolean(this.access_token)
     },
@@ -71,10 +68,7 @@ export default {
           })
 
           if (parsedCSV.errors.length > 0) {
-            this.$notify({
-              type: 'error',
-              text: this.$t('There is an error. Error: ', parsedCSV.errors[0].message)
-            })
+            this.$notifyError(this.$t('There is an error. Error: ', parsedCSV.errors[0].message))
             return
           }
 
