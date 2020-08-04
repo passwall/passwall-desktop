@@ -12,7 +12,7 @@ import { ipcRenderer } from 'electron'
 import { mapActions, mapState } from 'vuex'
 const { dialog } = require('electron').remote
 import CryptoUtils from '@/utils/crypto'
-import ObjectsToCsv from 'objects-to-csv'
+import Papa from 'papaparse'
 
 export default {
   created() {
@@ -50,9 +50,8 @@ export default {
         const itemList = JSON.parse(CryptoUtils.aesDecrypt(data))
         itemList.forEach(item => CryptoUtils.decryptFields(item))
 
-        const csvContent = new ObjectsToCsv(itemList)
-
-        fs.writeFileSync(filePath, csvContent.toString())
+        const csvContent = Papa.unparse(itemList)
+        fs.writeFileSync(filePath, csvContent)
       } catch (error) {
         console.log(error)
       }
@@ -67,42 +66,28 @@ export default {
         try {
           const fileContent = fs.readFileSync(files[0]).toString()
 
-          const parsedCSV = this.parseCSV(fileContent)
-          console.log('parsedCSV', parsedCSV)
+          let parsedCSV = Papa.parse(fileContent, {
+            header: true // creates array of { head: value }
+          })
 
-          const itemList = parsedCSV.map(item => {
+          if (parsedCSV.errors.length > 0) {
+            this.$notify({
+              type: 'error',
+              text: this.$t('There is an error. Error: ', parsedCSV.errors[0].message)
+            })
+            return
+          }
+
+          const itemList = parsedCSV.data.map(item => {
             return CryptoUtils.encryptPayload(item, ['username', 'password', 'extra'])
           })
-          console.log('itemlist', itemList)
+
           await this.Import(itemList)
           this.FetchAll()
         } catch (error) {
           console.log(error)
         }
       })
-    },
-
-    parseCSV(csv) {
-      const arr = []
-      let lines = csv.split('\n')
-
-      // Get headers like ["URL", "Username", "Password"]
-      let headers = lines[0].split(',')
-
-      for (let i = 1; i < lines.length; i++) {
-        let obj = {}
-
-        if (!lines[i] || !lines[i].trim()) continue
-
-        const words = lines[i].split(',')
-
-        words.forEach((word, j) => {
-          obj[headers[j].trim()] = words[j]
-        })
-
-        arr.push(obj)
-      }
-      return arr
     }
   }
 }

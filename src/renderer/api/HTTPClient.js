@@ -1,9 +1,12 @@
 import Axios from 'axios'
-import CryptoUtils from '@/utils/crypto'
+
+let baseURL = 'http://localhost:3625'
+if (process.env.NODE_ENV === 'production') {
+  baseURL = 'https://vault.passwall.io'
+}
 
 const client = Axios.create({
-  // baseURL: 'https://vault.passwall.io',
-  baseURL: 'http://localhost:3625',
+  baseURL,
   headers: {
     'Content-Type': 'application/json; charset=utf-8',
     Accept: 'application/json, text/plain, */*'

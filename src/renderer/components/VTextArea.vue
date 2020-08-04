@@ -43,22 +43,30 @@ export default {
 <style lang="scss">
 .text-area-wrapper {
   textarea {
-    background-color: $color-gray-500;
+    width: 100%;
+    resize: none;
     color: white;
     border-radius: 5px;
     padding: $spacer-2;
-    resize: none;
     min-height: 100px;
+    background-color: $color-gray-500;
     border: solid 1px $color-gray-700;
-    width: 100%;
+
+    &::placeholder {
+      font-weight: normal;
+      font-size: $font-size-small;
+      color: $color-gray-300;
+    }
 
     &:disabled {
       border: 0;
     }
+
     &:not(:placeholder-shown) {
       resize: vertical;
     }
   }
+
   .error {
     font-size: 10px;
     color: $color-danger;
