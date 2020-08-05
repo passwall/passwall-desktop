@@ -114,7 +114,8 @@ export default {
         title: '',
         url: '',
         username: '',
-        password: ''
+        password: '',
+        extra: ''
       }
     }
   },

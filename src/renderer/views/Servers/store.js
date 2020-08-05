@@ -8,7 +8,8 @@ const EncryptedFields = [
   'hosting_username',
   'hosting_password',
   'admin_username',
-  'admin_password'
+  'admin_password', 
+  'extra'
 ]
 
 export default {
@@ -43,6 +44,7 @@ export default {
     },
 
     async Create(_, data) {
+      console.log(data)
       const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
       await ServersService.Create(payload)
     },

@@ -221,6 +221,34 @@
           </div>
         </div>
 
+        <!-- Extra -->
+        <div class="form-row">
+          <div class="d-flex flex-content-between">
+            <label v-text="$t('Extra')" />
+            <!-- Copy -->
+            <ClipboardButton :copy="form.extra" class="mt-2" />
+            <!-- Show/Hide Pass -->
+            <button
+              type="button"
+              class="detail-page-header-icon mt-1 ml-2"
+              style="width: 20px; height: 20px;"
+              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+            >
+              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12" @click="showPass = true" />
+            </button>
+          </div>
+          <div class="d-flex">
+            <VTextArea v-if="isEditMode" v-model="form.extra" :placeholder="$t('ClickToFill')" />
+            <VTextArea
+              v-else
+              :value="showPass ? form.extra : ''"
+              :placeholder="$t('contentHidden')"
+              disabled
+            />
+          </div>
+        </div>
+
         <!-- Save -->
         <VButton
           v-if="isEditMode"

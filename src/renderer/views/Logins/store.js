@@ -26,7 +26,6 @@ export default {
 
       const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
       CryptoUtils.decryptFields(detail)
-
       state.Detail = detail
     },
 

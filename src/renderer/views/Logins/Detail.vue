@@ -227,7 +227,8 @@ export default {
         `Title: ${this.form.title}\n` +
         `URL: ${this.form.url}\n` +
         `Username: ${this.form.username}\n` +
-        `Password: ${this.form.password}`
+        `Password: ${this.form.password}` +
+        `Extra: ${this.form.extra}\n`
       )
     }
   }
