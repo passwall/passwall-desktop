@@ -22,12 +22,6 @@
       <div class="mt-4 mb-5">
         <label class="w-100">
           {{ $t('MasterPassword') }}
-          <VIcon
-            size="14"
-            name="question-mark"
-            class="master-pass-tooltip"
-            v-tooltip.bottom="$t('MasterPasswordRecoveryMessage')"
-          />
         </label>
         <VFormText
           v-model="LoginForm.master_password"
