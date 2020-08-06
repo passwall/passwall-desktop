@@ -76,7 +76,7 @@ export default {
 
     // themes
     &.--default {
-      color: $color-gray-300;
+      color: #fff;
       border: 1px solid #151c27;
       background-color: transparent;
       caret-color: $color-primary;

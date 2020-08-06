@@ -63,7 +63,7 @@ export default {
         try {
           const fileContent = fs.readFileSync(files[0]).toString()
 
-          let parsedCSV = Papa.parse(fileContent, {
+          let parsedCSV = Papa.parse(fileContent.trim(), {
             header: true // creates array of { head: value }
           })
 
