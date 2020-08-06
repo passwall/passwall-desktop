@@ -90,16 +90,10 @@ export default class CryptoUtils {
     })
   }
 
-  static decryptFields(data, encryptKey = this.encryptKey) {
+  static decryptFields(data, keyList, encryptKey = this.encryptKey) {
     Object.keys(data).forEach(key => {
-      if ([null, undefined].includes(data[key])) return
-
-      if (isBase64(data[key])) {
-        try {
-          data[key] = this.decrypt(data[key].toString(), encryptKey)
-        } catch (err) {
-          // console.log(err)
-        }
+      if (data[key] && keyList.includes(key)) {
+        data[key] = this.decrypt(data[key].toString(), encryptKey)
       }
     })
   }

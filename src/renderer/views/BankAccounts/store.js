@@ -25,7 +25,7 @@ export default {
       const { data } = await BankAccountsService.Get(id)
 
       const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-      CryptoUtils.decryptFields(detail)
+      CryptoUtils.decryptFields(detail, EncryptedFields)
 
       state.Detail = detail
     },
