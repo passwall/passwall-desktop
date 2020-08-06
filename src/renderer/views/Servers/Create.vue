@@ -179,7 +179,7 @@
           <VTextArea
             :placeholder="$t('ClickToFill')"
             v-model="form.extra"
-            v-validate="'required'"
+            v-validate=""
             name="Extra"
           />
         </div>
