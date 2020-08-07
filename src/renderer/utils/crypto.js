@@ -2,7 +2,7 @@ import CryptoJS from 'crypto-js'
 
 const keySize = 256 // 32
 const ivSize = 128 // 16
-const iterations = 100
+const iterations = 100000
 const iv = CryptoJS.lib.WordArray.random(ivSize / 8)
 
 export const isBase64 = value => {
