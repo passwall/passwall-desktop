@@ -63,7 +63,7 @@
           />
           <!-- Text -->
           <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.url" class="mr-2" />
+            <span v-text="shortURL" class="mr-2" />
             <ClipboardButton :copy="form.url" />
           </div>
         </div>
@@ -148,9 +148,7 @@
           type="submit"
           :loading="$wait.is($waiters.Logins.Update)"
           class="mt-4 mb-5 mx-3"
-        >
-          {{ $t('Save') }}
-        </VButton>
+        >{{ $t('Save') }}</VButton>
       </form>
     </div>
   </div>
@@ -158,6 +156,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import { textEllipsis } from '../../utils'
 
 export default {
   data() {
@@ -181,7 +180,6 @@ export default {
 
   methods: {
     ...mapActions('Logins', ['Get', 'Delete', 'Update']),
-
     getDetail(id) {
       const onSuccess = async () => {
         await this.Get(id)
@@ -221,7 +219,12 @@ export default {
 
   computed: {
     ...mapState('Logins', ['Detail', 'ItemList']),
-
+    shortURL() {
+      if (this.form.url) {
+        return textEllipsis(this.form.url)
+      }
+      return null
+    },
     loginCopyContent() {
       return (
         `Title: ${this.form.title}\n` +
