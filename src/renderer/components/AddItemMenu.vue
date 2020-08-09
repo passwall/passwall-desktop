@@ -39,7 +39,7 @@
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
       </button>
-      
+
       <!-- Servers -->
       <button @click="onClickItem('ServerCreate')" class="add-item-menu-item">
         <VIcon name="clipboard-check" size="14" class="icon" />
@@ -47,7 +47,6 @@
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
       </button>
-
     </div>
   </div>
 </template>

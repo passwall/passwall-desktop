@@ -15,17 +15,6 @@
       </button>
     </div>
 
-    <!-- All Items -->
-    <!-- <router-link :to="{ name: 'AllItems' }" class="sidebar-menu-item mt-7">
-      <VIcon name="star" size="14" />
-      {{ $t('AllItems') }}
-    </router-link> -->
-
-    <!-- Categories -->
-    <!-- <span class="c-gray-300 pl-5 fs-big py-2 mt-7 mb-4">
-      {{ $t('Categories') }}
-    </span> -->
-
     <!-- Logins -->
     <router-link :to="{ name: 'Logins' }" class="sidebar-menu-item">
       <VIcon name="lock-closed" size="14" />
@@ -295,10 +284,6 @@ export default {
         color: $color-secondary;
       }
     }
-
-    // &[disabled] {
-    //   pointer-events: none;
-    // }
   }
 }
 

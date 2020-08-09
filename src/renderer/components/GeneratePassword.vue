@@ -4,6 +4,7 @@
       <VIcon name="refresh" size="14" />
     </button>
 
+    <!-- Popover -->
     <template slot="popover">
       <div class="generate-password">
         <span v-text="password" />
@@ -34,17 +35,13 @@ export default {
     }
   },
 
-  created() {
-    this.onClickGenerate()
-  },
-
   methods: {
     onClickItem(name) {
       this.$router.push({ name })
       this.$emit('hide')
     },
 
-    async onClickUseThis() {
+    onClickUseThis() {
       this.$emit('input', this.password)
     },
 
@@ -62,8 +59,8 @@ export default {
 
 <style lang="scss">
 .btn-generate-pass {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 4px;
   background-color: $color-gray-500;
   margin-left: $spacer-2;

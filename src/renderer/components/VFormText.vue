@@ -44,11 +44,8 @@ export default {
     },
 
     inputListeners() {
-      const vm = this
       return Object.assign({}, this.$listeners, {
-        input: function(event) {
-          vm.$emit('input', event.target.value)
-        }
+        input: event => this.$emit('input', event.target.value)
       })
     }
   }

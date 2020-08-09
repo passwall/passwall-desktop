@@ -64,8 +64,7 @@
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-1 ml-n1"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
@@ -78,20 +77,14 @@
             <label v-text="$t('Extra')" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-1 ml-n1"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              class="detail-page-header-icon mt-2 ml-n1"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
             </button>
           </div>
-          <VTextArea
-            :placeholder="$t('ClickToFill')"
-            v-model="form.extra"
-            v-validate=""
-            name="Extra"
-          />
+          <VTextArea :placeholder="$t('ClickToFill')" v-model="form.extra" name="Extra" />
         </div>
 
         <!-- Save -->

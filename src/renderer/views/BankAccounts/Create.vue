@@ -31,7 +31,6 @@
           <label v-text="$t('Bank Code')" />
           <VFormText
             v-model="form.bank_code"
-            v-validate=""
             name="BankCode"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -43,7 +42,6 @@
           <label v-text="$t('Account Name')" />
           <VFormText
             v-model="form.account_name"
-            v-validate=""
             name="AccountName"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -55,7 +53,6 @@
           <label v-text="$t('Account Number')" />
           <VFormText
             v-model="form.account_number"
-            v-validate=""
             name="AccountNumber"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -67,7 +64,6 @@
           <label v-text="$t('IBAN')" />
           <VFormText
             v-model="form.iban"
-            v-validate=""
             name="IBAN"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -79,7 +75,6 @@
           <label v-text="$t('Currency')" />
           <VFormText
             v-model="form.currency"
-            v-validate=""
             name="Currency"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -92,7 +87,6 @@
           <div class="d-flex">
             <VFormText
               v-model="form.password"
-              v-validate=""
               name="Password"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
@@ -102,8 +96,7 @@
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-1 ml-n1"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />

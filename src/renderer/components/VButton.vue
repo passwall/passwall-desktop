@@ -1,7 +1,7 @@
 <template>
   <button
     :type="$attrs.type || 'button'"
-    :class="[`--${size}`, `--${theme}`, { '--loading': loading }]"
+    :class="clazz"
     class="btn"
     v-bind="$attrs"
     v-on="inputListeners"
@@ -32,17 +32,18 @@ export default {
   },
 
   computed: {
+    clazz() {
+      return [`--${this.size}`, `--${this.theme}`, { '--loading': this.loading }]
+    },
+
     getError() {
       const error = this.errors.items.find(e => e.field == this.name)
       return error ? error.msg : ''
     },
 
     inputListeners() {
-      const vm = this
       return Object.assign({}, this.$listeners, {
-        input: function(event) {
-          vm.$emit('input', event.target.value)
-        }
+        input: event => this.$emit('input', event.target.value)
       })
     }
   }

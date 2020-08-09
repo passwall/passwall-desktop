@@ -30,7 +30,6 @@
           <label v-text="$t('IP Address')" />
           <VFormText
             v-model="form.ip"
-            v-validate=""
             name="IP"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -41,7 +40,6 @@
           <label v-text="$t('Username')" />
           <VFormText
             v-model="form.username"
-            v-validate=""
             name="Username"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -54,7 +52,6 @@
           <div class="d-flex">
             <VFormText
               v-model="form.password"
-              v-validate=""
               name="Password"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
@@ -65,8 +62,7 @@
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-1 ml-n1"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
@@ -79,7 +75,6 @@
           <label v-text="$t('URL')" />
           <VFormText
             v-model="form.url"
-            v-validate=""
             name="URL"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -91,7 +86,6 @@
           <label v-text="$t('Hosting Username')" />
           <VFormText
             v-model="form.hosting_username"
-            v-validate=""
             name="HostingUsername"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -104,7 +98,6 @@
           <div class="d-flex">
             <VFormText
               v-model="form.hosting_password"
-              v-validate=""
               name="HostingPassword"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
@@ -115,8 +108,7 @@
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-1 ml-n1"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
@@ -129,7 +121,6 @@
           <label v-text="$t('Admin Username')" />
           <VFormText
             v-model="form.admin_username"
-            v-validate=""
             name="AdminUsername"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -142,7 +133,6 @@
           <div class="d-flex">
             <VFormText
               v-model="form.admin_password"
-              v-validate=""
               name="AdminPassword"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
@@ -153,8 +143,7 @@
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-1 ml-n1"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
@@ -162,26 +151,20 @@
           </div>
         </div>
 
-         <!-- Extra -->
+        <!-- Extra -->
         <div class="form-row">
           <div class="d-flex flex-content-between">
             <label v-text="$t('Extra')" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-1 ml-n1"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              class="detail-page-header-icon mt-2 ml-n1"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
             </button>
           </div>
-          <VTextArea
-            :placeholder="$t('ClickToFill')"
-            v-model="form.extra"
-            v-validate=""
-            name="Extra"
-          />
+          <VTextArea :placeholder="$t('ClickToFill')" v-model="form.extra" name="Extra" />
         </div>
 
         <!-- Save -->
@@ -210,7 +193,7 @@ export default {
         hosting_password: '',
         admin_username: '',
         admin_password: '',
-        extra: '',
+        extra: ''
       }
     }
   },

@@ -31,7 +31,6 @@
           <label v-text="$t('Cardholder Name')" />
           <VFormText
             v-model="form.cardholder_name"
-            v-validate=""
             name="CardholderName"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -43,7 +42,6 @@
           <label v-text="$t('Type')" />
           <VFormText
             v-model="form.type"
-            v-validate=""
             name="Type"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -55,7 +53,6 @@
           <label v-text="$t('Number')" />
           <VFormText
             v-model="form.number"
-            v-validate=""
             name="Number"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -67,7 +64,6 @@
           <label v-text="$t('Expiry Date')" />
           <VFormText
             v-model="form.expiry_date"
-            v-validate=""
             name="ExpiryDate"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
@@ -80,7 +76,6 @@
           <div class="d-flex">
             <VFormText
               v-model="form.verification_number"
-              v-validate=""
               name="VerificationNumber"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
@@ -90,8 +85,7 @@
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-1 ml-n1"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />

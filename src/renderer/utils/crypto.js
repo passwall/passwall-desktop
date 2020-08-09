@@ -25,12 +25,7 @@ export default class CryptoUtils {
   static encrypt(message, password = this.encryptKey) {
     const salt = CryptoJS.lib.WordArray.random(128 / 8)
 
-    const key = CryptoJS.PBKDF2(password, salt, {
-      keySize: keySize / 32,
-      iterations: iterations
-    })
-
-    const encrypted = CryptoJS.AES.encrypt(message, key, {
+    const encrypted = CryptoJS.AES.encrypt(message, password, {
       iv: iv,
       padding: CryptoJS.pad.Pkcs7,
       mode: CryptoJS.mode.CBC,
@@ -43,17 +38,12 @@ export default class CryptoUtils {
     return transitMessage
   }
 
-  static decrypt(transitMessage, pass = this.encryptKey) {
+  static decrypt(transitMessage, password = this.encryptKey) {
     const salt = CryptoJS.enc.Hex.parse(transitMessage.substr(0, 32))
     const iv = CryptoJS.enc.Hex.parse(transitMessage.substr(32, 32))
     const encrypted = transitMessage.substring(64)
 
-    const key = CryptoJS.PBKDF2(pass, salt, {
-      keySize: keySize / 32,
-      iterations: iterations
-    })
-
-    const decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+    const decrypted = CryptoJS.AES.decrypt(encrypted, password, {
       iv,
       padding: CryptoJS.pad.Pkcs7,
       mode: CryptoJS.mode.CBC,
@@ -64,9 +54,9 @@ export default class CryptoUtils {
 
   static pbkdf2Encrypt(masterPassword = this.encryptKey, secret) {
     const cipher = CryptoJS.PBKDF2(masterPassword, secret, {
+      hasher: CryptoJS.algo.SHA256,
       keySize: 256 / 32,
-      iterations: 100000,
-      hasher: CryptoJS.algo.SHA256
+      iterations
     })
 
     return cipher.toString()
@@ -110,10 +100,8 @@ export default class CryptoUtils {
       }
     })
 
-    const payload = {
+    return {
       data: this.aesEncrypt(JSON.stringify(data), transmissionKey)
     }
-
-    return payload
   }
 }

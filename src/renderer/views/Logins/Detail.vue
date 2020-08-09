@@ -100,13 +100,12 @@
             <!-- Copy -->
             <ClipboardButton :copy="form.password" class="mt-2" />
             <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.password" />
+            <GeneratePassword v-if="isEditMode" class="mt-1 mx-2" v-model="form.password" />
             <!-- Show/Hide Pass -->
             <button
               type="button"
               class="detail-page-header-icon mt-1 ml-2"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
@@ -124,8 +123,7 @@
             <button
               type="button"
               class="detail-page-header-icon mt-1 ml-2"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />

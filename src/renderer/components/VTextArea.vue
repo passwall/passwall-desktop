@@ -1,5 +1,5 @@
 <template>
-  <div class="text-area-wrapper d-flex flex-column px-3 py-2 w-100">
+  <div class="text-area-wrapper">
     <textarea
       :value="value"
       autocorrect="off"
@@ -29,11 +29,8 @@ export default {
     },
 
     inputListeners() {
-      const vm = this
       return Object.assign({}, this.$listeners, {
-        input: function(event) {
-          vm.$emit('input', event.target.value)
-        }
+        input: event => this.$emit('input', event.target.value)
       })
     }
   }
@@ -42,6 +39,11 @@ export default {
 
 <style lang="scss">
 .text-area-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: $spacer-2 $spacer-3;
+  width: 100%;
+
   textarea {
     width: 100%;
     resize: none;

@@ -15,7 +15,7 @@
       <PerfectScrollbar class="servers">
         <!-- List -->
         <template v-if="ItemList.length > 0">
-          <ServerItem
+          <ListItem
             v-for="item in ItemList"
             :key="item.id"
             :active="$route.params.id == item.id"
@@ -49,7 +49,7 @@
     >
       {{ $t('Select one item to see it’s details...') }}
     </div>
-    <router-view />
+    <RouterView />
   </div>
 </template>
 
