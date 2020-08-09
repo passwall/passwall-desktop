@@ -245,15 +245,15 @@
           </div>
         </div>
 
-        <!-- Save -->
-        <VButton
-          v-if="isEditMode"
-          type="submit"
-          :loading="$wait.is($waiters.Servers.Update)"
-          class="mt-4 mb-5 mx-3"
-        >
-          {{ $t('Save') }}
-        </VButton>
+        <!-- Save & Cancel -->
+        <div class="d-flex m-3" v-if="isEditMode">
+          <VButton class="flex-1" theme="text" :disabled="loading" @click="isEditMode = false">
+            {{ $t('Cancel') }}
+          </VButton>
+          <VButton class="flex-1" type="submit" :loading="loading">
+            {{ $t('Save') }}
+          </VButton>
+        </div>
       </form>
     </div>
   </div>
@@ -324,6 +324,10 @@ export default {
 
   computed: {
     ...mapState('Servers', ['Detail', 'ItemList']),
+
+    loading() {
+      return this.$wait.is(this.$waiters.Servers.Update)
+    },
 
     serverCopyContent() {
       return (

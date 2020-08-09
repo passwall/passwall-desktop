@@ -46,10 +46,15 @@
           />
         </div>
 
-        <!-- Save -->
-        <VButton type="submit" class="mt-3 mb-5 mx-3" :loading="$wait.is($waiters.Notes.Create)">{{
-          $t('Save')
-        }}</VButton>
+        <!-- Save & Cancel -->
+        <div class="d-flex m-3">
+          <VButton class="flex-1" theme="text" :disabled="loading" @click="$router.back()">
+            {{ $t('Cancel') }}
+          </VButton>
+          <VButton class="flex-1" type="submit" :loading="loading">
+            {{ $t('Save') }}
+          </VButton>
+        </div>
       </form>
     </div>
   </div>
@@ -66,6 +71,12 @@ export default {
         title: '',
         note: ''
       }
+    }
+  },
+
+  computed: {
+    loading() {
+      return this.$wait.is(this.$waiters.Notes.Create)
     }
   },
 
