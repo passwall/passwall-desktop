@@ -83,7 +83,7 @@ export default class CryptoUtils {
   static decryptFields(data, keyList, encryptKey = this.encryptKey) {
     Object.keys(data).forEach(key => {
       if (data[key] && keyList.includes(key)) {
-        data[key] = this.decrypt(data[key].toString(), encryptKey)
+        data[key] = this.decrypt(data[key], encryptKey)
       }
     })
   }
