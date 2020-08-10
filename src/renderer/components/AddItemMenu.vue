@@ -18,7 +18,7 @@
 
       <!-- Bank Accounts -->
       <button @click="onClickItem('BankAccountCreate')" class="add-item-menu-item">
-        <VIcon name="credit-card" size="14" class="icon" />
+        <VIcon name="bank-account" size="14" class="icon" />
         {{ $t('Bank Accounts') }}
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
@@ -26,7 +26,7 @@
 
       <!-- Emails -->
       <button @click="onClickItem('EmailCreate')" class="add-item-menu-item">
-        <VIcon name="credit-card" size="14" class="icon" />
+        <VIcon name="email" size="14" class="icon" />
         {{ $t('Emails') }}
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
@@ -34,7 +34,7 @@
 
       <!-- Private Notes -->
       <button @click="onClickItem('NoteCreate')" class="add-item-menu-item">
-        <VIcon name="clipboard-check" size="14" class="icon" />
+        <VIcon name="private-note" size="14" class="icon" />
         {{ $t('Private Notes') }}
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
@@ -42,7 +42,7 @@
 
       <!-- Servers -->
       <button @click="onClickItem('ServerCreate')" class="add-item-menu-item">
-        <VIcon name="clipboard-check" size="14" class="icon" />
+        <VIcon name="server" size="14" class="icon" />
         {{ $t('Servers') }}
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>

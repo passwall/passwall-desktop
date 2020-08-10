@@ -53,7 +53,7 @@
 
     <!-- Private Notes -->
     <router-link :to="{ name: 'Notes' }" class="sidebar-menu-item">
-      <VIcon name="clipboard-check" size="14" />
+      <VIcon name="private-note" size="14" />
       {{ $t('Private Notes') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
