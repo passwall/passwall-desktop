@@ -1,7 +1,6 @@
 import Axios from 'axios'
 
 let baseURL = 'http://localhost:3625'
-baseURL = 'https://vault.passwall.io'
 if (process.env.NODE_ENV === 'production') {
   baseURL = 'https://vault.passwall.io'
 }

@@ -95,7 +95,7 @@ export default class CryptoUtils {
     transmissionKey = this.transmissionKey
   ) {
     Object.keys(data).forEach(key => {
-      if (keyList.includes(key)) {
+      if (keyList.includes(key.toLowerCase())) {
         data[key] = this.encrypt(data[key], encryptKey)
       }
     })
