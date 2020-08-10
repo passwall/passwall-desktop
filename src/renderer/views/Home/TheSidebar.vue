@@ -33,7 +33,7 @@
 
     <!-- Bank Accounts -->
     <router-link :to="{ name: 'BankAccounts' }" class="sidebar-menu-item">
-      <VIcon name="credit-card" size="14" />
+      <VIcon name="bank-account" size="14" />
       {{ $t('Bank Accounts') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -43,7 +43,7 @@
 
     <!-- Emails -->
     <router-link :to="{ name: 'Emails' }" class="sidebar-menu-item">
-      <VIcon name="credit-card" size="14" />
+      <VIcon name="email" size="14" />
       {{ $t('Emails') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -63,7 +63,7 @@
 
     <!-- Servers -->
     <router-link :to="{ name: 'Servers' }" class="sidebar-menu-item">
-      <VIcon name="clipboard-check" size="14" />
+      <VIcon name="server" size="14" />
       {{ $t('Servers') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
