@@ -12,7 +12,7 @@
       </div>
     </div>
     <!-- Content -->
-    <div class="detail-page-content">
+    <PerfectScrollbar class="detail-page-content">
       <form class="form" @submit.stop.prevent="onClickSave">
         <!-- CardName -->
         <div class="form-row">
@@ -103,7 +103,7 @@
           </VButton>
         </div>
       </form>
-    </div>
+    </PerfectScrollbar>
   </div>
 </template>
 

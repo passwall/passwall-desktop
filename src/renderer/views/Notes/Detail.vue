@@ -25,7 +25,7 @@
       </button>
     </div>
     <!-- Content -->
-    <div class="detail-page-content">
+    <PerfectScrollbar class="detail-page-content">
       <!-- Edit Btn -->
       <button
         v-if="!isEditMode"
@@ -89,7 +89,7 @@
           </VButton>
         </div>
       </form>
-    </div>
+    </PerfectScrollbar>
   </div>
 </template>
 

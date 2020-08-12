@@ -63,6 +63,16 @@ html {
   }
 }
 
+.ps__rail-x {
+  height: 8px !important;
+  background-color: $color-gray-500 !important;
+}
+
+.ps__thumb-x {
+  height: 4px !important;
+  background-color: $color-primary !important;
+}
+
 .ps__rail-y {
   width: 8px !important;
   background-color: $color-gray-500 !important;
@@ -181,20 +191,6 @@ hr {
   }
 }
 
-::-webkit-scrollbar-track {
-  border-radius: 10px;
-  background-color: transparent;
-}
-::-webkit-scrollbar {
-  width: 5px;
-  margin-right: $spacer-3;
-  background-color: transparent;
-}
-::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background-color: $color-primary;
-}
-
 .spin {
   animation: spin 2s linear infinite;
 }
@@ -259,6 +255,13 @@ hr {
     height: calc(100% - 64px);
     overflow-x: auto;
     width: 99%;
+
+    .form-row {
+      span {
+        max-width: 350px;
+        @extend .text-truncate
+      }
+    }
 
     .edit-btn {
       position: absolute;
