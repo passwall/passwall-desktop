@@ -44,11 +44,8 @@ export default {
     },
 
     inputListeners() {
-      const vm = this
       return Object.assign({}, this.$listeners, {
-        input: function(event) {
-          vm.$emit('input', event.target.value)
-        }
+        input: event => this.$emit('input', event.target.value)
       })
     }
   }
@@ -76,7 +73,7 @@ export default {
 
     // themes
     &.--default {
-      color: $color-gray-300;
+      color: #fff;
       border: 1px solid #151c27;
       background-color: transparent;
       caret-color: $color-primary;

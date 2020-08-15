@@ -1,0 +1,30 @@
+.vue-notification {
+  padding: 10px 10px 10px 35px;
+  margin-top: 10px;
+
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-medium;
+  line-height: 22px;
+
+  color: #fff;
+  background: #151c27;
+  border-radius: 8px;
+
+  &.warn {
+    background: #151c27;
+    border-left-color: #151c27;
+  }
+
+  &.error {
+    background: #151c27;
+    border-left-color: #151c27;
+    background-image: url(/static/img/error-notify.png);
+    background-repeat: no-repeat;
+    background-position: 5px center;
+  }
+
+  &.success {
+    background: #151c27;
+    border-left-color: #151c27;
+  }
+}

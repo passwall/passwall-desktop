@@ -1,16 +1,15 @@
 <template>
-  <div class="server-item" :class="{ '--active': active }" @click="$emit('click')">
+  <div class="list-item" :class="{ '--active': active }" @click="$emit('click')">
     <!-- Avatar -->
-    <div class="server-item-avatar">
-      <CompanyLogoItem :url="data.url" />
+    <div class="list-item-avatar">
+      <CompanyLogo :url="data.url" />
     </div>
     <!-- Summary -->
-    <div class="server-item-summary">
+    <div class="list-item-summary">
       <span v-text="data.title" class="url" />
-      <span v-text="data.username" class="username" />
     </div>
     <!-- Detail -->
-    <button class="server-item-detail">
+    <button class="list-item-detail">
       <VIcon name="chevron-right" size="14" />
     </button>
   </div>
@@ -18,7 +17,7 @@
 
 <script>
 export default {
-  name: 'ServerItem',
+  name: 'ListItem',
 
   props: {
     data: {
@@ -34,13 +33,13 @@ export default {
 </script>
 
 <style lang="scss">
-.server-item {
+.list-item {
+  height: 64px;
   display: flex;
+  cursor: pointer;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
   background-color: black;
-  cursor: pointer;
   border-bottom: 1px solid black;
 
   &.--active {

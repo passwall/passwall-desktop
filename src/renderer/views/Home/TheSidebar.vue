@@ -15,17 +15,6 @@
       </button>
     </div>
 
-    <!-- All Items -->
-    <!-- <router-link :to="{ name: 'AllItems' }" class="sidebar-menu-item mt-7">
-      <VIcon name="star" size="14" />
-      {{ $t('AllItems') }}
-    </router-link> -->
-
-    <!-- Categories -->
-    <!-- <span class="c-gray-300 pl-5 fs-big py-2 mt-7 mb-4">
-      {{ $t('Categories') }}
-    </span> -->
-
     <!-- Logins -->
     <router-link :to="{ name: 'Logins' }" class="sidebar-menu-item">
       <VIcon name="lock-closed" size="14" />
@@ -44,7 +33,7 @@
 
     <!-- Bank Accounts -->
     <router-link :to="{ name: 'BankAccounts' }" class="sidebar-menu-item">
-      <VIcon name="credit-card" size="14" />
+      <VIcon name="bank-account" size="14" />
       {{ $t('Bank Accounts') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -54,7 +43,7 @@
 
     <!-- Emails -->
     <router-link :to="{ name: 'Emails' }" class="sidebar-menu-item">
-      <VIcon name="credit-card" size="14" />
+      <VIcon name="email" size="14" />
       {{ $t('Emails') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -64,7 +53,7 @@
 
     <!-- Private Notes -->
     <router-link :to="{ name: 'Notes' }" class="sidebar-menu-item">
-      <VIcon name="clipboard-check" size="14" />
+      <VIcon name="private-note" size="14" />
       {{ $t('Private Notes') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -74,7 +63,7 @@
 
     <!-- Servers -->
     <router-link :to="{ name: 'Servers' }" class="sidebar-menu-item">
-      <VIcon name="clipboard-check" size="14" />
+      <VIcon name="server" size="14" />
       {{ $t('Servers') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -120,8 +109,8 @@ export default {
     }
   },
 
-  async created() {
-    await this.checkUpdate()
+  created() {
+    this.checkUpdate()
   },
 
   computed: {
@@ -295,10 +284,6 @@ export default {
         color: $color-secondary;
       }
     }
-
-    // &[disabled] {
-    //   pointer-events: none;
-    // }
   }
 }
 

@@ -15,7 +15,7 @@
       <PerfectScrollbar class="bank_accounts">
         <!-- List -->
         <template v-if="ItemList.length > 0">
-          <BankAccountItem
+          <ListItem
             v-for="item in ItemList"
             :key="item.id"
             :active="$route.params.id == item.id"
@@ -45,11 +45,11 @@
     <!-- Detail -->
     <div
       class="w-100 h-100 flex-center c-gray-700"
-      v-if="ItemList.length > 0 && $route.name != 'BankAccountDetail' && $route.name != 'BankAccountCreate'"
+      v-if="ItemList.length > 0 && $route.name == 'BankAccounts'"
     >
       {{ $t('Select one item to see it’s details...') }}
     </div>
-    <router-view />
+    <RouterView />
   </div>
 </template>
 
@@ -72,23 +72,21 @@ export default {
     next()
   },
 
-  async created() {
-    await this.fetchAll()
+  created() {
+    this.fetchAll()
   },
 
   methods: {
     ...mapActions('BankAccounts', ['FetchAll']),
 
-    async fetchAll() {
-      try {
+    fetchAll() {
+      const onSuccess = async () => {
         await this.FetchAll({ Search: this.searchQuery })
-
         if (this.ItemList.length > 0) {
           this.onClickItem(this.ItemList[0].id)
         }
-      } catch (error) {
-        console.log(error)
       }
+      this.$request(onSuccess, this.$waiters.BankAccounts.All)
     },
 
     onClickItem(id) {

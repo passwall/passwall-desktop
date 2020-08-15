@@ -2,7 +2,7 @@
   <div class="main-container">
     <TheSidebar />
     <!-- Content -->
-    <router-view />
+    <RouterView />
   </div>
 </template>
 

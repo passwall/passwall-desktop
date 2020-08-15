@@ -1,17 +1,20 @@
 <template>
-  <img v-if="url && logoIsAvailable" @error="onLogoError" :src="companyLogo" class="company_logo" />
-  <div v-else></div>
+  <div>
+    <img
+      v-if="url && logoIsAvailable"
+      @error="logoIsAvailable = false"
+      :src="companyLogo"
+      class="company-logo"
+    />
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'CompanyLogoItem',
+  name: 'CompanyLogo',
 
   props: {
-    url: {
-      type: String,
-      default: () => ('')
-    }
+    url: String
   },
 
   data() {
@@ -30,19 +33,12 @@ export default {
       const matches = this.url.match(/^(?:https?:)?(?:\/\/)?([^\/\?]+)/i)
       return matches && matches[1]
     }
-  },
-
-  methods: {
-    onLogoError(e) {
-      this.logoIsAvailable = false
-    }
   }
-
 }
 </script>
 
-<style scoped lang="scss">
-  .company_logo {
-    border-radius: 5px; 
-  }
+<style lang="scss">
+.company-logo {
+  border-radius: 5px;
+}
 </style>

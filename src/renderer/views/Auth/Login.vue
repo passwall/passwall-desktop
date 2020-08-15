@@ -22,12 +22,6 @@
       <div class="mt-4 mb-5">
         <label class="w-100">
           {{ $t('MasterPassword') }}
-          <VIcon
-            size="14"
-            name="question-mark"
-            class="master-pass-tooltip"
-            v-tooltip.bottom="$t('MasterPasswordRecoveryMessage')"
-          />
         </label>
         <VFormText
           v-model="LoginForm.master_password"
@@ -71,12 +65,12 @@ export default {
           if (error.response.status == 401) {
             text = this.$t('Incorrect email or password!')
           }
-          this.$notify({ type: 'error', text })
+          this.$notifyError(text)
         }
 
         const onSuccess = async () => {
           await this.Login({ ...this.LoginForm })
-          this.$router.push({ name: 'Home' })
+          this.$router.replace({ name: 'Home' })
         }
 
         this.$request(onSuccess, this.$waiters.Auth.Login, onError)

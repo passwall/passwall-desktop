@@ -1,4 +1,7 @@
 import BankAccountsService from '@/api/services/BankAccounts'
+import CryptoUtils from '@/utils/crypto'
+
+const EncryptedFields = ['account_name', 'account_number', 'iban', 'currency', 'password']
 
 export default {
   namespaced: true,
@@ -11,57 +14,34 @@ export default {
   },
 
   actions: {
-    async FetchAll({ state, rootState }, query) {
+    async FetchAll({ state }, query) {
       const { data } = await BankAccountsService.FetchAll(query)
 
-      var dLen, i
-      dLen = data.length
-      for (i = 0; i < dLen; i++) {
-        data[i].account_name = this._vm.$helpers.decrypt(data[i].account_name, rootState.master_hash)
-        data[i].account_number = this._vm.$helpers.decrypt(data[i].account_number, rootState.master_hash)
-        data[i].iban = this._vm.$helpers.decrypt(data[i].iban, rootState.master_hash)
-        data[i].currency = this._vm.$helpers.decrypt(data[i].currency, rootState.master_hash)
-        data[i].password = this._vm.$helpers.decrypt(data[i].password, rootState.master_hash)
-      }
-
-      
-      state.ItemList = data
+      const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      state.ItemList = itemList
     },
 
-    async Get({ state, rootState }, id) {
+    async Get({ state }, id) {
       const { data } = await BankAccountsService.Get(id)
-      
-      data.account_name = this._vm.$helpers.decrypt(data.account_name, rootState.master_hash) 
-      data.account_number = this._vm.$helpers.decrypt(data.account_number, rootState.master_hash) 
-      data.iban = this._vm.$helpers.decrypt(data.iban, rootState.master_hash) 
-      data.currency = this._vm.$helpers.decrypt(data.currency, rootState.master_hash) 
-      data.password = this._vm.$helpers.decrypt(data.password, rootState.master_hash) 
 
-      state.Detail = data
+      const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      CryptoUtils.decryptFields(detail, EncryptedFields)
+
+      state.Detail = detail
     },
 
     async Delete(_, id) {
       await BankAccountsService.Delete(id)
     },
 
-    async Create({ rootState }, data) {
-      data.account_name = this._vm.$helpers.encrypt(data.account_name, rootState.master_hash)
-      data.account_number = this._vm.$helpers.encrypt(data.account_number, rootState.master_hash)
-      data.iban = this._vm.$helpers.encrypt(data.iban, rootState.master_hash)
-      data.currency = this._vm.$helpers.encrypt(data.currency, rootState.master_hash)
-      data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
-      
-      await BankAccountsService.Create(data)
+    async Create(_, data) {
+      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
+      await BankAccountsService.Create(payload)
     },
 
-    async Update({ rootState }, data) {
-      data.account_name = this._vm.$helpers.encrypt(data.account_name, rootState.master_hash)
-      data.account_number = this._vm.$helpers.encrypt(data.account_number, rootState.master_hash)
-      data.iban = this._vm.$helpers.encrypt(data.iban, rootState.master_hash)
-      data.currency = this._vm.$helpers.encrypt(data.currency, rootState.master_hash)
-      data.password = this._vm.$helpers.encrypt(data.password, rootState.master_hash)
-
-      await BankAccountsService.Update(data.id, data)
+    async Update(_, data) {
+      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
+      await BankAccountsService.Update(data.id, payload)
     }
   }
 }

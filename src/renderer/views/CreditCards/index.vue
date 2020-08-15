@@ -15,7 +15,7 @@
       <PerfectScrollbar class="credit_cards">
         <!-- List -->
         <template v-if="ItemList.length > 0">
-          <CreditCardItem
+          <ListItem
             v-for="item in ItemList"
             :key="item.id"
             :active="$route.params.id == item.id"
@@ -45,11 +45,11 @@
     <!-- Detail -->
     <div
       class="w-100 h-100 flex-center c-gray-700"
-      v-if="ItemList.length > 0 && $route.name != 'CreditCardDetail' && $route.name != 'CreditCardCreate'"
+      v-if="ItemList.length > 0 && $route.name == 'CreditCards'"
     >
       {{ $t('Select one item to see it’s details...') }}
     </div>
-    <router-view />
+    <RouterView />
   </div>
 </template>
 
@@ -72,8 +72,8 @@ export default {
     next()
   },
 
-  async created() {
-    await this.fetchAll()
+  created() {
+    this.fetchAll()
   },
 
   methods: {

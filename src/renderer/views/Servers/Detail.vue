@@ -25,7 +25,7 @@
       </button>
     </div>
     <!-- Content -->
-    <div class="detail-page-content">
+    <PerfectScrollbar class="detail-page-content">
       <!-- Edit Btn -->
       <button
         v-if="!isEditMode"
@@ -35,52 +35,17 @@
       >
         <VIcon name="pencil" size="14" />
       </button>
-      <div class="form">
+
+      <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
-        <div class="form-row">
-          <label v-text="$t('Title')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.title"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.title" class="mr-2" />
-            <ClipboardButton :copy="form.title" />
-          </div>
-        </div>
+        <FormRowText v-model="form.title" :title="$t('Title')" :edit-mode="isEditMode" />
+
         <!-- IP -->
-        <div class="form-row">
-          <label v-text="$t('IP Address')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.ip"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.ip" class="mr-2" />
-            <ClipboardButton :copy="form.ip" />
-          </div>
-        </div>
+        <FormRowText v-model="form.ip" :title="$t('IP Address')" :edit-mode="isEditMode" />
+        
         <!-- Username -->
-        <div class="form-row">
-          <label v-text="$t('Username')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.username"
-            :placeholder="$t('ClickToFill')"
-            theme="no-border"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.username" class="mr-2" />
-            <ClipboardButton :copy="form.username" />
-          </div>
-        </div>
+        <FormRowText v-model="form.username" :title="$t('Username')" :edit-mode="isEditMode" />
+
         <!-- Password -->
         <div class="form-row">
           <label v-text="$t('Password')" />
@@ -102,9 +67,9 @@
             <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.password" />
             <!-- Show/Hide Pass -->
             <button
-              class="detail-page-header-icon mt-2 ml-2"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              type="button"
+              class="detail-page-header-icon mt-1 ml-2"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
@@ -162,9 +127,9 @@
             <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.hosting_password" />
             <!-- Show/Hide Pass -->
             <button
-              class="detail-page-header-icon mt-2 ml-2"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              type="button"
+              class="detail-page-header-icon mt-1 ml-2"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
@@ -207,9 +172,9 @@
             <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.admin_password" />
             <!-- Show/Hide Pass -->
             <button
-              class="detail-page-header-icon mt-2 ml-2"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              type="button"
+              class="detail-page-header-icon mt-1 ml-2"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
@@ -217,13 +182,44 @@
           </div>
         </div>
 
+        <!-- Extra -->
+        <div class="form-row">
+          <div class="d-flex flex-content-between">
+            <label v-text="$t('Extra')" />
+            <!-- Copy -->
+            <ClipboardButton :copy="form.extra" class="mt-2" />
+            <!-- Show/Hide Pass -->
+            <button
+              type="button"
+              class="detail-page-header-icon mt-2 ml-2"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
+            >
+              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12" @click="showPass = true" />
+            </button>
+          </div>
+          <div class="d-flex">
+            <VTextArea v-if="isEditMode" v-model="form.extra" :placeholder="$t('ClickToFill')" />
+            <VTextArea
+              v-else
+              :value="showPass ? form.extra : ''"
+              :placeholder="$t('contentHidden')"
+              disabled
+            />
+          </div>
+        </div>
 
-        <!-- Save -->
-        <VButton v-if="isEditMode" @click="onClickUpdate" class="mt-2 mb-5 mx-3">
-          {{ $t('Save') }}
-        </VButton>
-      </div>
-    </div>
+        <!-- Save & Cancel -->
+        <div class="d-flex m-3" v-if="isEditMode">
+          <VButton class="flex-1" theme="text" :disabled="loading" @click="isEditMode = false">
+            {{ $t('Cancel') }}
+          </VButton>
+          <VButton class="flex-1" type="submit" :loading="loading">
+            {{ $t('Save') }}
+          </VButton>
+        </div>
+      </form>
+    </PerfectScrollbar>
   </div>
 </template>
 
@@ -242,126 +238,74 @@ export default {
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
-    this.init(to.params)
+    this.getDetail(to.params.id)
     next()
   },
 
   created() {
-    this.init(this.$route.params)
+    this.getDetail(this.$route.params.id)
   },
 
   methods: {
     ...mapActions('Servers', ['Get', 'Delete', 'Update']),
 
-    async init(params) {
-      try {
-        await this.Get(params.id)
+    getDetail(id) {
+      const onSuccess = async () => {
+        await this.Get(id)
         this.form = { ...this.Detail }
-      } catch (error) {
+      }
+
+      const onError = () => {
         this.$router.back()
       }
+
+      this.$request(onSuccess, this.$waiters.Servers.Get, onError)
     },
 
-    async onClickDelete() {
-      try {
+    onClickDelete() {
+      const onSuccess = async () => {
         await this.Delete(this.form.id)
         const index = this.ItemList.findIndex(item => item.id == this.form.id)
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
         this.$router.push({ name: 'Servers', params: { refresh: true } })
-      } catch (err) {
-        console.log(err)
       }
+
+      this.$request(onSuccess, this.$waiters.Servers.Delete)
     },
 
     async onClickUpdate() {
-      try {
+      const onSuccess = async () => {
         await this.Update({ ...this.form })
         this.$router.push({ name: 'Servers', params: { refresh: true } })
-      } catch (err) {
-        console.log(err)
-      } finally {
-        this.isEditMode = false
       }
+
+      await this.$request(onSuccess, this.$waiters.Servers.Update)
+      this.isEditMode = false
     }
   },
 
   computed: {
     ...mapState('Servers', ['Detail', 'ItemList']),
 
+    loading() {
+      return this.$wait.is(this.$waiters.Servers.Update)
+    },
+
     serverCopyContent() {
-      return `Title: ${this.form.title}\nIP: ${this.form.ip}\nUsername: ${this.form.username}\nPassword: ${this.form.password}\nURL: ${this.form.url}\nHosting Username: ${this.form.hosting_username}\nHosting Password: ${this.form.hosting_password}\nAdmin Username: ${this.form.admin_username}\nAdmin Password: ${this.form.admin_password}\n`
+      return (
+        `Title: ${this.form.title}\n` +
+        `IP: ${this.form.ip}\n` +
+        `Username: ${this.form.username}\n` +
+        `Password: ${this.form.password}\n` +
+        `URL: ${this.form.url}\n` +
+        `Hosting Username: ${this.form.hosting_username}\n` +
+        `Hosting Password: ${this.form.hosting_password}\n` +
+        `Admin Username: ${this.form.admin_username}\n` +
+        `Admin Password: ${this.form.admin_password}`
+      )
     }
   }
 }
 </script>
-
-<style lang="scss">
-.detail-page {
-  width: 100%;
-  height: 100vh;
-  border-left: 1px solid black;
-  background-color: $color-gray-600;
-
-  &-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    border-bottom: 1px solid black;
-    padding: 0 $spacer-5;
-
-    &-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background-color: $color-gray-400;
-    }
-
-    &-summary {
-      color: #fff;
-      margin: 0 auto 0 $spacer-3;
-      display: flex;
-      flex-direction: column;
-
-      .url {
-        font-weight: bold;
-        font-size: $font-size-normal;
-        line-height: 16px;
-      }
-
-      .email {
-        font-weight: normal;
-        font-size: $font-size-mini;
-        line-height: 16px;
-      }
-    }
-
-    &-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      background-color: $color-gray-500;
-      margin-left: $spacer-2;
-      color: $color-gray-300;
-    }
-  }
-
-  &-content {
-    position: relative;
-    height: calc(100% - 64px);
-    overflow-x: auto;
-    width: 99%;
-
-    .edit-btn {
-      position: absolute;
-      top: 37px;
-      right: 32px;
-    }
-  }
-}
-</style>

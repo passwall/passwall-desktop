@@ -56,7 +56,7 @@ app.on('activate', () => {
 })
 
 function createMenu() {
-  var template = [
+  const template = [
     {
       label: 'Application',
       submenu: [

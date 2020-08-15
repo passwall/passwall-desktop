@@ -1,14 +1,15 @@
 <template>
   <v-popover offset="16">
-    <button @click="onClickGenerate" class="btn-generate-pass">
+    <button type="button" @click="onClickGenerate" class="btn-generate-pass">
       <VIcon name="refresh" size="14" />
     </button>
 
+    <!-- Popover -->
     <template slot="popover">
       <div class="generate-password">
         <span v-text="password" />
         <hr />
-        <VButton type="submit" size="mini" v-close-popover @click="onClickUseThis">
+        <VButton size="mini" v-close-popover @click="onClickUseThis">
           {{ $t('UseThis') }}
         </VButton>
       </div>
@@ -19,6 +20,7 @@
 <script>
 import { mapActions } from 'vuex'
 import SystemService from '@/api/services/System'
+import CryptoUtils from '@/utils/crypto'
 
 export default {
   name: 'GeneratePassword',
@@ -33,17 +35,13 @@ export default {
     }
   },
 
-  created() {
-    this.onClickGenerate()
-  },
-
   methods: {
     onClickItem(name) {
       this.$router.push({ name })
       this.$emit('hide')
     },
 
-    async onClickUseThis() {
+    onClickUseThis() {
       this.$emit('input', this.password)
     },
 
@@ -61,8 +59,8 @@ export default {
 
 <style lang="scss">
 .btn-generate-pass {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 4px;
   background-color: $color-gray-500;
   margin-left: $spacer-2;

@@ -25,7 +25,7 @@
       </button>
     </div>
     <!-- Content -->
-    <div class="detail-page-content">
+    <PerfectScrollbar class="detail-page-content">
       <!-- Edit Btn -->
       <button
         v-if="!isEditMode"
@@ -36,86 +36,21 @@
         <VIcon name="pencil" size="14" />
       </button>
 
-      <div class="form">
+      <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- CardName -->
-        <div class="form-row">
-          <label v-text="$t('Card Name')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.card_name"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.card_name" class="mr-2" />
-            <ClipboardButton :copy="form.card_name" />
-          </div>
-        </div>
+        <FormRowText v-model="form.card_name" :title="$t('Card Name')" :edit-mode="isEditMode" />
 
         <!-- CardholderName -->
-        <div class="form-row">
-          <label v-text="$t('Cardholder Name')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.cardholder_name"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.cardholder_name" class="mr-2" />
-            <ClipboardButton :copy="form.cardholder_name" />
-          </div>
-        </div>
+        <FormRowText v-model="form.cardholder_name" :title="$t('Cardholder Name')" :edit-mode="isEditMode" />
 
         <!-- Type -->
-        <div class="form-row">
-          <label v-text="$t('Type')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.type"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.type" class="mr-2" />
-            <ClipboardButton :copy="form.type" />
-          </div>
-        </div>
+        <FormRowText v-model="form.type" :title="$t('Type')" :edit-mode="isEditMode" />
 
         <!-- Number -->
-        <div class="form-row">
-          <label v-text="$t('Number')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.number"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.number" class="mr-2" />
-            <ClipboardButton :copy="form.number" />
-          </div>
-        </div>
+        <FormRowText v-model="form.number" :title="$t('Number')" :edit-mode="isEditMode" />
 
         <!-- ExpiryDate -->
-        <div class="form-row">
-          <label v-text="$t('Expiry Date')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.expiry_date"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.expiry_date" class="mr-2" />
-            <ClipboardButton :copy="form.expiry_date" />
-          </div>
-        </div>
+        <FormRowText v-model="form.expiry_date" :title="$t('Expiry Date')" :edit-mode="isEditMode" />
 
         <!-- VerificationNumber -->
         <div class="form-row">
@@ -135,12 +70,16 @@
             <!-- Copy -->
             <ClipboardButton :copy="form.verification_number" class="mt-2" />
             <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.verification_number" />
+            <GeneratePassword
+              v-if="isEditMode"
+              class="mt-2 mx-2"
+              v-model="form.verification_number"
+            />
             <!-- Show/Hide Pass -->
             <button
-              class="detail-page-header-icon mt-2 ml-2"
-              style="width: 20px; height: 20px;"
-              v-tooltip="$t(showPass ? 'HidePassword' : 'ShowPassword')"
+              type="button"
+              class="detail-page-header-icon mt-1 ml-2"
+              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
               <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
               <VIcon name="eye" v-else size="12" @click="showPass = true" />
@@ -148,12 +87,17 @@
           </div>
         </div>
 
-        <!-- Save -->
-        <VButton v-if="isEditMode" @click="onClickUpdate" class="mt-2 mb-5 mx-3">
-          {{ $t('Save') }}
-        </VButton>
-      </div>
-    </div>
+        <!-- Save & Cancel -->
+        <div class="d-flex m-3" v-if="isEditMode">
+          <VButton class="flex-1" theme="text" :disabled="loading" @click="isEditMode = false">
+            {{ $t('Cancel') }}
+          </VButton>
+          <VButton class="flex-1" type="submit" :loading="loading">
+            {{ $t('Save') }}
+          </VButton>
+        </div>
+      </form>
+    </PerfectScrollbar>
   </div>
 </template>
 
@@ -172,124 +116,69 @@ export default {
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
-    this.init(to.params)
+    this.getDetail(to.params.id)
     next()
   },
 
   created() {
-    this.init(this.$route.params)
+    this.getDetail(this.$route.params.id)
   },
 
   methods: {
     ...mapActions('CreditCards', ['Get', 'Delete', 'Update']),
 
-    async init(params) {
-      try {
-        await this.Get(params.id)
+    getDetail(id) {
+      const onSuccess = async () => {
+        await this.Get(id)
         this.form = { ...this.Detail }
-      } catch (error) {
+      }
+
+      const onError = () => {
         this.$router.back()
       }
+
+      this.$request(onSuccess, this.$waiters.CreditCards.Get, onError)
     },
 
-    async onClickDelete() {
-      try {
+   onClickDelete() {
+      const onSuccess = async () => {
         await this.Delete(this.form.id)
         const index = this.ItemList.findIndex(item => item.id == this.form.id)
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
         this.$router.push({ name: 'CreditCards', params: { refresh: true } })
-      } catch (err) {
-        console.log(err)
       }
+
+      this.$request(onSuccess, this.$waiters.CreditCards.Delete)
     },
 
     async onClickUpdate() {
-      try {
+      const onSuccess = async () => {
         await this.Update({ ...this.form })
         this.$router.push({ name: 'CreditCards', params: { refresh: true } })
-      } catch (err) {
-        console.log(err)
-      } finally {
-        this.isEditMode = false
       }
+
+      await this.$request(onSuccess, this.$waiters.CreditCards.Update)
+      this.isEditMode = false
     }
   },
 
   computed: {
     ...mapState('CreditCards', ['Detail', 'ItemList']),
 
+    loading() {
+      return this.$wait.is(this.$waiters.CreditCards.Update)
+    },
+
     creditCardCopyContent() {
-      return `Card Name: ${this.form.card_name}\nCardholder Name: ${this.form.cardholder_name}\nType: ${this.form.type}\nNumber: ${this.form.number}`
+      return (
+        `Card Name: ${this.form.card_name}\n` +
+        `Cardholder Name: ${this.form.cardholder_name}\n` +
+        `Type: ${this.form.type}\n` +
+        `Number: ${this.form.number}`
+      )
     }
   }
 }
 </script>
-
-<style lang="scss">
-.detail-page {
-  width: 100%;
-  height: 100vh;
-  border-left: 1px solid black;
-  background-color: $color-gray-600;
-
-  &-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    border-bottom: 1px solid black;
-    padding: 0 $spacer-5;
-
-    &-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background-color: $color-gray-400;
-    }
-
-    &-summary {
-      color: #fff;
-      margin: 0 auto 0 $spacer-3;
-      display: flex;
-      flex-direction: column;
-
-      .url {
-        font-weight: bold;
-        font-size: $font-size-normal;
-        line-height: 16px;
-      }
-
-      .email {
-        font-weight: normal;
-        font-size: $font-size-mini;
-        line-height: 16px;
-      }
-    }
-
-    &-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      background-color: $color-gray-500;
-      margin-left: $spacer-2;
-      color: $color-gray-300;
-    }
-  }
-
-  &-content {
-    position: relative;
-    height: calc(100% - 64px);
-
-    .edit-btn {
-      position: absolute;
-      top: 37px;
-      right: 32px;
-    }
-  }
-}
-</style>

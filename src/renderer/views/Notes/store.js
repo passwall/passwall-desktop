@@ -1,4 +1,7 @@
 import NotesService from '@/api/services/Notes'
+import CryptoUtils from '@/utils/crypto'
+
+const EncryptedFields = ['note']
 
 export default {
   namespaced: true,
@@ -11,36 +14,34 @@ export default {
   },
 
   actions: {
-    async FetchAll({ state, rootState }, query) {
+    async FetchAll({ state }, query) {
       const { data } = await NotesService.FetchAll(query)
 
-      var dLen, i
-      dLen = data.length
-      for (i = 0; i < dLen; i++) {
-        data[i].note = this._vm.$helpers.decrypt(data[i].note, rootState.master_hash)
-      }
-      
-      state.ItemList = data
+      const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      state.ItemList = itemList
     },
 
-    async Get({ state, rootState }, id) {
+    async Get({ state }, id) {
       const { data } = await NotesService.Get(id)
-      data.note = this._vm.$helpers.decrypt(data.note, rootState.master_hash)
-      state.Detail = data
+
+      const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      CryptoUtils.decryptFields(detail, EncryptedFields)
+
+      state.Detail = detail
     },
 
     async Delete(_, id) {
       await NotesService.Delete(id)
     },
 
-    async Create({ rootState }, data) {
-      data.note = this._vm.$helpers.encrypt(data.note, rootState.master_hash)
-      await NotesService.Create(data)
+    async Create(_, data) {
+      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
+      await NotesService.Create(payload)
     },
 
-    async Update({ rootState }, data) {
-      data.note = this._vm.$helpers.encrypt(data.note, rootState.master_hash)
-      await NotesService.Update(data.id, data)
+    async Update(_, data) {
+      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
+      await NotesService.Update(data.id, payload)
     }
   }
 }

@@ -1,11 +1,11 @@
 <template>
   <button
     :type="$attrs.type || 'button'"
-    :class="[`--${size}`, `--${theme}`, { '--loading': loading }]"
+    :disabled="$attrs.disabled || loading"
+    :class="clazz"
     class="btn"
     v-bind="$attrs"
     v-on="inputListeners"
-    :disabled="loading"
   >
     <slot />
     <VIcon v-if="loading" name="refresh" size="14" class="spin c-white ml-2" />
@@ -23,7 +23,8 @@ export default {
     },
     theme: {
       type: String,
-      default: 'primary'
+      default: 'primary',
+      validator: value => ['primary', 'text'].includes(value)
     },
     loading: {
       type: Boolean,
@@ -32,17 +33,18 @@ export default {
   },
 
   computed: {
+    clazz() {
+      return [`--${this.size}`, `--theme-${this.theme}`, { '--loading': this.loading }]
+    },
+
     getError() {
       const error = this.errors.items.find(e => e.field == this.name)
       return error ? error.msg : ''
     },
 
     inputListeners() {
-      const vm = this
       return Object.assign({}, this.$listeners, {
-        input: function(event) {
-          vm.$emit('input', event.target.value)
-        }
+        input: event => this.$emit('input', event.target.value)
       })
     }
   }
@@ -62,8 +64,14 @@ export default {
     cursor: no-drop;
   }
 
-  &.--primary {
+  /* themes */
+  &.--theme-primary {
     background-color: $color-primary;
+  }
+
+  &.--theme-text {
+    border-color: transparent;
+    background-color: transparent;
   }
 
   /* size */

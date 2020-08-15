@@ -5,6 +5,7 @@
 
 // Plugins
 @import 'plugins/v-tooltip';
+@import 'plugins/vue-notifications.scss';
 
 // Utilities
 @import 'utilities/space';
@@ -60,6 +61,16 @@ html {
   &-leave-to {
     opacity: 0;
   }
+}
+
+.ps__rail-x {
+  height: 8px !important;
+  background-color: $color-gray-500 !important;
+}
+
+.ps__thumb-x {
+  height: 4px !important;
+  background-color: $color-primary !important;
 }
 
 .ps__rail-y {
@@ -180,23 +191,82 @@ hr {
   }
 }
 
-::-webkit-scrollbar-track
-{
-  border-radius: 10px;
-  background-color:transparent;
-}
-::-webkit-scrollbar
-{
-  width: 5px;
-  margin-right: $spacer-3;
-  background-color:transparent;
-}
-::-webkit-scrollbar-thumb
-{
-  border-radius: 5px;
-  background-color:$color-primary;
-}
-
 .spin {
   animation: spin 2s linear infinite;
+}
+
+/** Detail Page **/
+.detail-page {
+  width: 100%;
+  height: 100vh;
+  border-left: 1px solid black;
+  background-color: $color-gray-600;
+
+  &-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 1px solid black;
+    padding: 0 $spacer-5;
+
+    &-avatar {
+      min-width: 32px;
+      min-height: 32px;
+      max-width: 32px;
+      max-height: 32px;
+      border-radius: 8px;
+      background-color: $color-gray-400;
+    }
+
+    &-summary {
+      color: #fff;
+      margin: 0 auto 0 $spacer-3;
+      display: flex;
+      flex-direction: column;
+
+      .url {
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 16px;
+      }
+
+      .email {
+        font-weight: normal;
+        font-size: 10px;
+        line-height: 16px;
+      }
+    }
+
+    &-icon {
+      min-width: 24px;
+      min-height: 24px;
+      max-width: 24px;
+      max-height: 24px;
+      border-radius: 4px;
+      background-color: $color-gray-500;
+      margin-left: $spacer-3;
+      color: $color-gray-300;
+    }
+  }
+
+  &-content {
+    position: relative;
+    height: calc(100% - 64px);
+    overflow-x: auto;
+    width: 99%;
+
+    .form-row {
+      span {
+        max-width: 320px;
+        @extend .text-truncate
+      }
+    }
+
+    .edit-btn {
+      position: absolute;
+      top: 37px;
+      right: 32px;
+    }
+  }
 }

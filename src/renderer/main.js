@@ -2,8 +2,8 @@ import Vue from 'vue'
 import HTTPClient from '@/api/HTTPClient'
 import AuthService from '@/api/services/Auth'
 
-import '@/styles/app.scss'
-import '@/config'
+import './styles/app.scss'
+import './config'
 import App from './App'
 import router from './router'
 import store from './store'
@@ -11,7 +11,7 @@ import i18n from './i18n'
 
 const AuthCheck = async () => {
   const goToLogin = async () => {
-    localStorage.removeItem('access_token')
+    localStorage.clear()
     store.state.access_token = null
     store.state.refresh_token = null
     await router.push({ name: 'Login' })
@@ -47,8 +47,7 @@ const AuthCheck = async () => {
 
 ;(async () => {
   if (process.env.NODE_ENV === 'production') {
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
+    localStorage.clear()
   } else {
     await AuthCheck()
   }
