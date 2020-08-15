@@ -13,8 +13,8 @@
 
       <!-- Copy -->
       <button
-        class="detail-page-header-icon"
         v-tooltip="$t('Copy')"
+        class="detail-page-header-icon"
         v-clipboard:copy="bankAccountCopyContent"
       >
         <VIcon name="duplicate" size="14" />
@@ -38,100 +38,22 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- BankName -->
-        <div class="form-row">
-          <label v-text="$t('Bank Name')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.bank_name"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.bank_name" class="mr-2" />
-            <ClipboardButton :copy="form.bank_name" />
-          </div>
-        </div>
+        <FormRowText v-model="form.bank_name" :title="$t('Bank Name')" :edit-mode="isEditMode" />
 
         <!-- BankCode -->
-        <div class="form-row">
-          <label v-text="$t('Bank Code')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.bank_code"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.bank_code" class="mr-2" />
-            <ClipboardButton :copy="form.bank_code" />
-          </div>
-        </div>
+        <FormRowText v-model="form.bank_code" :title="$t('Bank Code')" :edit-mode="isEditMode" />
 
         <!-- AccountName -->
-        <div class="form-row">
-          <label v-text="$t('Account Name')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.account_name"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.account_name" class="mr-2" />
-            <ClipboardButton :copy="form.account_name" />
-          </div>
-        </div>
+        <FormRowText v-model="form.account_name" :title="$t('Account Name')" :edit-mode="isEditMode" />
 
         <!-- AccountNumber -->
-        <div class="form-row">
-          <label v-text="$t('Account Number')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.account_number"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.account_number" class="mr-2" />
-            <ClipboardButton :copy="form.account_number" />
-          </div>
-        </div>
+        <FormRowText v-model="form.account_number" :title="$t('Account Number')" :edit-mode="isEditMode" />
 
         <!-- IBAN -->
-        <div class="form-row">
-          <label v-text="$t('IBAN')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.iban"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.iban" class="mr-2" />
-            <ClipboardButton :copy="form.iban" />
-          </div>
-        </div>
+        <FormRowText v-model="form.iban" :title="$t('IBAN')" :edit-mode="isEditMode" />
 
         <!-- Currency -->
-        <div class="form-row">
-          <label v-text="$t('Currency')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.currency"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.currency" class="mr-2" />
-            <ClipboardButton :copy="form.currency" />
-          </div>
-        </div>
+        <FormRowText v-model="form.currency" :title="$t('Currency')" :edit-mode="isEditMode" />
 
         <!-- Password -->
         <div class="form-row">

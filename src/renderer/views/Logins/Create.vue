@@ -18,11 +18,11 @@
         <div class="form-row">
           <label v-text="$t('Title')" />
           <VFormText
+            name="Title"
+            theme="no-border"
             v-model="form.title"
             v-validate="'required'"
-            name="Title"
             :placeholder="$t('ClickToFill')"
-            theme="no-border"
           />
         </div>
         <!-- URL -->
@@ -121,7 +121,7 @@ export default {
   computed: {
     loading() {
       return this.$wait.is(this.$waiters.Logins.Create)
-    },
+    }
   },
 
   methods: {

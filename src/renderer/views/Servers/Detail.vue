@@ -38,50 +38,14 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
-        <div class="form-row">
-          <label v-text="$t('Title')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.title"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.title" class="mr-2" />
-            <ClipboardButton :copy="form.title" />
-          </div>
-        </div>
+        <FormRowText v-model="form.title" :title="$t('Title')" :edit-mode="isEditMode" />
+
         <!-- IP -->
-        <div class="form-row">
-          <label v-text="$t('IP Address')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.ip"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.ip" class="mr-2" />
-            <ClipboardButton :copy="form.ip" />
-          </div>
-        </div>
+        <FormRowText v-model="form.ip" :title="$t('IP Address')" :edit-mode="isEditMode" />
+        
         <!-- Username -->
-        <div class="form-row">
-          <label v-text="$t('Username')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.username"
-            :placeholder="$t('ClickToFill')"
-            theme="no-border"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.username" class="mr-2" />
-            <ClipboardButton :copy="form.username" />
-          </div>
-        </div>
+        <FormRowText v-model="form.username" :title="$t('Username')" :edit-mode="isEditMode" />
+
         <!-- Password -->
         <div class="form-row">
           <label v-text="$t('Password')" />

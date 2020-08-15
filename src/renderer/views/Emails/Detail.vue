@@ -38,35 +38,10 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
-        <div class="form-row">
-          <label v-text="$t('Title')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.title"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.title" class="mr-2" />
-            <ClipboardButton :copy="form.title" />
-          </div>
-        </div>
+        <FormRowText v-model="form.title" :title="$t('Title')" :edit-mode="isEditMode" />
+        
         <!-- Email -->
-        <div class="form-row">
-          <label v-text="$t('Email')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.email"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.email" class="mr-2" />
-            <ClipboardButton :copy="form.email" />
-          </div>
-        </div>
+        <FormRowText v-model="form.email" :title="$t('Email')" :edit-mode="isEditMode" />
 
         <!-- Password -->
         <div class="form-row">

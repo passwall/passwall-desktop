@@ -14,10 +14,7 @@ export default {
   name: 'CompanyLogo',
 
   props: {
-    url: {
-      type: String,
-      required: true
-    }
+    url: String
   },
 
   data() {

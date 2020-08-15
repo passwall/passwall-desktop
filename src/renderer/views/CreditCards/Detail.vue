@@ -38,84 +38,19 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- CardName -->
-        <div class="form-row">
-          <label v-text="$t('Card Name')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.card_name"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.card_name" class="mr-2" />
-            <ClipboardButton :copy="form.card_name" />
-          </div>
-        </div>
+        <FormRowText v-model="form.card_name" :title="$t('Card Name')" :edit-mode="isEditMode" />
 
         <!-- CardholderName -->
-        <div class="form-row">
-          <label v-text="$t('Cardholder Name')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.cardholder_name"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.cardholder_name" class="mr-2" />
-            <ClipboardButton :copy="form.cardholder_name" />
-          </div>
-        </div>
+        <FormRowText v-model="form.cardholder_name" :title="$t('Cardholder Name')" :edit-mode="isEditMode" />
 
         <!-- Type -->
-        <div class="form-row">
-          <label v-text="$t('Type')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.type"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.type" class="mr-2" />
-            <ClipboardButton :copy="form.type" />
-          </div>
-        </div>
+        <FormRowText v-model="form.type" :title="$t('Type')" :edit-mode="isEditMode" />
 
         <!-- Number -->
-        <div class="form-row">
-          <label v-text="$t('Number')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.number"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.number" class="mr-2" />
-            <ClipboardButton :copy="form.number" />
-          </div>
-        </div>
+        <FormRowText v-model="form.number" :title="$t('Number')" :edit-mode="isEditMode" />
 
         <!-- ExpiryDate -->
-        <div class="form-row">
-          <label v-text="$t('Expiry Date')" />
-          <VFormText
-            v-if="isEditMode"
-            v-model="form.expiry_date"
-            theme="no-border"
-            :placeholder="$t('ClickToFill')"
-          />
-          <!-- Text -->
-          <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.expiry_date" class="mr-2" />
-            <ClipboardButton :copy="form.expiry_date" />
-          </div>
-        </div>
+        <FormRowText v-model="form.expiry_date" :title="$t('Expiry Date')" :edit-mode="isEditMode" />
 
         <!-- VerificationNumber -->
         <div class="form-row">

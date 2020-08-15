@@ -34,12 +34,12 @@ export default {
 
 <style lang="scss">
 .list-item {
+  height: 64px;
   display: flex;
+  cursor: pointer;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
   background-color: black;
-  cursor: pointer;
   border-bottom: 1px solid black;
 
   &.--active {
