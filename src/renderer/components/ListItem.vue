@@ -2,7 +2,7 @@
   <div class="list-item" :class="{ '--active': active }" @click="$emit('click')">
     <!-- Avatar -->
     <div class="list-item-avatar">
-      <CompanyLogo :url="data.url" />
+      <CompanyLogo v-if="data" :url="data.url" :company-name="data.title" />
     </div>
     <!-- Summary -->
     <div class="list-item-summary">

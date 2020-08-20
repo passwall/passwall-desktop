@@ -2,8 +2,9 @@
   <div class="detail-page">
     <div class="detail-page-header">
       <!-- Avatar -->
+
       <div class="detail-page-header-avatar">
-        <img v-if="form.src" :src="form.src" />
+        <CompanyLogo v-if="form" :url="form.url" :company-name="form.title" />
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
@@ -45,7 +46,7 @@
 
         <!-- Username -->
         <FormRowText v-model="form.username" :title="$t('Username')" :edit-mode="isEditMode" />
-        
+
         <!-- Password -->
         <div class="form-row">
           <label v-text="$t('Password')" />
@@ -200,3 +201,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.detail-page-header-avatar {
+  height: 100%;
+}
+</style>
