@@ -2,7 +2,6 @@
   <button
     type="button"
     class="clipboard-btn"
-    v-show="copy"
     v-clipboard:copy="copy"
     v-tooltip="$t('Copy')"
   >

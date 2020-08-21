@@ -42,27 +42,28 @@
 
         <!-- Note -->
         <div class="form-row">
-          <div class="d-flex flex-content-between">
+          <div class="d-flex flex-items-end flex-content-between">
             <label v-text="$t('Private Note')" />
-            <!-- Copy -->
-            <ClipboardButton :copy="form.note" class="mt-2" />
-            <!-- Show/Hide Pass -->
-            <button
-              type="button"
-              class="detail-page-header-icon mt-1 ml-2"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
-            >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
-            </button>
+            <div class="d-flex flex-items-center">
+              <!-- Copy -->
+              <ClipboardButton :copy="form.note" />
+              <!-- Show/Hide Pass -->
+              <button
+                type="button"
+                @click="showNote = !showNote"
+                class="detail-page-header-icon ml-2"
+                v-tooltip="$t(showNote ? 'Hide' : 'Show')"
+              >
+                <VIcon :name="showNote ? 'eye-off' : 'eye'" size="12px" />
+              </button>
+            </div>
           </div>
           <div class="d-flex">
-            <VTextArea v-if="isEditMode" v-model="form.note" :placeholder="$t('ClickToFill')" />
             <VTextArea
-              v-else
-              :value="showPass ? form.note : ''"
-              :placeholder="$t('contentHidden')"
-              disabled
+              v-model="form.note"
+              :sensitive="!isEditMode && !showNote"
+              :placeholder="$t(isEditMode ? 'ClickToFill' : 'ContentHidden')"
+              :disabled="!isEditMode"
             />
           </div>
         </div>
@@ -89,6 +90,7 @@ export default {
     return {
       isEditMode: false,
       showPass: false,
+      showNote: false,
       form: {}
     }
   },

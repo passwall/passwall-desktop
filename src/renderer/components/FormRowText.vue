@@ -11,7 +11,7 @@
     <!-- Text -->
     <div v-else class="d-flex flex-items-center px-3 py-2">
       <span v-text="value" class="mr-2" />
-      <ClipboardButton :copy="value" />
+      <ClipboardButton v-if="value" :copy="value" />
     </div>
   </div>
 </template>

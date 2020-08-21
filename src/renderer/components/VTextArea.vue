@@ -1,7 +1,7 @@
 <template>
   <div class="text-area-wrapper">
     <textarea
-      :value="value"
+      :value="sensitive ? '*********' : value"
       autocorrect="off"
       autocomplete="off"
       spellcheck="false"
@@ -19,7 +19,8 @@ export default {
 
   props: {
     name: String,
-    value: String
+    value: String,
+    sensitive: Boolean
   },
 
   computed: {

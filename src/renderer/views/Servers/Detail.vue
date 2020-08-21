@@ -184,27 +184,28 @@
 
         <!-- Extra -->
         <div class="form-row">
-          <div class="d-flex flex-content-between">
+          <div class="d-flex flex-items-end flex-content-between">
             <label v-text="$t('Extra')" />
-            <!-- Copy -->
-            <ClipboardButton :copy="form.extra" class="mt-2" />
-            <!-- Show/Hide Pass -->
-            <button
-              type="button"
-              class="detail-page-header-icon mt-2 ml-2"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
-            >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
-            </button>
+            <div class="d-flex flex-items-center">
+              <!-- Copy -->
+              <ClipboardButton :copy="form.extra" />
+              <!-- Show/Hide Pass -->
+              <button
+                type="button"
+                @click="showExtra = !showExtra"
+                class="detail-page-header-icon ml-2"
+                v-tooltip="$t(showExtra ? 'Hide' : 'Show')"
+              >
+                <VIcon :name="showExtra ? 'eye-off' : 'eye'" size="12px" />
+              </button>
+            </div>
           </div>
           <div class="d-flex">
-            <VTextArea v-if="isEditMode" v-model="form.extra" :placeholder="$t('ClickToFill')" />
             <VTextArea
-              v-else
-              :value="showPass ? form.extra : ''"
-              :placeholder="$t('contentHidden')"
-              disabled
+              v-model="form.extra"
+              :sensitive="!isEditMode && !showExtra"
+              :placeholder="$t(isEditMode ? 'ClickToFill' : 'ContentHidden')"
+              :disabled="!isEditMode"
             />
           </div>
         </div>
@@ -231,6 +232,7 @@ export default {
     return {
       isEditMode: false,
       showPass: false,
+      showExtra: false,
       form: {}
     }
   },
