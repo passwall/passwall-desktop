@@ -17,11 +17,11 @@
         v-tooltip="$t('Copy')"
         v-clipboard:copy="creditCardCopyContent"
       >
-        <VIcon name="duplicate" size="14" />
+        <VIcon name="duplicate" size="14px" />
       </button>
       <!-- Delete -->
       <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
-        <VIcon name="trash" size="14" />
+        <VIcon name="trash" size="14px" />
       </button>
     </div>
     <!-- Content -->
@@ -33,7 +33,7 @@
         v-tooltip="$t('Edit')"
         @click="isEditMode = true"
       >
-        <VIcon name="pencil" size="14" />
+        <VIcon name="pencil" size="14px" />
       </button>
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
@@ -81,8 +81,8 @@
               class="detail-page-header-icon mt-1 ml-2"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
             </button>
           </div>
         </div>

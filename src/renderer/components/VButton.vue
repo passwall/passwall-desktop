@@ -8,7 +8,7 @@
     v-on="inputListeners"
   >
     <slot />
-    <VIcon v-if="loading" name="refresh" size="14" class="spin c-white ml-2" />
+    <VIcon v-if="loading" name="refresh" size="14px" class="spin c-white ml-2" />
   </button>
 </template>
 

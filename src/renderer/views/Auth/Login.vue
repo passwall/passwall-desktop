@@ -3,7 +3,7 @@
     <!-- Left Background -->
     <div>
       <VIcon name="passwall-back" class="login-background" width="450px" height="540px" />
-      <VIcon name="right-corner" class="login-right-corner" size="82" />
+      <VIcon name="right-corner" class="login-right-corner" size="82px" />
     </div>
     <!-- Login Form -->
     <form class="login-form" @submit.stop.prevent="onLogin">

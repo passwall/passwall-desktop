@@ -6,7 +6,7 @@
     v-clipboard:copy="copy"
     v-tooltip="$t('Copy')"
   >
-    <VIcon name="duplicate" size="13" />
+    <VIcon name="duplicate" size="13px" />
   </button>
 </template>
 
@@ -28,8 +28,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 4px;
   background-color: $color-gray-500;
   color: $color-gray-300;

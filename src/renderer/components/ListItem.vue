@@ -10,7 +10,7 @@
     </div>
     <!-- Detail -->
     <button class="list-item-detail">
-      <VIcon name="chevron-right" size="14" />
+      <VIcon name="chevron-right" size="14px" />
     </button>
   </div>
 </template>

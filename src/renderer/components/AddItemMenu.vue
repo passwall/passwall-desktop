@@ -4,48 +4,48 @@
     <div class="add-item-menu-items">
       <!-- Logins -->
       <button @click="onClickItem('LoginCreate')" class="add-item-menu-item">
-        <VIcon name="lock-closed" size="14" class="icon" />
+        <VIcon name="lock-closed" size="14px" class="icon" />
         {{ $t('Login') }}
       </button>
 
       <!-- Credit Cards -->
       <button @click="onClickItem('CreditCardCreate')" class="add-item-menu-item">
-        <VIcon name="credit-card" size="14" class="icon" />
+        <VIcon name="credit-card" size="14px" class="icon" />
         {{ $t('Credit Cards') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
       </button>
 
       <!-- Bank Accounts -->
       <button @click="onClickItem('BankAccountCreate')" class="add-item-menu-item">
-        <VIcon name="bank-account" size="14" class="icon" />
+        <VIcon name="bank-account" size="14px" class="icon" />
         {{ $t('Bank Accounts') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
       </button>
 
       <!-- Emails -->
       <button @click="onClickItem('EmailCreate')" class="add-item-menu-item">
-        <VIcon name="email" size="14" class="icon" />
+        <VIcon name="email" size="14px" class="icon" />
         {{ $t('Emails') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
       </button>
 
       <!-- Private Notes -->
       <button @click="onClickItem('NoteCreate')" class="add-item-menu-item">
-        <VIcon name="private-note" size="14" class="icon" />
+        <VIcon name="private-note" size="14px" class="icon" />
         {{ $t('Private Notes') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
       </button>
 
       <!-- Servers -->
       <button @click="onClickItem('ServerCreate')" class="add-item-menu-item">
-        <VIcon name="server" size="14" class="icon" />
+        <VIcon name="server" size="14px" class="icon" />
         {{ $t('Servers') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
       </button>
     </div>
   </div>

@@ -64,8 +64,8 @@
               class="detail-page-header-icon mt-1 ml-n1"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
             </button>
           </div>
         </div>
@@ -110,8 +110,8 @@
               class="detail-page-header-icon mt-1 ml-n1"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
             </button>
           </div>
         </div>
@@ -145,8 +145,8 @@
               class="detail-page-header-icon mt-1 ml-n1"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
             </button>
           </div>
         </div>
@@ -160,8 +160,8 @@
               class="detail-page-header-icon mt-2 ml-n1"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
+              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
             </button>
           </div>
           <VTextArea :placeholder="$t('ClickToFill')" v-model="form.extra" name="Extra" />

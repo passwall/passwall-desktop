@@ -10,20 +10,20 @@
       </div>
       <!-- Logout -->
       <button @click="onClickLogout" v-tooltip="$t('Logout')">
-        <!--        <LogoutIcon size="14" class="c-danger rot-180" />-->
-        <VIcon name="logout" size="14" rotation="180" class="c-danger" />
+        <!--        <LogoutIcon size="14px" class="c-danger rot-180" />-->
+        <VIcon name="logout" size="14px" rotation="180" class="c-danger" />
       </button>
     </div>
 
     <!-- Logins -->
     <router-link :to="{ name: 'Logins' }" class="sidebar-menu-item">
-      <VIcon name="lock-closed" size="14" />
+      <VIcon name="lock-closed" size="14px" />
       {{ $t('Logins') }}
     </router-link>
 
     <!-- Credit Cards -->
     <router-link :to="{ name: 'CreditCards' }" class="sidebar-menu-item">
-      <VIcon name="credit-card" size="14" />
+      <VIcon name="credit-card" size="14px" />
       {{ $t('Credit Cards') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -33,7 +33,7 @@
 
     <!-- Bank Accounts -->
     <router-link :to="{ name: 'BankAccounts' }" class="sidebar-menu-item">
-      <VIcon name="bank-account" size="14" />
+      <VIcon name="bank-account" size="14px" />
       {{ $t('Bank Accounts') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -43,7 +43,7 @@
 
     <!-- Emails -->
     <router-link :to="{ name: 'Emails' }" class="sidebar-menu-item">
-      <VIcon name="email" size="14" />
+      <VIcon name="email" size="14px" />
       {{ $t('Emails') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -53,7 +53,7 @@
 
     <!-- Private Notes -->
     <router-link :to="{ name: 'Notes' }" class="sidebar-menu-item">
-      <VIcon name="private-note" size="14" />
+      <VIcon name="private-note" size="14px" />
       {{ $t('Private Notes') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -63,7 +63,7 @@
 
     <!-- Servers -->
     <router-link :to="{ name: 'Servers' }" class="sidebar-menu-item">
-      <VIcon name="server" size="14" />
+      <VIcon name="server" size="14px" />
       {{ $t('Servers') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -73,7 +73,7 @@
 
     <!-- Trash -->
     <router-link :to="{ name: 'Trash' }" event="" class="sidebar-menu-item" disabled>
-      <VIcon name="trash" size="14" />
+      <VIcon name="trash" size="14px" />
       {{ $t('Trash') }}
       <!-- Premium -->
       <div class="premium-icon" v-tooltip="">
@@ -92,7 +92,7 @@
       <VIcon name="right-corner" class="left-corner rot-180" size="15" />
 
       {{ $t('GiveFeedback') }}
-      <div class="icon"><VIcon name="external-link" size="8" /></div>
+      <div class="icon"><VIcon name="external-link" size="8px" /></div>
     </button>
   </div>
 </template>
