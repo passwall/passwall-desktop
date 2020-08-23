@@ -1,10 +1,5 @@
 <template>
-  <button
-    type="button"
-    class="clipboard-btn"
-    v-clipboard:copy="copy"
-    v-tooltip="$t('Copy')"
-  >
+  <button type="button" class="clipboard-btn" v-clipboard:copy="copy" v-tooltip="$t('Copy')">
     <VIcon name="duplicate" size="13px" />
   </button>
 </template>

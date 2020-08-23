@@ -42,7 +42,7 @@
 
         <!-- IP -->
         <FormRowText v-model="form.ip" :title="$t('IP Address')" :edit-mode="isEditMode" />
-        
+
         <!-- Username -->
         <FormRowText v-model="form.username" :title="$t('Username')" :edit-mode="isEditMode" />
 
@@ -65,14 +65,14 @@
             <ClipboardButton :copy="form.password" class="mt-2" />
             <!-- Generate -->
             <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.password" />
-            <!-- Show/Hide Pass -->
+            <!-- Show/Hide -->
             <button
               type="button"
-              class="detail-page-header-icon mt-1 ml-2"
+              @click="showPass = !showPass"
+              class="detail-page-header-icon ml-2"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
@@ -125,14 +125,14 @@
             <ClipboardButton :copy="form.hosting_password" class="mt-2" />
             <!-- Generate -->
             <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.hosting_password" />
-            <!-- Show/Hide Pass -->
+            <!-- Show/Hide -->
             <button
               type="button"
-              class="detail-page-header-icon mt-1 ml-2"
+              @click="showPass = !showPass"
+              class="detail-page-header-icon ml-2"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
@@ -170,14 +170,14 @@
             <ClipboardButton :copy="form.admin_password" class="mt-2" />
             <!-- Generate -->
             <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.admin_password" />
-            <!-- Show/Hide Pass -->
+            <!-- Show/Hide -->
             <button
               type="button"
-              class="detail-page-header-icon mt-1 ml-2"
+              @click="showPass = !showPass"
+              class="detail-page-header-icon ml-2"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
@@ -189,7 +189,7 @@
             <div class="d-flex flex-items-center">
               <!-- Copy -->
               <ClipboardButton :copy="form.extra" />
-              <!-- Show/Hide Pass -->
+              <!-- Show/Hide -->
               <button
                 type="button"
                 @click="showExtra = !showExtra"

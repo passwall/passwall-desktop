@@ -47,7 +47,7 @@
             <div class="d-flex flex-items-center">
               <!-- Copy -->
               <ClipboardButton :copy="form.note" />
-              <!-- Show/Hide Pass -->
+              <!-- Show/Hide -->
               <button
                 type="button"
                 @click="showNote = !showNote"

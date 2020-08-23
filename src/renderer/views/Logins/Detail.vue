@@ -53,8 +53,8 @@
             <VFormText
               v-if="isEditMode"
               :type="showPass ? 'text' : 'password'"
-              v-model="form.password"
               :placeholder="$t('ClickToFill')"
+              v-model="form.password"
               theme="no-border"
             />
             <!-- Text -->
@@ -65,14 +65,14 @@
             <ClipboardButton :copy="form.password" />
             <!-- Generate -->
             <GeneratePassword v-if="isEditMode" class="mx-2" v-model="form.password" />
-            <!-- Show/Hide Pass -->
+            <!-- Show/Hide -->
             <button
               type="button"
+              @click="showPass = !showPass"
               class="detail-page-header-icon ml-2"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
@@ -84,7 +84,7 @@
             <div class="d-flex flex-items-center">
               <!-- Copy -->
               <ClipboardButton :copy="form.extra" />
-              <!-- Show/Hide Pass -->
+              <!-- Show/Hide -->
               <button
                 type="button"
                 @click="showExtra = !showExtra"

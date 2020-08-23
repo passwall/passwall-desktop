@@ -40,9 +40,9 @@
         <div class="form-row">
           <label v-text="$t('Username')" />
           <VFormText
+            name="Username"
             v-model="form.username"
             v-validate="'required'"
-            name="Username"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
@@ -52,9 +52,9 @@
           <label v-text="$t('Password')" />
           <div class="d-flex">
             <VFormText
+              name="Password"
               v-model="form.password"
               v-validate="'required'"
-              name="Password"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
               theme="no-border"
