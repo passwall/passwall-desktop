@@ -36,10 +36,14 @@ export default {
     },
 
     async onExport() {
-      if (!this.checkAccess()) return
+      if (!this.checkAccess()) {
+        return
+      }
 
       const filePath = dialog.showSaveDialogSync(null)
-      if (!filePath) return
+      if (!filePath) {
+        return
+      }
 
       try {
         const data = await this.Export()
@@ -55,10 +59,14 @@ export default {
     },
 
     onImport() {
-      if (!this.checkAccess()) return
+      if (!this.checkAccess()) {
+        return
+      }
 
       dialog.showOpenDialog({ properties: ['openFile'] }, async files => {
-        if (files.length === 0) return
+        if (files.length === 0) {
+          return
+        }
 
         try {
           const fileContent = fs.readFileSync(files[0]).toString()

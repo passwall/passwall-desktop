@@ -1,6 +1,6 @@
 <template>
   <div class="main-container">
-    <TheSidebar />
+    <Sidebar />
     <!-- Content -->
     <RouterView />
   </div>
@@ -8,11 +8,11 @@
 
 <script>
 import { mapActions } from 'vuex'
-import TheSidebar from './TheSidebar'
+import Sidebar from './Sidebar/index'
 
 export default {
   components: {
-    TheSidebar
+    Sidebar
   }
 }
 </script>
