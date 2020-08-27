@@ -4,6 +4,9 @@ import i18n from '@/i18n'
 import * as Waiters from '@/utils/waiters'
 Vue.prototype.$waiters = Waiters
 
+import * as Contant from '@/utils/constant'
+Vue.prototype.$C = Contant
+
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
 

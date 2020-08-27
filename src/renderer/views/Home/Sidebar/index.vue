@@ -15,70 +15,50 @@
     </div>
 
     <!-- Logins -->
-    <RouterLink :to="{ name: 'Logins' }" class="sidebar-menu-item">
-      <VIcon name="lock-closed" size="14px" />
-      {{ $t('Logins') }}
-    </RouterLink>
+    <MenuItem
+      :service="$C.Services.Logins"
+      :name="$t('Logins')"
+      icon="lock-closed"
+      :plan="user.plan"
+    />
 
     <!-- Credit Cards -->
-    <RouterLink :to="{ name: 'CreditCards' }" class="sidebar-menu-item">
-      <VIcon name="credit-card" size="14px" />
-      {{ $t('Credit Cards') }}
-      <!-- Premium -->
-      <div class="premium-icon" v-tooltip="'Premium'">
-        <VIcon name="star" size="11" class="c-secondary" />
-      </div>
-    </RouterLink>
+    <MenuItem
+      :service="$C.Services.CreditCards"
+      :name="$t('CreditCards')"
+      icon="credit-card"
+      :plan="user.plan"
+    />
 
     <!-- Bank Accounts -->
-    <RouterLink :to="{ name: 'BankAccounts' }" class="sidebar-menu-item">
-      <VIcon name="bank-account" size="14px" />
-      {{ $t('Bank Accounts') }}
-      <!-- Premium -->
-      <div class="premium-icon" v-tooltip="'Premium'">
-        <VIcon name="star" size="11" class="c-secondary" />
-      </div>
-    </RouterLink>
+    <MenuItem
+      :service="$C.Services.BankAccounts"
+      :name="$t('BankAccounts')"
+      icon="bank-account"
+      :plan="user.plan"
+    />
 
     <!-- Emails -->
-    <RouterLink :to="{ name: 'Emails' }" class="sidebar-menu-item">
-      <VIcon name="email" size="14px" />
-      {{ $t('Emails') }}
-      <!-- Premium -->
-      <div class="premium-icon" v-tooltip="'Premium'">
-        <VIcon name="star" size="11" class="c-secondary" />
-      </div>
-    </RouterLink>
+    <MenuItem :service="$C.Services.Emails" :name="$t('Emails')" icon="email" :plan="user.plan" />
 
     <!-- Private Notes -->
-    <RouterLink :to="{ name: 'Notes' }" class="sidebar-menu-item">
-      <VIcon name="private-note" size="14px" />
-      {{ $t('Private Notes') }}
-      <!-- Premium -->
-      <div class="premium-icon" v-tooltip="'Premium'">
-        <VIcon name="star" size="11" class="c-secondary" />
-      </div>
-    </RouterLink>
+    <MenuItem
+      :service="$C.Services.Notes"
+      :name="$t('Notes')"
+      icon="private-note"
+      :plan="user.plan"
+    />
 
     <!-- Servers -->
-    <RouterLink :to="{ name: 'Servers' }" class="sidebar-menu-item">
-      <VIcon name="server" size="14px" />
-      {{ $t('Servers') }}
-      <!-- Premium -->
-      <div class="premium-icon" v-tooltip="'Premium'">
-        <VIcon name="star" size="11" class="c-secondary" />
-      </div>
-    </RouterLink>
+    <MenuItem
+      :service="$C.Services.Servers"
+      :name="$t('Servers')"
+      icon="server"
+      :plan="user.plan"
+    />
 
     <!-- Trash -->
-    <RouterLink :to="{ name: 'Trash' }" event="" class="sidebar-menu-item" disabled>
-      <VIcon name="trash" size="14px" />
-      {{ $t('Trash') }}
-      <!-- Premium -->
-      <div class="premium-icon" v-tooltip="'Premium'">
-        <VIcon name="star" size="11" class="c-secondary" />
-      </div>
-    </RouterLink>
+    <MenuItem :service="$C.Services.Trash" :name="$t('Trash')" icon="trash" :plan="user.plan" />
 
     <!-- Update -->
     <button v-if="hasUpdate" @click="onClickUpdate" class="update-box flex-center">
@@ -101,8 +81,13 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import HTTPClient from '@/api/HTTPClient'
+import MenuItem from './MenuItem'
 
 export default {
+  components: {
+    MenuItem
+  },
+
   data() {
     return {
       hasUpdate: false,
@@ -264,6 +249,12 @@ export default {
     font-size: $font-size-normal;
     border-bottom: 1px solid $color-gray-600;
 
+    &.--lock {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
     &:nth-last-child(3) {
       margin-bottom: auto;
     }
@@ -297,6 +288,7 @@ export default {
   border-radius: 4px;
   margin-left: $spacer-2;
   background-color: $color-gray-400;
+  pointer-events: all;
 
   svg {
     margin: 0;
