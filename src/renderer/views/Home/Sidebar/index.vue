@@ -8,10 +8,39 @@
         <span class="account-info-name" v-text="user.name" />
         <span class="account-info-plan" v-text="user.plan" />
       </div>
-      <!-- Logout -->
-      <button @click="onClickLogout" v-tooltip="$t('Logout')">
-        <VIcon name="logout" size="14px" rotation="180" class="c-danger" />
+      <!-- Menu Button -->
+      <button @click="showAccountMenu = !showAccountMenu">
+        <VIcon :name="showAccountMenu ? 'x' : 'menu'" size="15px" class="c-white" />
       </button>
+
+      <!-- Menu -->
+      <div class="account-menu" :class="{ '--open': showAccountMenu }">
+        <div class="d-flex flex-column flex-items-start p-3">
+          <span v-text="$t('Subscription Settings')" class="c-gray-300 mb-3" />
+          <!-- Upgrade -->
+          <button @click="onClickUpgrade">
+            <VIcon name="arrow-up" size="14px" class="mr-2 c-secondary" />
+            {{ $t('Upgrade') }}
+          </button>
+          <!-- Update -->
+          <button @click="onClickUpdate">
+            <VIcon name="refresh" size="15px" class="mr-2" />
+            {{ $t('Update') }}
+          </button>
+          <!-- Cancel -->
+          <button @click="onClickCancel">
+            <VIcon name="x" size="10px" class="mr-2" />
+            {{ $t('Cancel') }}
+          </button>
+
+          <hr />
+          <!-- Logout -->
+          <button @click="onClickLogout">
+            <VIcon name="logout" size="14px" rotation="180" class="c-danger mr-2" />
+            {{ $t('Logout') }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Logins -->
@@ -91,7 +120,8 @@ export default {
   data() {
     return {
       hasUpdate: false,
-      updateLink: null
+      updateLink: null,
+      showAccountMenu: false
     }
   },
 
@@ -131,6 +161,18 @@ export default {
       open('https://passwall.typeform.com/to/GAv1h2')
     },
 
+    onClickUpgrade() {
+      open('')
+    },
+
+    onClickUpdate() {
+      open('')
+    },
+
+    onClickCancel() {
+      open('')
+    },
+
     onClickLogout() {
       this.Logout()
       this.$router.push({ name: 'Login' })
@@ -148,6 +190,7 @@ export default {
   flex-direction: column;
 
   .account {
+    position: relative;
     margin: 32px 0px;
     width: 100%;
     height: 40px;
@@ -155,6 +198,44 @@ export default {
     justify-content: space-between;
     align-items: center;
     padding: 0 $spacer-3;
+
+    &-menu {
+      position: absolute;
+      background-color: $color-gray-500;
+      border-radius: 12px;
+      height: 0px;
+      color: white;
+      top: 55px;
+      left: 12px;
+      right: 12px;
+      z-index: 2;
+      transition: all 0.1s ease;
+      overflow: hidden;
+
+      &.--open {
+        border: 1px solid $color-gray-400;
+        height: 206px;
+      }
+
+      hr {
+        width: 174px;
+        border-bottom: 2px solid black;
+        margin-bottom: 10px;
+        margin-left: -16px;
+      }
+
+      button {
+        color: white;
+        font-size: $font-size-medium;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+
+        &:last-child {
+          margin-bottom: 0px;
+        }
+      }
+    }
 
     &-avatar {
       display: flex;
