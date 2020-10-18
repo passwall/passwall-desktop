@@ -129,9 +129,6 @@ export default {
   created() {
     this.checkUpdate()
   },
-  // cancel_url: "0001-01-01T01:55:52+01:55"
-  // status: "trialing"
-  // update_url:
 
   computed: {
     ...mapState(['user']),
@@ -166,7 +163,10 @@ export default {
     },
 
     onClickUpgrade() {
-      shell.openExternalSync('')
+      window.Paddle.Checkout.open({
+        product: 630862,
+        email: this.user.email
+      })
     },
 
     onClickUpdate() {

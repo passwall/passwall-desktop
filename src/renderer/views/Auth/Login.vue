@@ -2,7 +2,7 @@
   <div class="login-container">
     <!-- Left Background -->
     <div>
-      <VIcon name="passwall-back" class="login-background" width="450px" height="540px" />
+      <VIcon name="passwall-back" class="login-background" width="450px" height="560px" />
       <VIcon name="right-corner" class="login-right-corner" size="82px" />
     </div>
     <!-- Login Form -->
