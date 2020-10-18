@@ -6,7 +6,7 @@
       <!-- Info -->
       <div class="account-info">
         <span class="account-info-name" v-text="user.name" />
-        <span class="account-info-plan" v-text="user.plan" />
+        <span class="account-info-plan" v-text="user.status == 'active' ? 'PRO' : 'FREE'" />
       </div>
       <!-- Menu Button -->
       <button @click="showAccountMenu = !showAccountMenu">
@@ -90,7 +90,7 @@
     <MenuItem :service="$C.Services.Trash" :name="$t('Trash')" icon="trash" :plan="user.plan" />
 
     <!-- Update -->
-    <button v-if="hasUpdate" @click="onClickUpdate" class="update-box flex-center">
+    <button v-if="hasUpdate" @click="onClickUpdateApp" class="update-box flex-center">
       {{ $t('There is an update available.') }}
     </button>
 
@@ -111,6 +111,7 @@
 import { mapActions, mapState } from 'vuex'
 import HTTPClient from '@/api/HTTPClient'
 import MenuItem from './MenuItem'
+import { shell } from 'electron'
 
 export default {
   components: {
@@ -128,6 +129,9 @@ export default {
   created() {
     this.checkUpdate()
   },
+  // cancel_url: "0001-01-01T01:55:52+01:55"
+  // status: "trialing"
+  // update_url:
 
   computed: {
     ...mapState(['user']),
@@ -141,8 +145,8 @@ export default {
   methods: {
     ...mapActions(['Logout']),
 
-    onClickUpdate() {
-      open(this.updateLink || 'https://passwall.io')
+    onClickUpdateApp() {
+      shell.openExternalSync(this.updateLink || 'https://passwall.io')
     },
 
     async checkUpdate() {
@@ -158,19 +162,19 @@ export default {
     },
 
     onClickFeedback() {
-      open('https://passwall.typeform.com/to/GAv1h2')
+      shell.openExternalSync('https://passwall.typeform.com/to/GAv1h2')
     },
 
     onClickUpgrade() {
-      open('')
+      shell.openExternalSync('')
     },
 
     onClickUpdate() {
-      open('')
+      shell.openExternalSync(this.user.update_url)
     },
 
     onClickCancel() {
-      open('')
+      shell.openExternalSync(this.user.cancel_url)
     },
 
     onClickLogout() {
