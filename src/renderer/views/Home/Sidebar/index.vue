@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import HTTPClient from '@/api/HTTPClient'
 import MenuItem from './MenuItem'
 import { shell } from 'electron'
@@ -129,14 +129,11 @@ export default {
 
   computed: {
     ...mapState(['user']),
+    ...mapGetters(['hasProPlan']),
 
     firstLettersOfName() {
       const [firstName, lastName] = this.user.name.split(' ')
       return `${firstName[0]}${(lastName || ' ')[0]}`
-    },
-
-    hasProPlan() {
-      return this.user.status == 'active'
     },
 
     accountMenuClass() {
@@ -197,6 +194,7 @@ export default {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  user-select: none;
 
   .account {
     position: relative;
@@ -385,7 +383,6 @@ export default {
   border-radius: 4px;
   margin-left: $spacer-2;
   background-color: $color-gray-400;
-  pointer-events: all;
 
   svg {
     margin: 0;

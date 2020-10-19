@@ -29,6 +29,12 @@ export default new Vuex.Store({
     }
   },
 
+  getters: {
+    hasProPlan(state) {
+      return state.user.status == 'active'
+    }
+  },
+
   actions: {
     async Login({ state }, payload) {
       payload.master_password = CryptoUtils.sha256Encrypt(payload.master_password)

@@ -9,7 +9,11 @@
       </button>
 
       <!-- Credit Cards -->
-      <button @click="onClickItem('CreditCardCreate')" class="add-item-menu-item">
+      <button
+        @click="onClickItem('CreditCardCreate')"
+        class="add-item-menu-item"
+        :class="{ '--lock': !hasProPlan }"
+      >
         <VIcon name="credit-card" size="14px" class="icon" />
         {{ $t('Credit Cards') }}
         <!-- Premium -->
@@ -17,7 +21,11 @@
       </button>
 
       <!-- Bank Accounts -->
-      <button @click="onClickItem('BankAccountCreate')" class="add-item-menu-item">
+      <button
+        @click="onClickItem('BankAccountCreate')"
+        class="add-item-menu-item"
+        :class="{ '--lock': !hasProPlan }"
+      >
         <VIcon name="bank-account" size="14px" class="icon" />
         {{ $t('Bank Accounts') }}
         <!-- Premium -->
@@ -25,7 +33,11 @@
       </button>
 
       <!-- Emails -->
-      <button @click="onClickItem('EmailCreate')" class="add-item-menu-item">
+      <button
+        @click="onClickItem('EmailCreate')"
+        class="add-item-menu-item"
+        :class="{ '--lock': !hasProPlan }"
+      >
         <VIcon name="email" size="14px" class="icon" />
         {{ $t('Emails') }}
         <!-- Premium -->
@@ -33,7 +45,11 @@
       </button>
 
       <!-- Private Notes -->
-      <button @click="onClickItem('NoteCreate')" class="add-item-menu-item">
+      <button
+        @click="onClickItem('NoteCreate')"
+        class="add-item-menu-item"
+        :class="{ '--lock': !hasProPlan }"
+      >
         <VIcon name="private-note" size="14px" class="icon" />
         {{ $t('Private Notes') }}
         <!-- Premium -->
@@ -41,7 +57,11 @@
       </button>
 
       <!-- Servers -->
-      <button @click="onClickItem('ServerCreate')" class="add-item-menu-item">
+      <button
+        @click="onClickItem('ServerCreate')"
+        class="add-item-menu-item"
+        :class="{ '--lock': !hasProPlan }"
+      >
         <VIcon name="server" size="14px" class="icon" />
         {{ $t('Servers') }}
         <!-- Premium -->
@@ -52,6 +72,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'AddItemMenu',
 
@@ -60,6 +82,10 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+
+  computed: {
+    ...mapGetters(['hasProPlan'])
   },
 
   methods: {
@@ -100,6 +126,12 @@ export default {
       padding: 10px $spacer-4;
       color: #fff;
       cursor: pointer;
+
+      &.--lock {
+        opacity: 0.6;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
 
       .icon {
         margin-right: $spacer-2;
