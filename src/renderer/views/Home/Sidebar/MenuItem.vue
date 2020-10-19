@@ -24,12 +24,12 @@ export default {
     name: String,
     route: String,
     icon: String,
-    plan: String
+    lock: Boolean
   },
 
   computed: {
     isLock() {
-      return this.plan == 'Free' && PremiumServices.includes(this.service)
+      return this.lock && PremiumServices.includes(this.service)
     }
   }
 }

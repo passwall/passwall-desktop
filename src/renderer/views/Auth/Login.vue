@@ -27,9 +27,9 @@
           v-model="LoginForm.master_password"
           size="medium"
           type="password"
-          v-validate="'required|min:6|max:100'"
           name="Master Password"
           placeholder="Master Password"
+          v-validate="'required|min:6|max:100'"
         />
       </div>
       <!-- Login Btn -->

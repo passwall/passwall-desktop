@@ -6,7 +6,7 @@
       <!-- Info -->
       <div class="account-info">
         <span class="account-info-name" v-text="user.name" />
-        <span class="account-info-plan" v-text="user.status == 'active' ? 'PRO' : 'FREE'" />
+        <span class="account-info-plan" v-text="hasProPlan ? 'PRO' : 'FREE'" />
       </div>
       <!-- Menu Button -->
       <button @click="showAccountMenu = !showAccountMenu">
@@ -14,24 +14,26 @@
       </button>
 
       <!-- Menu -->
-      <div class="account-menu" :class="{ '--open': showAccountMenu }">
+      <div class="account-menu" :class="accountMenuClass">
         <div class="d-flex flex-column flex-items-start p-3">
           <span v-text="$t('Subscription Settings')" class="c-gray-300 mb-3" />
           <!-- Upgrade -->
-          <button @click="onClickUpgrade">
+          <button @click="onClickUpgrade" v-if="!hasProPlan">
             <VIcon name="arrow-up" size="14px" class="mr-2 c-secondary" />
             {{ $t('Upgrade') }}
           </button>
-          <!-- Update -->
-          <button @click="onClickUpdate">
-            <VIcon name="refresh" size="15px" class="mr-2" />
-            {{ $t('Update') }}
-          </button>
-          <!-- Cancel -->
-          <button @click="onClickCancel">
-            <VIcon name="x" size="10px" class="mr-2" />
-            {{ $t('Cancel') }}
-          </button>
+          <template v-else>
+            <!-- Update -->
+            <button @click="onClickUpdate">
+              <VIcon name="refresh" size="15px" class="mr-2" />
+              {{ $t('Update') }}
+            </button>
+            <!-- Cancel -->
+            <button @click="onClickCancel">
+              <VIcon name="x" size="10px" class="mr-2" />
+              {{ $t('Cancel') }}
+            </button>
+          </template>
 
           <hr />
           <!-- Logout -->
@@ -44,19 +46,14 @@
     </div>
 
     <!-- Logins -->
-    <MenuItem
-      :service="$C.Services.Logins"
-      :name="$t('Logins')"
-      icon="lock-closed"
-      :plan="user.plan"
-    />
+    <MenuItem :service="$C.Services.Logins" :name="$t('Logins')" icon="lock-closed" />
 
     <!-- Credit Cards -->
     <MenuItem
       :service="$C.Services.CreditCards"
       :name="$t('CreditCards')"
       icon="credit-card"
-      :plan="user.plan"
+      :lock="!hasProPlan"
     />
 
     <!-- Bank Accounts -->
@@ -64,18 +61,18 @@
       :service="$C.Services.BankAccounts"
       :name="$t('BankAccounts')"
       icon="bank-account"
-      :plan="user.plan"
+      :lock="!hasProPlan"
     />
 
     <!-- Emails -->
-    <MenuItem :service="$C.Services.Emails" :name="$t('Emails')" icon="email" :plan="user.plan" />
+    <MenuItem :service="$C.Services.Emails" :name="$t('Emails')" icon="email" :lock="!hasProPlan" />
 
     <!-- Private Notes -->
     <MenuItem
       :service="$C.Services.Notes"
       :name="$t('Notes')"
       icon="private-note"
-      :plan="user.plan"
+      :lock="!hasProPlan"
     />
 
     <!-- Servers -->
@@ -83,11 +80,11 @@
       :service="$C.Services.Servers"
       :name="$t('Servers')"
       icon="server"
-      :plan="user.plan"
+      :lock="!hasProPlan"
     />
 
     <!-- Trash -->
-    <MenuItem :service="$C.Services.Trash" :name="$t('Trash')" icon="trash" :plan="user.plan" />
+    <MenuItem :service="$C.Services.Trash" :name="$t('Trash')" icon="trash" :lock="!hasProPlan" />
 
     <!-- Update -->
     <button v-if="hasUpdate" @click="onClickUpdateApp" class="update-box flex-center">
@@ -136,6 +133,14 @@ export default {
     firstLettersOfName() {
       const [firstName, lastName] = this.user.name.split(' ')
       return `${firstName[0]}${(lastName || ' ')[0]}`
+    },
+
+    hasProPlan() {
+      return this.user.status == 'active'
+    },
+
+    accountMenuClass() {
+      return [this.hasProPlan ? '--pro-plan' : '--free-plan', { '--open': this.showAccountMenu }]
     }
   },
 
@@ -218,7 +223,14 @@ export default {
 
       &.--open {
         border: 1px solid $color-gray-400;
-        height: 206px;
+
+        &.--free-plan {
+          height: 130px;
+        }
+
+        &.--pro-plan {
+          height: 167px;
+        }
       }
 
       hr {
