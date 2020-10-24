@@ -21,6 +21,7 @@
             :active="$route.params.id == item.id"
             :data="item"
             @click="onClickItem(item.id)"
+            type="Login"
           />
         </template>
         <!-- Empty State -->
