@@ -121,7 +121,6 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import { textEllipsis } from '../../utils'
 
 export default {
   data() {
@@ -146,6 +145,7 @@ export default {
 
   methods: {
     ...mapActions('Logins', ['Get', 'Delete', 'Update']),
+
     getDetail(id) {
       const onSuccess = async () => {
         await this.Get(id)
