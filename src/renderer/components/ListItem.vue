@@ -6,7 +6,7 @@
     </div>
     <!-- Summary -->
     <div class="list-item-summary">
-      <span v-text="data.title" class="url" />
+      <span v-text="getTitle" class="url" />
     </div>
     <!-- Detail -->
     <button class="list-item-detail">
@@ -27,6 +27,11 @@ export default {
     active: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    getTitle: function() {
+      return this.data.title ? this.data.title : this.data.url
     }
   }
 }

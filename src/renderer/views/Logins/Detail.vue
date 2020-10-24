@@ -7,7 +7,7 @@
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.title" class="url" />
+        <span v-text="getTitle" class="url" />
         <span v-text="form.username" class="email" />
       </div>
 
@@ -198,6 +198,9 @@ export default {
         `Password: ${this.form.password}` +
         `Extra: ${this.form.extra}\n`
       )
+    },
+    getTitle(){
+      return this.form.title ? this.form.title : this.form.url
     }
   }
 }
