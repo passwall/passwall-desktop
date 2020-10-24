@@ -24,6 +24,10 @@ export default {
       type: Object,
       default: () => ({})
     },
+    type: {
+      type: String,
+      default: 'NotLogin'
+    },
     active: {
       type: Boolean,
       default: false
@@ -31,7 +35,8 @@ export default {
   },
   computed: {
     getTitle: function() {
-      return this.data.title ? this.data.title : this.data.url
+      if (this.type === 'Login') return this.data.title ? this.data.title : this.data.url
+      else return this.data.title
     }
   }
 }

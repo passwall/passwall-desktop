@@ -1,44 +1,47 @@
 <template>
-  <div>
+  <div class="logoWrapper">
     <img
       v-if="url && logoIsAvailable"
       @error="logoIsAvailable = false"
-      :src="companyLogo"
+      @load="logoIsAvailable = true"
+      :src="getLogo(url)"
       class="company-logo"
     />
+    <h6 v-else>{{ companyLetter(url) }}</h6>
   </div>
 </template>
 
 <script>
+import LogoMixin from '@/mixins/logo'
+
 export default {
   name: 'CompanyLogo',
+  mixins: [LogoMixin],
 
   props: {
     url: String
-  },
-
-  data() {
-    return {
-      logoIsAvailable: true
-    }
-  },
-
-  computed: {
-    companyLogo() {
-      return `http://logo.clearbit.com/${this.domainFromURL}`
-    },
-
-    domainFromURL() {
-      // Regex is from: https://stackoverflow.com/a/33651369/10991790
-      const matches = this.url.match(/^(?:https?:)?(?:\/\/)?([^\/\?]+)/i)
-      return matches && matches[1]
-    }
   }
 }
 </script>
 
 <style lang="scss">
+.logoWrapper {
+  height: 32px;
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  h6 {
+    color: $color-secondary;
+    font-weight: $font-weight-semibold;
+  }
+
+}
 .company-logo {
   border-radius: 5px;
+  height: 100%;
+  width: 100%;
 }
 </style>
