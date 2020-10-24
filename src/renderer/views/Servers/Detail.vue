@@ -3,11 +3,11 @@
     <div class="detail-page-header">
       <!-- Avatar -->
       <div class="detail-page-header-avatar">
-        <img v-if="form.src" :src="form.src" />
+        <CompanyLogo :url="form.url" />
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.title" class="url" />
+        <span v-text="getTitle" class="url" />
         <span v-text="form.username" class="email" />
       </div>
 
@@ -307,6 +307,10 @@ export default {
         `Admin Username: ${this.form.admin_username}\n` +
         `Admin Password: ${this.form.admin_password}`
       )
+    },
+    
+    getTitle(){
+      return this.form.title ? this.form.title : this.form.url
     }
   }
 }
