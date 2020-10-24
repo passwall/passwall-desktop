@@ -5,10 +5,6 @@ export default {
       url: ''
     }
   },
-  created: function (){
-    console.log('hey')
-    this.logoIsAvailable = true
-  },
   methods: {
     getLogo(url) {
       this.url = url
