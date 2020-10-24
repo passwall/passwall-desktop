@@ -87,7 +87,7 @@
           />
           <!-- Text -->
           <div v-else class="d-flex flex-items-center px-3 py-2">
-            <span v-text="form.url" class="mr-2" />
+            <span v-text="shortURL" class="mr-2" />
             <ClipboardButton :copy="form.url" />
           </div>
         </div>
@@ -226,6 +226,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import { textEllipsis } from '../../utils'
 
 export default {
   data() {
