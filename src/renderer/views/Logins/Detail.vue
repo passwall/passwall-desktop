@@ -64,7 +64,7 @@
             <!-- Copy -->
             <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mx-2" v-model="form.password" />
+            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.password" />
             <!-- Show/Hide -->
             <button
               type="button"
@@ -199,7 +199,7 @@ export default {
         `Extra: ${this.form.extra}\n`
       )
     },
-    getTitle(){
+    getTitle() {
       return this.form.title ? this.form.title : this.form.url
     }
   }

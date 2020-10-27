@@ -121,16 +121,6 @@ const router = new Router({
               component: require('@/views/Servers/Detail').default
             }
           ]
-        },
-        {
-          path: '/identities',
-          name: 'Identities',
-          component: require('@/views/Identities/index').default
-        },
-        {
-          path: '/trash',
-          name: 'Trash',
-          component: require('@/views/Trash/index').default
         }
       ]
     },

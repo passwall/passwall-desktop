@@ -68,11 +68,11 @@
               <span v-text="showPass ? form.verification_number : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.verification_number" class="mt-2" />
+            <ClipboardButton :copy="form.verification_number" />
             <!-- Generate -->
             <GeneratePassword
               v-if="isEditMode"
-              class="mt-2 mx-2"
+              class="mx-1"
               v-model="form.verification_number"
             />
             <!-- Show/Hide -->

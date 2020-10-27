@@ -259,7 +259,7 @@ hr {
     .form-row {
       span {
         max-width: 320px;
-        @extend .text-truncate
+        @extend .text-truncate;
       }
     }
 
@@ -269,4 +269,32 @@ hr {
       right: 32px;
     }
   }
+}
+
+.content-container {
+  width: 100%;
+  display: flex;
+}
+
+.items-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 295px;
+  max-width: 295px;
+  height: 100vh;
+
+  & > .ps {
+    height: 100%;
+  }
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: $color-gray-600;
+  padding: 0 $spacer-3;
+  min-height: 64px;
+  height: 64px;
+  border-bottom: 1px solid black;
 }

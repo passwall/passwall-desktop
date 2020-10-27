@@ -5,7 +5,6 @@ export const Services = {
   Emails: 'Emails',
   Notes: 'Notes',
   Servers: 'Servers',
-  Trash: 'Trash'
 }
 
 export const PremiumServices = [
@@ -14,5 +13,4 @@ export const PremiumServices = [
   Services.Emails,
   Services.Notes,
   Services.Servers,
-  Services.Trash
 ]
