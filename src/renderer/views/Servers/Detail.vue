@@ -122,9 +122,9 @@
               <span v-text="showPass ? form.hosting_password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.hosting_password" class="mt-2" />
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.hosting_password" />
+            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.hosting_password" />
             <!-- Show/Hide -->
             <button
               type="button"
@@ -167,9 +167,9 @@
               <span v-text="showPass ? form.admin_password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.admin_password" class="mt-2" />
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.admin_password" />
+            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.admin_password" />
             <!-- Show/Hide -->
             <button
               type="button"

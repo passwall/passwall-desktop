@@ -50,15 +50,18 @@
               :placeholder="$t('ClickToFill')"
               theme="no-border"
             />
+            <!-- Copy -->
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword class="mt-2 mr-3" v-model="form.password" />
+            <GeneratePassword class="mx-1" v-model="form.password" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-1 ml-n1"
+              type="button"
+              @click="showPass = !showPass"
+              class="detail-page-header-icon ml-2"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>

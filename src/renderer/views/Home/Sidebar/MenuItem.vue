@@ -7,7 +7,7 @@
     <VIcon :name="icon" size="14px" />
     {{ name }}
     <!-- Premium -->
-    <div v-if="isLock" class="premium-icon" v-tooltip="'Premium'">
+    <div v-if="isNotLogins" class="premium-icon" v-tooltip="'Premium'">
       <VIcon name="star" size="11" class="c-secondary" />
     </div>
   </RouterLink>
@@ -30,7 +30,10 @@ export default {
   computed: {
     isLock() {
       return this.lock && PremiumServices.includes(this.service)
-    }
+    },
+    isNotLogins() {
+      return this.name !== 'Logins'
+    },
   }
 }
 </script>

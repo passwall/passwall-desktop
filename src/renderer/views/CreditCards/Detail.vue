@@ -69,12 +69,6 @@
             </div>
             <!-- Copy -->
             <ClipboardButton :copy="form.verification_number" />
-            <!-- Generate -->
-            <GeneratePassword
-              v-if="isEditMode"
-              class="mx-1"
-              v-model="form.verification_number"
-            />
             <!-- Show/Hide -->
             <button
               type="button"
