@@ -3,11 +3,11 @@
     <div class="detail-page-header">
       <!-- Avatar -->
       <div class="detail-page-header-avatar">
-        <img v-if="form.src" :src="form.src" />
+        <CompanyLogo :url="form.title" />
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.card_name" class="url" />
+        <span v-text="form.title" class="url" />
         <span v-text="form.number" class="email" />
       </div>
 
@@ -38,7 +38,7 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- CardName -->
-        <FormRowText v-model="form.card_name" :title="$t('Card Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('Card Name')" :edit-mode="isEditMode" />
 
         <!-- CardholderName -->
         <FormRowText v-model="form.cardholder_name" :title="$t('Cardholder Name')" :edit-mode="isEditMode" />
@@ -173,7 +173,7 @@ export default {
 
     creditCardCopyContent() {
       return (
-        `Card Name: ${this.form.card_name}\n` +
+        `Card Name: ${this.form.title}\n` +
         `Cardholder Name: ${this.form.cardholder_name}\n` +
         `Type: ${this.form.type}\n` +
         `Number: ${this.form.number}`

@@ -3,11 +3,11 @@
     <div class="detail-page-header">
       <!-- Avatar -->
       <div class="detail-page-header-avatar">
-        <img v-if="form.src" :src="form.src" />
+        <CompanyLogo :url="form.title" />
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.bank_name" class="url" />
+        <span v-text="getTitle" class="url" />
         <span v-text="form.account_name" class="email" />
       </div>
 
@@ -38,7 +38,7 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- BankName -->
-        <FormRowText v-model="form.bank_name" :title="$t('Bank Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('Bank Name')" :edit-mode="isEditMode" />
 
         <!-- BankCode -->
         <FormRowText v-model="form.bank_code" :title="$t('Bank Code')" :edit-mode="isEditMode" />
@@ -172,12 +172,16 @@ export default {
 
     bankAccountCopyContent() {
       return (
-        `Bank Name: ${this.form.bank_name}\n` +
+        `Bank Name: ${this.form.title}\n` +
         `Bank Code: ${this.form.bank_code}\n` +
         `Account Name: ${this.form.account_name}\n` +
         `Account Number: ${this.form.account_number}\n` +
         `IBAN: ${this.form.iban}\nCurrency: ${this.form.currency}\n`
       )
+    },
+
+    getTitle(){
+      return this.form.title
     }
   }
 }

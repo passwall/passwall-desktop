@@ -14,13 +14,13 @@
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
       <form class="form" @submit.stop.prevent="onClickSave">
-        <!-- BankName -->
+        <!-- Title -->
         <div class="form-row">
           <label v-text="$t('Bank Name')" />
           <VFormText
-            v-model="form.bank_name"
+            v-model="form.title"
             v-validate="'required'"
-            name="BankName"
+            name="Title"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
@@ -126,7 +126,7 @@ export default {
     return {
       showPass: false,
       form: {
-        bank_name: '',
+        title: '',
         bank_code: '',
         account_name: '',
         account_number: '',
