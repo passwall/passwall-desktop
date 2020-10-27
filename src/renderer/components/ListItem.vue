@@ -2,7 +2,7 @@
   <div class="list-item" :class="{ '--active': active }" @click="$emit('click')">
     <!-- Avatar -->
     <div class="list-item-avatar">
-      <CompanyLogo :url="data.url" />
+      <CompanyLogo :url="getUrl" />
     </div>
     <!-- Summary -->
     <div class="list-item-summary">
@@ -36,6 +36,10 @@ export default {
   computed: {
     getTitle: function() {
       if (this.type === 'Login') return this.data.title ? this.data.title : this.data.url
+      else return this.data.title
+    },
+    getUrl: function() {
+      if (this.type === 'Login') return this.data.url ? this.data.url : this.data.title
       else return this.data.title
     }
   }
