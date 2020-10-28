@@ -51,7 +51,7 @@
     <!-- Credit Cards -->
     <MenuItem
       :service="$C.Services.CreditCards"
-      :name="$t('CreditCards')"
+      :name="$t('Credit Cards')"
       icon="credit-card"
       :lock="!hasProPlan"
     />
@@ -59,7 +59,7 @@
     <!-- Bank Accounts -->
     <MenuItem
       :service="$C.Services.BankAccounts"
-      :name="$t('BankAccounts')"
+      :name="$t('Bank Accounts')"
       icon="bank-account"
       :lock="!hasProPlan"
     />

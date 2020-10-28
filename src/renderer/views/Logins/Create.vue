@@ -16,7 +16,7 @@
       <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
         <div class="form-row">
-          <label v-text="$t('Title')" />
+          <label v-text="$t('TITLE')" />
           <VFormText
             name="Title"
             theme="no-border"
@@ -38,7 +38,7 @@
         </div>
         <!-- Username -->
         <div class="form-row">
-          <label v-text="$t('Username')" />
+          <label v-text="$t('USERNAME')" />
           <VFormText
             name="Username"
             v-model="form.username"
@@ -49,7 +49,7 @@
         </div>
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               name="Password"
@@ -77,7 +77,7 @@
         <!-- Extra -->
         <div class="form-row">
           <div class="d-flex flex-content-between">
-            <label v-text="$t('Extra')" />
+            <label v-text="$t('EXTRA')" />
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-2 ml-n1"

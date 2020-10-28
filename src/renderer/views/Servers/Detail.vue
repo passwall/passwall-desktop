@@ -38,17 +38,17 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
-        <FormRowText v-model="form.title" :title="$t('Title')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('TITLE')" :edit-mode="isEditMode" />
 
         <!-- IP -->
-        <FormRowText v-model="form.ip" :title="$t('IP Address')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.ip" :title="$t('IP ADDRESS')" :edit-mode="isEditMode" />
 
         <!-- Username -->
-        <FormRowText v-model="form.username" :title="$t('Username')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.username" :title="$t('USERNAME')" :edit-mode="isEditMode" />
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
@@ -93,7 +93,7 @@
         </div>
         <!-- HostingUsername -->
         <div class="form-row">
-          <label v-text="$t('Hosting Username')" />
+          <label v-text="$t('HOSTING USERNAME')" />
           <VFormText
             v-if="isEditMode"
             v-model="form.hosting_username"
@@ -108,7 +108,7 @@
         </div>
         <!-- HostingPassword -->
         <div class="form-row">
-          <label v-text="$t('Hosting Password')" />
+          <label v-text="$t('HOSTING PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
@@ -138,7 +138,7 @@
         </div>
         <!-- AdminUsername -->
         <div class="form-row">
-          <label v-text="$t('Admin Username')" />
+          <label v-text="$t('ADMIN USERNAME')" />
           <VFormText
             v-if="isEditMode"
             v-model="form.admin_username"
@@ -153,7 +153,7 @@
         </div>
         <!-- AdminPassword -->
         <div class="form-row">
-          <label v-text="$t('Admin Password')" />
+          <label v-text="$t('ADMIN PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
@@ -185,7 +185,7 @@
         <!-- Extra -->
         <div class="form-row">
           <div class="d-flex flex-items-end flex-content-between">
-            <label v-text="$t('Extra')" />
+            <label v-text="$t('EXTRA')" />
             <div class="d-flex flex-items-center">
               <!-- Copy -->
               <ClipboardButton :copy="form.extra" />

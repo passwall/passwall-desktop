@@ -16,7 +16,7 @@
       <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
         <div class="form-row">
-          <label v-text="$t('Card Name')" />
+          <label v-text="$t('CARD NAME')" />
           <VFormText
             v-model="form.title"
             v-validate="'required'"
@@ -28,7 +28,7 @@
 
         <!-- CardholderName -->
         <div class="form-row">
-          <label v-text="$t('Cardholder Name')" />
+          <label v-text="$t('CARDHOLDER NAME')" />
           <VFormText
             v-model="form.cardholder_name"
             name="CardholderName"
@@ -39,7 +39,7 @@
 
         <!-- Type -->
         <div class="form-row">
-          <label v-text="$t('Type')" />
+          <label v-text="$t('TYPE')" />
           <VFormText
             v-model="form.type"
             name="Type"
@@ -50,7 +50,7 @@
 
         <!-- Number -->
         <div class="form-row">
-          <label v-text="$t('Number')" />
+          <label v-text="$t('NUMBER')" />
           <VFormText
             v-model="form.number"
             name="Number"
@@ -61,7 +61,7 @@
 
         <!-- ExpiryDate -->
         <div class="form-row">
-          <label v-text="$t('Expiry Date')" />
+          <label v-text="$t('EXPIRY DATE')" />
           <VFormText
             v-model="form.expiry_date"
             name="ExpiryDate"
@@ -72,7 +72,7 @@
 
         <!-- VerificationNumber -->
         <div class="form-row">
-          <label v-text="$t('Verification Number')" />
+          <label v-text="$t('VERIFICATION NUMBER')" />
           <div class="d-flex">
             <VFormText
               v-model="form.verification_number"

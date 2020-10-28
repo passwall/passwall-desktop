@@ -16,7 +16,7 @@
       <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
         <div class="form-row">
-          <label v-text="$t('Title')" />
+          <label v-text="$t('TITLE')" />
           <VFormText
             v-model="form.title"
             v-validate="'required'"
@@ -27,7 +27,7 @@
         </div>
         <!-- IP -->
         <div class="form-row">
-          <label v-text="$t('IP Address')" />
+          <label v-text="$t('IP ADDRESS')" />
           <VFormText
             v-model="form.ip"
             name="IP"
@@ -37,7 +37,7 @@
         </div>
         <!-- Username -->
         <div class="form-row">
-          <label v-text="$t('Username')" />
+          <label v-text="$t('USERNAME')" />
           <VFormText
             v-model="form.username"
             name="Username"
@@ -48,7 +48,7 @@
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-model="form.password"
@@ -83,7 +83,7 @@
 
         <!-- HostingUsername -->
         <div class="form-row">
-          <label v-text="$t('Hosting Username')" />
+          <label v-text="$t('HOSTING USERNAME')" />
           <VFormText
             v-model="form.hosting_username"
             name="HostingUsername"
@@ -94,7 +94,7 @@
 
         <!-- HostingPassword -->
         <div class="form-row">
-          <label v-text="$t('Hosting Password')" />
+          <label v-text="$t('HOSTING PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-model="form.hosting_password"
@@ -118,7 +118,7 @@
 
         <!-- AdminUsername -->
         <div class="form-row">
-          <label v-text="$t('Admin Username')" />
+          <label v-text="$t('ADMIN USERNAME')" />
           <VFormText
             v-model="form.admin_username"
             name="AdminUsername"
@@ -129,7 +129,7 @@
 
         <!-- AdminPassword -->
         <div class="form-row">
-          <label v-text="$t('Admin Password')" />
+          <label v-text="$t('ADMIN PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-model="form.admin_password"
@@ -154,7 +154,7 @@
         <!-- Extra -->
         <div class="form-row">
           <div class="d-flex flex-content-between">
-            <label v-text="$t('Extra')" />
+            <label v-text="$t('EXTRA')" />
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-2 ml-n1"

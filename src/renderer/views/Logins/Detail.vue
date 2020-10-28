@@ -38,17 +38,17 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
-        <FormRowText v-model="form.title" :title="$t('Title')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('TITLE')" :edit-mode="isEditMode" />
 
         <!-- URL -->
         <FormRowText v-model="form.url" :title="$t('URL')" :edit-mode="isEditMode" />
 
         <!-- Username -->
-        <FormRowText v-model="form.username" :title="$t('Username')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.username" :title="$t('USERNAME')" :edit-mode="isEditMode" />
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex flex-items-center">
             <VFormText
               v-if="isEditMode"
@@ -80,7 +80,7 @@
         <!-- Extra -->
         <div class="form-row">
           <div class="d-flex flex-items-end flex-content-between">
-            <label v-text="$t('Extra')" />
+            <label v-text="$t('EXTRA')" />
             <div class="d-flex flex-items-center">
               <!-- Copy -->
               <ClipboardButton :copy="form.extra" />

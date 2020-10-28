@@ -16,7 +16,7 @@
       <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
         <div class="form-row">
-          <label v-text="$t('Title')" />
+          <label v-text="$t('TITLE')" />
           <VFormText
             v-model="form.title"
             v-validate="'required'"
@@ -28,7 +28,7 @@
 
         <!-- Email -->
         <div class="form-row">
-          <label v-text="$t('Email')" />
+          <label v-text="$t('EMAIL')" />
           <VFormText
             v-model="form.email"
             v-validate="'required'"
@@ -40,7 +40,7 @@
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-model="form.password"

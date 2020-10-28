@@ -38,26 +38,26 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- BankName -->
-        <FormRowText v-model="form.title" :title="$t('Bank Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('BANK NAME')" :edit-mode="isEditMode" />
 
         <!-- BankCode -->
-        <FormRowText v-model="form.bank_code" :title="$t('Bank Code')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.bank_code" :title="$t('BANK CODE')" :edit-mode="isEditMode" />
 
         <!-- AccountName -->
-        <FormRowText v-model="form.account_name" :title="$t('Account Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.account_name" :title="$t('ACCOUNT NAME')" :edit-mode="isEditMode" />
 
         <!-- AccountNumber -->
-        <FormRowText v-model="form.account_number" :title="$t('Account Number')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.account_number" :title="$t('ACCOUNT NUMBER')" :edit-mode="isEditMode" />
 
         <!-- IBAN -->
         <FormRowText v-model="form.iban" :title="$t('IBAN')" :edit-mode="isEditMode" />
 
         <!-- Currency -->
-        <FormRowText v-model="form.currency" :title="$t('Currency')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.currency" :title="$t('CURRENCY')" :edit-mode="isEditMode" />
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"

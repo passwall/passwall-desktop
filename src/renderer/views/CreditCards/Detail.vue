@@ -38,23 +38,23 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- CardName -->
-        <FormRowText v-model="form.title" :title="$t('Card Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('CARD NAME')" :edit-mode="isEditMode" />
 
         <!-- CardholderName -->
-        <FormRowText v-model="form.cardholder_name" :title="$t('Cardholder Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.cardholder_name" :title="$t('CARDHOLDER NAME')" :edit-mode="isEditMode" />
 
         <!-- Type -->
-        <FormRowText v-model="form.type" :title="$t('Type')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.type" :title="$t('TYPE')" :edit-mode="isEditMode" />
 
         <!-- Number -->
-        <FormRowText v-model="form.number" :title="$t('Number')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.number" :title="$t('NUMBER')" :edit-mode="isEditMode" />
 
         <!-- ExpiryDate -->
-        <FormRowText v-model="form.expiry_date" :title="$t('Expiry Date')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.expiry_date" :title="$t('EXPIRY DATE')" :edit-mode="isEditMode" />
 
         <!-- VerificationNumber -->
         <div class="form-row">
-          <label v-text="$t('Verification Number')" />
+          <label v-text="$t('VERIFICATION NUMBER')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
