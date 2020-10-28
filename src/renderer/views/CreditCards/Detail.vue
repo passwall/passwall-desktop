@@ -3,11 +3,11 @@
     <div class="detail-page-header">
       <!-- Avatar -->
       <div class="detail-page-header-avatar">
-        <img v-if="form.src" :src="form.src" />
+        <CompanyLogo :url="form.title" />
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.card_name" class="url" />
+        <span v-text="form.title" class="url" />
         <span v-text="form.number" class="email" />
       </div>
 
@@ -38,23 +38,23 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- CardName -->
-        <FormRowText v-model="form.card_name" :title="$t('Card Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('CARD NAME')" :edit-mode="isEditMode" />
 
         <!-- CardholderName -->
-        <FormRowText v-model="form.cardholder_name" :title="$t('Cardholder Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.cardholder_name" :title="$t('CARDHOLDER NAME')" :edit-mode="isEditMode" />
 
         <!-- Type -->
-        <FormRowText v-model="form.type" :title="$t('Type')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.type" :title="$t('TYPE')" :edit-mode="isEditMode" />
 
         <!-- Number -->
-        <FormRowText v-model="form.number" :title="$t('Number')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.number" :title="$t('NUMBER')" :edit-mode="isEditMode" />
 
         <!-- ExpiryDate -->
-        <FormRowText v-model="form.expiry_date" :title="$t('Expiry Date')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.expiry_date" :title="$t('EXPIRY DATE')" :edit-mode="isEditMode" />
 
         <!-- VerificationNumber -->
         <div class="form-row">
-          <label v-text="$t('Verification Number')" />
+          <label v-text="$t('VERIFICATION NUMBER')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
@@ -68,13 +68,7 @@
               <span v-text="showPass ? form.verification_number : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.verification_number" class="mt-2" />
-            <!-- Generate -->
-            <GeneratePassword
-              v-if="isEditMode"
-              class="mt-2 mx-2"
-              v-model="form.verification_number"
-            />
+            <ClipboardButton :copy="form.verification_number" />
             <!-- Show/Hide -->
             <button
               type="button"
@@ -173,7 +167,7 @@ export default {
 
     creditCardCopyContent() {
       return (
-        `Card Name: ${this.form.card_name}\n` +
+        `Card Name: ${this.form.title}\n` +
         `Cardholder Name: ${this.form.cardholder_name}\n` +
         `Type: ${this.form.type}\n` +
         `Number: ${this.form.number}`

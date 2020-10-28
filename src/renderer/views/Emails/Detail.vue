@@ -38,14 +38,14 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
-        <FormRowText v-model="form.title" :title="$t('Title')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('TITLE')" :edit-mode="isEditMode" />
         
         <!-- Email -->
-        <FormRowText v-model="form.email" :title="$t('Email')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.email" :title="$t('EMAIL')" :edit-mode="isEditMode" />
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
@@ -59,9 +59,9 @@
               <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.password" class="mt-2" />
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.password" />
+            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.password" />
             <!-- Show/Hide -->
             <button
               type="button"

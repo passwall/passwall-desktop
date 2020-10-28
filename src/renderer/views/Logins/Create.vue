@@ -16,7 +16,7 @@
       <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
         <div class="form-row">
-          <label v-text="$t('Title')" />
+          <label v-text="$t('TITLE')" />
           <VFormText
             name="Title"
             theme="no-border"
@@ -38,7 +38,7 @@
         </div>
         <!-- Username -->
         <div class="form-row">
-          <label v-text="$t('Username')" />
+          <label v-text="$t('USERNAME')" />
           <VFormText
             name="Username"
             v-model="form.username"
@@ -49,7 +49,7 @@
         </div>
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               name="Password"
@@ -59,22 +59,25 @@
               :placeholder="$t('ClickToFill')"
               theme="no-border"
             />
+            <!-- Copy -->
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword class="mt-2 mr-3" v-model="form.password" />
+            <GeneratePassword class="mx-1" v-model="form.password" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-1 ml-n1"
+              type="button"
+              @click="showPass = !showPass"
+              class="detail-page-header-icon ml-2"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
         <!-- Extra -->
         <div class="form-row">
           <div class="d-flex flex-content-between">
-            <label v-text="$t('Extra')" />
+            <label v-text="$t('EXTRA')" />
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-2 ml-n1"

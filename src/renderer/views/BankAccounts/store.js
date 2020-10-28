@@ -18,6 +18,7 @@ export default {
       const { data } = await BankAccountsService.FetchAll(query)
 
       const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      console.log(itemList)
       state.ItemList = itemList
     },
 

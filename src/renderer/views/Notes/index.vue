@@ -12,11 +12,11 @@
         />
       </div>
       <!-- Items -->
-      <PerfectScrollbar class="logins">
+      <PerfectScrollbar>
         <!-- List -->
-        <template v-if="ItemList.length > 0">
+        <template v-if="filteredList.length > 0">
           <ListItem
-            v-for="item in ItemList"
+            v-for="item in filteredList"
             :key="item.id"
             :active="$route.params.id == item.id"
             :data="item"
@@ -55,41 +55,13 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import ListMixin from '@/mixins/list'
 
 export default {
-  data() {
-    return {
-      searchQuery: '',
-      itemMenuActive: false,
-      emptyCenterStateActive: false
-    }
-  },
-
-  beforeRouteUpdate(to, from, next) {
-    if (to.params.refresh) {
-      this.fetchAll()
-    }
-    next()
-  },
-
-  created() {
-    this.fetchAll()
-  },
+  mixins: [ListMixin],
 
   methods: {
     ...mapActions('Notes', ['FetchAll']),
-
-    async fetchAll() {
-      try {
-        await this.FetchAll({ Search: this.searchQuery })
-
-        if (this.ItemList.length > 0) {
-          this.onClickItem(this.ItemList[0].id)
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    },
 
     onClickItem(id) {
       this.$router.push({
@@ -104,33 +76,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.content-container {
-  width: 100%;
-  display: flex;
-}
-
-.items-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 295px;
-  max-width: 295px;
-  height: 100vh;
-}
-
-.logins {
-  height: 100%;
-}
-
-.search-wrapper {
-  display: flex;
-  align-items: center;
-  background-color: $color-gray-600;
-  padding: 0 $spacer-3;
-  min-height: 64px;
-  height: 64px;
-  border-bottom: 1px solid black;
-}
-</style>

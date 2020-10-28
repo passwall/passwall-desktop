@@ -3,11 +3,11 @@
     <div class="detail-page-header">
       <!-- Avatar -->
       <div class="detail-page-header-avatar">
-        <img v-if="form.src" :src="form.src" />
+        <CompanyLogo :url="form.title" />
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.bank_name" class="url" />
+        <span v-text="getTitle" class="url" />
         <span v-text="form.account_name" class="email" />
       </div>
 
@@ -38,26 +38,26 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- BankName -->
-        <FormRowText v-model="form.bank_name" :title="$t('Bank Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('BANK NAME')" :edit-mode="isEditMode" />
 
         <!-- BankCode -->
-        <FormRowText v-model="form.bank_code" :title="$t('Bank Code')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.bank_code" :title="$t('BANK CODE')" :edit-mode="isEditMode" />
 
         <!-- AccountName -->
-        <FormRowText v-model="form.account_name" :title="$t('Account Name')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.account_name" :title="$t('ACCOUNT NAME')" :edit-mode="isEditMode" />
 
         <!-- AccountNumber -->
-        <FormRowText v-model="form.account_number" :title="$t('Account Number')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.account_number" :title="$t('ACCOUNT NUMBER')" :edit-mode="isEditMode" />
 
         <!-- IBAN -->
         <FormRowText v-model="form.iban" :title="$t('IBAN')" :edit-mode="isEditMode" />
 
         <!-- Currency -->
-        <FormRowText v-model="form.currency" :title="$t('Currency')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.currency" :title="$t('CURRENCY')" :edit-mode="isEditMode" />
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
@@ -71,9 +71,7 @@
               <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.password" class="mt-2" />
-            <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.password" />
+            <ClipboardButton :copy="form.password"  />
             <!-- Show/Hide -->
             <button
               type="button"
@@ -172,12 +170,16 @@ export default {
 
     bankAccountCopyContent() {
       return (
-        `Bank Name: ${this.form.bank_name}\n` +
+        `Bank Name: ${this.form.title}\n` +
         `Bank Code: ${this.form.bank_code}\n` +
         `Account Name: ${this.form.account_name}\n` +
         `Account Number: ${this.form.account_number}\n` +
         `IBAN: ${this.form.iban}\nCurrency: ${this.form.currency}\n`
       )
+    },
+
+    getTitle(){
+      return this.form.title
     }
   }
 }

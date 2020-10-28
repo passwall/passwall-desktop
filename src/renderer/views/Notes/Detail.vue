@@ -38,12 +38,12 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
-        <FormRowText v-model="form.title" :title="$t('Title')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('TITLE')" :edit-mode="isEditMode" />
 
         <!-- Note -->
         <div class="form-row">
           <div class="d-flex flex-items-end flex-content-between">
-            <label v-text="$t('Private Note')" />
+            <label v-text="$t('PRIVATE NOTE')" />
             <div class="d-flex flex-items-center">
               <!-- Copy -->
               <ClipboardButton :copy="form.note" />

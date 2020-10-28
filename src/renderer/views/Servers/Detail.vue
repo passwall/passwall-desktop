@@ -38,17 +38,17 @@
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
-        <FormRowText v-model="form.title" :title="$t('Title')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.title" :title="$t('TITLE')" :edit-mode="isEditMode" />
 
         <!-- IP -->
-        <FormRowText v-model="form.ip" :title="$t('IP Address')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.ip" :title="$t('IP ADDRESS')" :edit-mode="isEditMode" />
 
         <!-- Username -->
-        <FormRowText v-model="form.username" :title="$t('Username')" :edit-mode="isEditMode" />
+        <FormRowText v-model="form.username" :title="$t('USERNAME')" :edit-mode="isEditMode" />
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
@@ -62,9 +62,9 @@
               <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.password" class="mt-2" />
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.password" />
+            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.password" />
             <!-- Show/Hide -->
             <button
               type="button"
@@ -93,7 +93,7 @@
         </div>
         <!-- HostingUsername -->
         <div class="form-row">
-          <label v-text="$t('Hosting Username')" />
+          <label v-text="$t('HOSTING USERNAME')" />
           <VFormText
             v-if="isEditMode"
             v-model="form.hosting_username"
@@ -108,37 +108,37 @@
         </div>
         <!-- HostingPassword -->
         <div class="form-row">
-          <label v-text="$t('Hosting Password')" />
+          <label v-text="$t('HOSTING PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
-              :type="showPass ? 'text' : 'password'"
+              :type="showHostingPass ? 'text' : 'password'"
               v-model="form.hosting_password"
               :placeholder="$t('ClickToFill')"
               theme="no-border"
             />
             <!-- Text -->
             <div v-else class="d-flex flex-items-center px-3 py-2">
-              <span v-text="showPass ? form.hosting_password : '●●●●●●'" class="mr-2" />
+              <span v-text="showHostingPass ? form.hosting_password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.hosting_password" class="mt-2" />
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.hosting_password" />
+            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.hosting_password" />
             <!-- Show/Hide -->
             <button
               type="button"
-              @click="showPass = !showPass"
+              @click="showHostingPass = !showHostingPass"
               class="detail-page-header-icon ml-2"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
+              v-tooltip="$t(showHostingPass ? 'Hide' : 'Show')"
             >
-              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
+              <VIcon :name="showHostingPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
         <!-- AdminUsername -->
         <div class="form-row">
-          <label v-text="$t('Admin Username')" />
+          <label v-text="$t('ADMIN USERNAME')" />
           <VFormText
             v-if="isEditMode"
             v-model="form.admin_username"
@@ -153,31 +153,31 @@
         </div>
         <!-- AdminPassword -->
         <div class="form-row">
-          <label v-text="$t('Admin Password')" />
+          <label v-text="$t('ADMIN PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-if="isEditMode"
-              :type="showPass ? 'text' : 'password'"
+              :type="showAdminPass ? 'text' : 'password'"
               v-model="form.admin_password"
               :placeholder="$t('ClickToFill')"
               theme="no-border"
             />
             <!-- Text -->
             <div v-else class="d-flex flex-items-center px-3 py-2">
-              <span v-text="showPass ? form.admin_password : '●●●●●●'" class="mr-2" />
+              <span v-text="showAdminPass ? form.admin_password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.admin_password" class="mt-2" />
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mt-2 mx-2" v-model="form.admin_password" />
+            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.admin_password" />
             <!-- Show/Hide -->
             <button
               type="button"
-              @click="showPass = !showPass"
+              @click="showAdminPass = !showAdminPass"
               class="detail-page-header-icon ml-2"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
+              v-tooltip="$t(showAdminPass ? 'Hide' : 'Show')"
             >
-              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
+              <VIcon :name="showAdminPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
@@ -185,7 +185,7 @@
         <!-- Extra -->
         <div class="form-row">
           <div class="d-flex flex-items-end flex-content-between">
-            <label v-text="$t('Extra')" />
+            <label v-text="$t('EXTRA')" />
             <div class="d-flex flex-items-center">
               <!-- Copy -->
               <ClipboardButton :copy="form.extra" />
@@ -232,6 +232,8 @@ export default {
     return {
       isEditMode: false,
       showPass: false,
+      showHostingPass: false,
+      showAdminPass: false,
       showExtra: false,
       form: {}
     }
@@ -240,6 +242,8 @@ export default {
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
+    this.showHostingPass = false
+    this.showAdminPass = false
     this.getDetail(to.params.id)
     next()
   },

@@ -17,7 +17,7 @@
         <VIcon name="credit-card" size="14px" class="icon" />
         {{ $t('Credit Cards') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
 
       <!-- Bank Accounts -->
@@ -29,7 +29,7 @@
         <VIcon name="bank-account" size="14px" class="icon" />
         {{ $t('Bank Accounts') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
 
       <!-- Emails -->
@@ -41,7 +41,7 @@
         <VIcon name="email" size="14px" class="icon" />
         {{ $t('Emails') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
 
       <!-- Private Notes -->
@@ -53,7 +53,7 @@
         <VIcon name="private-note" size="14px" class="icon" />
         {{ $t('Private Notes') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
 
       <!-- Servers -->
@@ -65,7 +65,7 @@
         <VIcon name="server" size="14px" class="icon" />
         {{ $t('Servers') }}
         <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="8px" class="c-secondary" /></div>
+        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
     </div>
   </div>

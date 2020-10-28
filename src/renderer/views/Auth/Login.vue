@@ -63,7 +63,7 @@ export default {
         const onError = error => {
           let text = this.$t('Ooops! Something went wrong!')
           if (error.response.status == 401) {
-            text = this.$t('Incorrect email or password!')
+            text = this.$t(error.response.data.message)
           }
           this.$notifyError(text)
         }

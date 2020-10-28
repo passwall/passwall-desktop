@@ -14,13 +14,13 @@
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
       <form class="form" @submit.stop.prevent="onClickSave">
-        <!-- BankName -->
+        <!-- Title -->
         <div class="form-row">
-          <label v-text="$t('Bank Name')" />
+          <label v-text="$t('BANK NAME')" />
           <VFormText
-            v-model="form.bank_name"
+            v-model="form.title"
             v-validate="'required'"
-            name="BankName"
+            name="Title"
             :placeholder="$t('ClickToFill')"
             theme="no-border"
           />
@@ -28,7 +28,7 @@
 
         <!-- BankCode -->
         <div class="form-row">
-          <label v-text="$t('Bank Code')" />
+          <label v-text="$t('BANK CODE')" />
           <VFormText
             v-model="form.bank_code"
             name="BankCode"
@@ -39,7 +39,7 @@
 
         <!-- AccountName -->
         <div class="form-row">
-          <label v-text="$t('Account Name')" />
+          <label v-text="$t('ACCOUNT NAME')" />
           <VFormText
             v-model="form.account_name"
             name="AccountName"
@@ -50,7 +50,7 @@
 
         <!-- AccountNumber -->
         <div class="form-row">
-          <label v-text="$t('Account Number')" />
+          <label v-text="$t('ACCOUNT NUMBER')" />
           <VFormText
             v-model="form.account_number"
             name="AccountNumber"
@@ -72,7 +72,7 @@
 
         <!-- Currency -->
         <div class="form-row">
-          <label v-text="$t('Currency')" />
+          <label v-text="$t('CURRENCY')" />
           <VFormText
             v-model="form.currency"
             name="Currency"
@@ -83,7 +83,7 @@
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-model="form.password"
@@ -126,7 +126,7 @@ export default {
     return {
       showPass: false,
       form: {
-        bank_name: '',
+        title: '',
         bank_code: '',
         account_name: '',
         account_number: '',

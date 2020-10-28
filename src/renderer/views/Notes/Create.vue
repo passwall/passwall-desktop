@@ -16,7 +16,7 @@
       <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
         <div class="form-row">
-          <label v-text="$t('Title')" />
+          <label v-text="$t('TITLE')" />
           <VFormText
             v-model="form.title"
             v-validate="'required'"
@@ -28,7 +28,7 @@
         <!-- Note -->
         <div class="form-row">
           <div class="d-flex flex-content-between">
-            <label v-text="$t('Private Note')" />
+            <label v-text="$t('PRIVATE NOTE')" />
             <!-- Show/Hide -->
             <button
               type="button"

@@ -8,6 +8,7 @@ import store from './store'
 import i18n from './i18n'
 
 localStorage.clear()
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

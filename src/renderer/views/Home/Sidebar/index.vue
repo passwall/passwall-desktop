@@ -51,7 +51,7 @@
     <!-- Credit Cards -->
     <MenuItem
       :service="$C.Services.CreditCards"
-      :name="$t('CreditCards')"
+      :name="$t('Credit Cards')"
       icon="credit-card"
       :lock="!hasProPlan"
     />
@@ -59,7 +59,7 @@
     <!-- Bank Accounts -->
     <MenuItem
       :service="$C.Services.BankAccounts"
-      :name="$t('BankAccounts')"
+      :name="$t('Bank Accounts')"
       icon="bank-account"
       :lock="!hasProPlan"
     />
@@ -70,7 +70,7 @@
     <!-- Private Notes -->
     <MenuItem
       :service="$C.Services.Notes"
-      :name="$t('Notes')"
+      :name="$t('Private Notes')"
       icon="private-note"
       :lock="!hasProPlan"
     />
@@ -82,9 +82,8 @@
       icon="server"
       :lock="!hasProPlan"
     />
-
-    <!-- Trash -->
-    <MenuItem :service="$C.Services.Trash" :name="$t('Trash')" icon="trash" :lock="!hasProPlan" />
+  
+    <button class="btn-empty-fix"></button>
 
     <!-- Update -->
     <button v-if="hasUpdate" @click="onClickUpdateApp" class="update-box flex-center">
@@ -93,12 +92,12 @@
 
     <!-- Feedback -->
     <button class="btn-feedback" @click="onClickFeedback">
-      <VIcon name="right-corner" class="right-corner" size="15px" />
+      <VIcon name="right-corner" class="right-corner" size="15px" v-if="!hasUpdate" />
       <VIcon name="right-corner" class="left-corner rot-180" size="15px" />
 
       {{ $t('GiveFeedback') }}
       <div class="icon">
-        <VIcon name="external-link" size="8px" />
+        <VIcon name="external-link" size="11px" />
       </div>
     </button>
   </div>
@@ -257,6 +256,8 @@ export default {
       align-items: center;
       width: 40px;
       height: 40px;
+      min-width: 40px;
+      min-height: 40px;
       border-radius: 50%;
       background-color: $color-primary;
       font-weight: 700;
@@ -283,11 +284,15 @@ export default {
     }
   }
 
+  .btn-empty-fix {
+    margin-top: auto;
+  }
+
   .update-box {
     height: 30px;
     color: #fff;
     background-color: $color-primary;
-    margin-bottom: auto;
+    margin-top: auto;
 
     &:hover {
       opacity: 0.9;

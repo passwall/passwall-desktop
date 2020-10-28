@@ -16,7 +16,7 @@
       <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
         <div class="form-row">
-          <label v-text="$t('Title')" />
+          <label v-text="$t('TITLE')" />
           <VFormText
             v-model="form.title"
             v-validate="'required'"
@@ -28,7 +28,7 @@
 
         <!-- Email -->
         <div class="form-row">
-          <label v-text="$t('Email')" />
+          <label v-text="$t('EMAIL')" />
           <VFormText
             v-model="form.email"
             v-validate="'required'"
@@ -40,7 +40,7 @@
 
         <!-- Password -->
         <div class="form-row">
-          <label v-text="$t('Password')" />
+          <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
               v-model="form.password"
@@ -50,15 +50,18 @@
               :placeholder="$t('ClickToFill')"
               theme="no-border"
             />
+            <!-- Copy -->
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword class="mt-2 mr-3" v-model="form.password" />
+            <GeneratePassword class="mx-1" v-model="form.password" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-1 ml-n1"
+              type="button"
+              @click="showPass = !showPass"
+              class="detail-page-header-icon ml-2"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>

@@ -2,11 +2,12 @@
   <div class="list-item" :class="{ '--active': active }" @click="$emit('click')">
     <!-- Avatar -->
     <div class="list-item-avatar">
-      <CompanyLogo :url="data.url" />
+      <CompanyLogo :url="getUrl" />
     </div>
     <!-- Summary -->
     <div class="list-item-summary">
       <span v-text="getTitle" class="url" />
+      <span v-text="getUsername" class="username" />
     </div>
     <!-- Detail -->
     <button class="list-item-detail">
@@ -37,6 +38,13 @@ export default {
     getTitle: function() {
       if (this.type === 'Login') return this.data.title ? this.data.title : this.data.url
       else return this.data.title
+    },
+    getUrl: function() {
+      if (this.type === 'Login') return this.data.url ? this.data.url : this.data.title
+      else return this.data.title
+    },
+    getUsername: function() {
+      return
     }
   }
 }
