@@ -2,7 +2,7 @@
   <div class="sidebar">
     <div class="account">
       <!-- Avatar -->
-      <div class="account-avatar" v-text="firstLettersOfName" />
+      <VAvatar :pro="hasProPlan" :name="user.name" />
       <!-- Info -->
       <div class="account-info">
         <span class="account-info-name" v-text="user.name" />
@@ -82,7 +82,7 @@
       icon="server"
       :lock="!hasProPlan"
     />
-  
+
     <button class="btn-empty-fix"></button>
 
     <!-- Update -->
@@ -129,11 +129,6 @@ export default {
   computed: {
     ...mapState(['user']),
     ...mapGetters(['hasProPlan']),
-
-    firstLettersOfName() {
-      const [firstName, lastName] = this.user.name.split(' ')
-      return `${firstName[0]}${(lastName || ' ')[0]}`
-    },
 
     accountMenuClass() {
       return [this.hasProPlan ? '--pro-plan' : '--free-plan', { '--open': this.showAccountMenu }]
@@ -248,20 +243,6 @@ export default {
           margin-bottom: 0px;
         }
       }
-    }
-
-    &-avatar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      min-height: 40px;
-      border-radius: 50%;
-      background-color: $color-primary;
-      font-weight: 700;
-      color: #fff;
     }
 
     &-info {
