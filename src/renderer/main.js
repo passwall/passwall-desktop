@@ -7,7 +7,7 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 
-localStorage.clear()
+store.dispatch('Logout')
 
 Vue.config.productionTip = false
 

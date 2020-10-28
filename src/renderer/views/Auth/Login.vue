@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       LoginForm: {
-        email: '',
+        email: localStorage.email || '',
         master_password: ''
       }
     }

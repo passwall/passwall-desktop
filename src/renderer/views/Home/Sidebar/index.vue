@@ -145,7 +145,7 @@ export default {
     async checkUpdate() {
       const { version } = require('../../../../../package.json')
       try {
-        const { data } = await HTTPClient.get('/web/check-update/1')
+        const { data } = await HTTPClient.get('/web/check-update/1', {}, { Authorization: null })
 
         this.hasUpdate = data.latest_version != version
         this.updateLink = data.download_url
