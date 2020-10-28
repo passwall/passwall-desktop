@@ -82,6 +82,8 @@
       icon="server"
       :lock="!hasProPlan"
     />
+  
+    <button class="btn-empty-fix"></button>
 
     <!-- Update -->
     <button v-if="hasUpdate" @click="onClickUpdateApp" class="update-box flex-center">
@@ -95,7 +97,7 @@
 
       {{ $t('GiveFeedback') }}
       <div class="icon">
-        <VIcon name="external-link" size="8px" />
+        <VIcon name="external-link" size="11px" />
       </div>
     </button>
   </div>
@@ -280,6 +282,10 @@ export default {
         color: $color-secondary;
       }
     }
+  }
+
+  .btn-empty-fix {
+    margin-top: auto;
   }
 
   .update-box {

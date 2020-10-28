@@ -7,6 +7,7 @@
     <!-- Summary -->
     <div class="list-item-summary">
       <span v-text="getTitle" class="url" />
+      <span v-text="getUsername" class="username" />
     </div>
     <!-- Detail -->
     <button class="list-item-detail">
@@ -41,6 +42,9 @@ export default {
     getUrl: function() {
       if (this.type === 'Login') return this.data.url ? this.data.url : this.data.title
       else return this.data.title
+    },
+    getUsername: function() {
+      return
     }
   }
 }
