@@ -27,6 +27,11 @@ export default {
       const { data } = await ServersService.FetchAll(query)
 
       const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+
+      itemList.forEach(element => {
+        CryptoUtils.decryptFields(element, EncryptedFields)  
+      });
+      
       state.ItemList = itemList
     },
 
@@ -44,7 +49,6 @@ export default {
     },
 
     async Create(_, data) {
-      console.log(data)
       const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
       await ServersService.Create(payload)
     },

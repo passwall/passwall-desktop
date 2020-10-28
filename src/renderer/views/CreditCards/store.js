@@ -18,6 +18,11 @@ export default {
       const { data } = await CreditCardsService.FetchAll(query)
 
       const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+
+      itemList.forEach(element => {
+        CryptoUtils.decryptFields(element, EncryptedFields)  
+      });
+      
       state.ItemList = itemList
     },
 

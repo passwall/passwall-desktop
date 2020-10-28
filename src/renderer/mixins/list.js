@@ -32,10 +32,14 @@ export default {
     }
   },
 
+
   computed: {
     filteredList() {
-      return this.ItemList.filter(i =>
-        i.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+      // return this.ItemList.filter(i =>
+      //   i.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+      // )
+      return this.ItemList.filter(item =>
+        Object.values(item).some(value => (value ? value.toString() : '').includes(this.searchQuery.toLowerCase()))
       )
     }
   }

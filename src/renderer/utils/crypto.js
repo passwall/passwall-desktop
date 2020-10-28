@@ -39,7 +39,6 @@ export default class CryptoUtils {
   }
 
   static decrypt(transitMessage, password = this.encryptKey) {
-    const salt = CryptoJS.enc.Hex.parse(transitMessage.substr(0, 32))
     const iv = CryptoJS.enc.Hex.parse(transitMessage.substr(32, 32))
     const encrypted = transitMessage.substring(64)
 
