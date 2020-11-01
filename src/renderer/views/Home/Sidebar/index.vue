@@ -148,7 +148,7 @@ export default {
         const { data } = await HTTPClient.get('https://api.github.com/repos/passwall/passwall-desktop/releases/latest', {}, { Authorization: null })
         
         this.hasUpdate = data.tag_name != version
-        this.updateLink = data.download_url
+        this.updateLink = data.html_url
       } catch (err) {
         console.log(err)
       }
