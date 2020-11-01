@@ -89,7 +89,7 @@ export default {
   justify-content: space-between;
 
   .btn,
-  .form-text {
+  .form-text-wrapper {
     width: 350px;
   }
 }
