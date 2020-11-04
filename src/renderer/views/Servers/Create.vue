@@ -51,21 +51,25 @@
           <label v-text="$t('PASSWORD')" />
           <div class="d-flex">
             <VFormText
-              v-model="form.password"
               name="Password"
+              v-model="form.password"
+              v-validate="'required'"
               :type="showPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
               theme="no-border"
             />
+            <!-- Copy -->
+            <ClipboardButton :copy="form.password" />
             <!-- Generate -->
-            <GeneratePassword class="mt-2 mr-3" v-model="form.password" />
+            <GeneratePassword class="mx-1" v-model="form.password" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-1 ml-n1"
+              type="button"
+              @click="showPass = !showPass"
+              class="detail-page-header-icon ml-2"
               v-tooltip="$t(showPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
@@ -99,19 +103,20 @@
             <VFormText
               v-model="form.hosting_password"
               name="HostingPassword"
-              :type="showPass ? 'text' : 'password'"
+              :type="showHostingPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
               theme="no-border"
             />
             <!-- Generate -->
-            <GeneratePassword class="mt-2 mr-3" v-model="form.hosting_password" />
+            <GeneratePassword class="mx-1" v-model="form.hosting_password" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-1 ml-n1"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
+              type="button"
+              @click="showHostingPass = !showHostingPass"
+              class="detail-page-header-icon ml-2"
+              v-tooltip="$t(showHostingPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showHostingPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
@@ -134,19 +139,22 @@
             <VFormText
               v-model="form.admin_password"
               name="AdminPassword"
-              :type="showPass ? 'text' : 'password'"
+              :type="showAdminPass ? 'text' : 'password'"
               :placeholder="$t('ClickToFill')"
               theme="no-border"
             />
+            <!-- Copy -->
+            <ClipboardButton :copy="form.admin_password" />
             <!-- Generate -->
-            <GeneratePassword class="mt-2 mr-3" v-model="form.admin_password" />
+            <GeneratePassword class="mx-1" v-model="form.admin_password" />
             <!-- Show/Hide -->
             <button
-              class="detail-page-header-icon mt-1 ml-n1"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
+              type="button"
+              @click="showAdminPass = !showAdminPass"
+              class="detail-page-header-icon ml-2"
+              v-tooltip="$t(showAdminPass ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon :name="showAdminPass ? 'eye-off' : 'eye'" size="12px" />
             </button>
           </div>
         </div>
@@ -158,10 +166,10 @@
             <!-- Show/Hide -->
             <button
               class="detail-page-header-icon mt-2 ml-n1"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
+              v-tooltip="$t(showExtra ? 'Hide' : 'Show')"
             >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
+              <VIcon name="eye-off" v-if="showExtra" size="12px" @click="showExtra = false" />
+              <VIcon name="eye" v-else size="12px" @click="showExtra = true" />
             </button>
           </div>
           <VTextArea :placeholder="$t('ClickToFill')" v-model="form.extra" name="Extra" />
@@ -188,6 +196,9 @@ export default {
   data() {
     return {
       showPass: false,
+      showAdminPass: false,
+      showHostingPass: false,
+      showExtra: false,
       form: {
         title: '',
         ip: '',

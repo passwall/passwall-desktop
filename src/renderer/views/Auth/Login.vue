@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       LoginForm: {
-        email: '',
+        email: localStorage.email || '',
         master_password: ''
       }
     }
@@ -89,7 +89,7 @@ export default {
   justify-content: space-between;
 
   .btn,
-  .form-text {
+  .form-text-wrapper {
     width: 350px;
   }
 }

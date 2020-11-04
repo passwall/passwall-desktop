@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import i18n from '@/i18n'
+import store from '@/store'
+import router from '@/router'
 
 import * as Waiters from '@/utils/waiters'
 Vue.prototype.$waiters = Waiters
@@ -51,14 +53,17 @@ Vue.prototype.$request = async (callback, waitKey, errorCallback = null) => {
     console.log(error)
 
     if (error.response) {
+      if (error.response.status === 401 && !router.app._route.meta.auth) {
+        store.dispatch('Logout')
+        return router.push({ name: 'Login' })
+      }
+
       if (errorCallback) {
         errorCallback(error)
-      } else {
-        if (error.response.status >= 500) {
-          Vue.prototype.$notifyError(i18n.t('API500ErrorMessage'))
-        } else if (error.response.data.Message && error.response.status != 401) {
-          Vue.prototype.$notifyError(error.response.data.Message)
-        }
+      } else if (error.response.status >= 500) {
+        Vue.prototype.$notifyError(i18n.t('API500ErrorMessage'))
+      } else if (error.response.data.Message && error.response.status != 401) {
+        Vue.prototype.$notifyError(error.response.data.Message)
       }
     } else {
       Vue.prototype.$notifyError('Network Error !')

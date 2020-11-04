@@ -44,7 +44,12 @@ export default {
       else return this.data.title
     },
     getUsername: function() {
-      return
+      if (this.type === 'Login') return this.data.username
+      else if (this.type === 'Email') return this.data.email
+      else if (this.type === 'BankAccount') return this.data.iban
+      else if (this.type === 'CreditCard') return this.data.number
+      else if (this.type === 'Server') return this.data.ip
+      else return ''
     }
   }
 }

@@ -18,15 +18,18 @@ export default {
       const { data } = await LoginsService.FetchAll(query)
 
       const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+      
+      itemList.forEach(element => {
+        CryptoUtils.decryptFields(element, EncryptedFields)  
+      });
+      
       state.ItemList = itemList
     },
 
     async Get({ state }, id) {
       const { data } = await LoginsService.Get(id)
-
       const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-      CryptoUtils.decryptFields(detail, EncryptedFields)
-
+      CryptoUtils.decryptFields(detail, EncryptedFields)      
       state.Detail = detail
     },
 

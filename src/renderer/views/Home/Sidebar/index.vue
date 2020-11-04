@@ -145,10 +145,10 @@ export default {
     async checkUpdate() {
       const { version } = require('../../../../../package.json')
       try {
-        const { data } = await HTTPClient.get('/web/check-update/1')
-
-        this.hasUpdate = data.latest_version != version
-        this.updateLink = data.download_url
+        const { data } = await HTTPClient.get('https://api.github.com/repos/passwall/passwall-desktop/releases/latest', {}, { Authorization: null })
+        
+        this.hasUpdate = data.tag_name != version
+        this.updateLink = data.html_url
       } catch (err) {
         console.log(err)
       }
