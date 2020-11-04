@@ -64,6 +64,7 @@
               :sensitive="!isEditMode && !showNote"
               :placeholder="$t(isEditMode ? 'ClickToFill' : 'ContentHidden')"
               :disabled="!isEditMode"
+              rows="17"
             />
           </div>
         </div>
