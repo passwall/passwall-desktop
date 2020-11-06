@@ -41,6 +41,7 @@ export default {
       }
 
       const filePath = dialog.showSaveDialogSync(null)
+
       if (!filePath) {
         return
       }
@@ -63,13 +64,12 @@ export default {
         return
       }
 
-      dialog.showOpenDialog({ properties: ['openFile'] }, async files => {
-        if (files.length === 0) {
+      const t = dialog.showOpenDialog({ properties: ['openFile'] }).then(async ({ filePaths }) => {
+        if (filePaths.length === 0) {
           return
         }
-
         try {
-          const fileContent = fs.readFileSync(files[0]).toString()
+          const fileContent = fs.readFileSync(filePaths[0]).toString()
 
           let parsedCSV = Papa.parse(fileContent.trim(), {
             header: true // creates array of { head: value }
