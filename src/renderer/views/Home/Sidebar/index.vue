@@ -107,7 +107,7 @@
 import { mapActions, mapGetters, mapState } from 'vuex'
 import HTTPClient from '@/api/HTTPClient'
 import MenuItem from './MenuItem'
-import { shell } from 'electron'
+import electron from 'electron'
 
 export default {
   components: {
@@ -139,14 +139,18 @@ export default {
     ...mapActions(['Logout']),
 
     onClickUpdateApp() {
-      shell.openExternalSync(this.updateLink || 'https://passwall.io')
+      electron.shell.openExternal(this.updateLink || 'https://passwall.io')
     },
 
     async checkUpdate() {
       const { version } = require('../../../../../package.json')
       try {
-        const { data } = await HTTPClient.get('https://api.github.com/repos/passwall/passwall-desktop/releases/latest', {}, { Authorization: null })
-        
+        const { data } = await HTTPClient.get(
+          'https://api.github.com/repos/passwall/passwall-desktop/releases/latest',
+          {},
+          { Authorization: null }
+        )
+
         this.hasUpdate = data.tag_name != version
         this.updateLink = data.html_url
       } catch (err) {
@@ -155,22 +159,23 @@ export default {
     },
 
     onClickFeedback() {
-      shell.openExternalSync('https://passwall.typeform.com/to/GAv1h2')
+      electron.shell.openExternal('https://passwall.typeform.com/to/GAv1h2')
     },
 
     onClickUpgrade() {
       window.Paddle.Checkout.open({
         product: 630862,
-        email: this.user.email
+        email: this.user.email,
+        successCallback: this.onClickLogout
       })
     },
 
     onClickUpdate() {
-      shell.openExternalSync(this.user.update_url)
+      electron.shell.openExternal(this.user.update_url)
     },
 
     onClickCancel() {
-      shell.openExternalSync(this.user.cancel_url)
+      electron.shell.openExternal(this.user.cancel_url)
     },
 
     onClickLogout() {
