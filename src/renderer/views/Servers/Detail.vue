@@ -300,20 +300,20 @@ export default {
     },
 
     serverCopyContent() {
-      return (
-        `Title: ${this.form.title}\n` +
-        `IP: ${this.form.ip}\n` +
-        `Username: ${this.form.username}\n` +
-        `Password: ${this.form.password}\n` +
-        `URL: ${this.form.url}\n` +
-        `Hosting Username: ${this.form.hosting_username}\n` +
-        `Hosting Password: ${this.form.hosting_password}\n` +
-        `Admin Username: ${this.form.admin_username}\n` +
+      return [
+        `Title: ${this.form.title}`,
+        `IP: ${this.form.ip}`,
+        `Username: ${this.form.username}`,
+        `Password: ${this.form.password}`,
+        `URL: ${this.form.url}`,
+        `Hosting Username: ${this.form.hosting_username}`,
+        `Hosting Password: ${this.form.hosting_password}`,
+        `Admin Username: ${this.form.admin_username}`,
         `Admin Password: ${this.form.admin_password}`
-      )
+      ].join('\n')
     },
-    
-    getTitle(){
+
+    getTitle() {
       return this.form.title ? this.form.title : this.form.url
     }
   }

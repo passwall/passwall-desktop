@@ -155,7 +155,7 @@ export default {
     },
 
     noteCopyContent() {
-      return `Title: ${this.form.title}\nNote: ${this.form.note}`
+      return [`Title: ${this.form.title}`, `Note: ${this.form.note}`].join('\n')
     }
   }
 }

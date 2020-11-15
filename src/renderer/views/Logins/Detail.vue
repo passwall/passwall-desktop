@@ -191,13 +191,13 @@ export default {
     },
 
     loginCopyContent() {
-      return (
-        `Title: ${this.form.title}\n` +
-        `URL: ${this.form.url}\n` +
-        `Username: ${this.form.username}\n` +
-        `Password: ${this.form.password}` +
-        `Extra: ${this.form.extra}\n`
-      )
+      return [
+        `Title: ${this.form.title}`,
+        `URL: ${this.form.url}`,
+        `Username: ${this.form.username}`,
+        `Password: ${this.form.password}`,
+        `Extra: ${this.form.extra}`
+      ].join('\n')
     },
     getTitle() {
       return this.form.title ? this.form.title : this.form.url

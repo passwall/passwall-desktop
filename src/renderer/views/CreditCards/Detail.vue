@@ -41,7 +41,11 @@
         <FormRowText v-model="form.title" :title="$t('CARD NAME')" :edit-mode="isEditMode" />
 
         <!-- CardholderName -->
-        <FormRowText v-model="form.cardholder_name" :title="$t('CARDHOLDER NAME')" :edit-mode="isEditMode" />
+        <FormRowText
+          v-model="form.cardholder_name"
+          :title="$t('CARDHOLDER NAME')"
+          :edit-mode="isEditMode"
+        />
 
         <!-- Type -->
         <FormRowText v-model="form.type" :title="$t('TYPE')" :edit-mode="isEditMode" />
@@ -50,7 +54,11 @@
         <FormRowText v-model="form.number" :title="$t('NUMBER')" :edit-mode="isEditMode" />
 
         <!-- ExpiryDate -->
-        <FormRowText v-model="form.expiry_date" :title="$t('EXPIRY DATE')" :edit-mode="isEditMode" />
+        <FormRowText
+          v-model="form.expiry_date"
+          :title="$t('EXPIRY DATE')"
+          :edit-mode="isEditMode"
+        />
 
         <!-- VerificationNumber -->
         <div class="form-row">
@@ -134,7 +142,7 @@ export default {
       this.$request(onSuccess, this.$waiters.CreditCards.Get, onError)
     },
 
-   onClickDelete() {
+    onClickDelete() {
       const onSuccess = async () => {
         await this.Delete(this.form.id)
         const index = this.ItemList.findIndex(item => item.id == this.form.id)
@@ -166,12 +174,12 @@ export default {
     },
 
     creditCardCopyContent() {
-      return (
-        `Card Name: ${this.form.title}\n` +
-        `Cardholder Name: ${this.form.cardholder_name}\n` +
-        `Type: ${this.form.type}\n` +
+      return [
+        `Card Name: ${this.form.title}`,
+        `Cardholder Name: ${this.form.cardholder_name}`,
+        `Type: ${this.form.type}`,
         `Number: ${this.form.number}`
-      )
+      ].join('\n')
     }
   }
 }

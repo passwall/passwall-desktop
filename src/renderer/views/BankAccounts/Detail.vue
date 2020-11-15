@@ -44,10 +44,18 @@
         <FormRowText v-model="form.bank_code" :title="$t('BANK CODE')" :edit-mode="isEditMode" />
 
         <!-- AccountName -->
-        <FormRowText v-model="form.account_name" :title="$t('ACCOUNT NAME')" :edit-mode="isEditMode" />
+        <FormRowText
+          v-model="form.account_name"
+          :title="$t('ACCOUNT NAME')"
+          :edit-mode="isEditMode"
+        />
 
         <!-- AccountNumber -->
-        <FormRowText v-model="form.account_number" :title="$t('ACCOUNT NUMBER')" :edit-mode="isEditMode" />
+        <FormRowText
+          v-model="form.account_number"
+          :title="$t('ACCOUNT NUMBER')"
+          :edit-mode="isEditMode"
+        />
 
         <!-- IBAN -->
         <FormRowText v-model="form.iban" :title="$t('IBAN')" :edit-mode="isEditMode" />
@@ -71,7 +79,7 @@
               <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.password"  />
+            <ClipboardButton :copy="form.password" />
             <!-- Show/Hide -->
             <button
               type="button"
@@ -169,16 +177,16 @@ export default {
     },
 
     bankAccountCopyContent() {
-      return (
-        `Bank Name: ${this.form.title}\n` +
-        `Bank Code: ${this.form.bank_code}\n` +
-        `Account Name: ${this.form.account_name}\n` +
-        `Account Number: ${this.form.account_number}\n` +
-        `IBAN: ${this.form.iban}\nCurrency: ${this.form.currency}\n`
-      )
+      return [
+        `Bank Name: ${this.form.title}`,
+        `Bank Code: ${this.form.bank_code}`,
+        `Account Name: ${this.form.account_name}`,
+        `Account Number: ${this.form.account_number}`,
+        `IBAN: ${this.form.iban}\nCurrency: ${this.form.currency}`
+      ].join('\n')
     },
 
-    getTitle(){
+    getTitle() {
       return this.form.title
     }
   }

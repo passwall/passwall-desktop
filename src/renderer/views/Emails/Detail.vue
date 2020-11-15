@@ -39,7 +39,7 @@
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
         <FormRowText v-model="form.title" :title="$t('TITLE')" :edit-mode="isEditMode" />
-        
+
         <!-- Email -->
         <FormRowText v-model="form.email" :title="$t('EMAIL')" :edit-mode="isEditMode" />
 
@@ -159,7 +159,7 @@ export default {
     },
 
     emailCopyContent() {
-      return `Title: ${this.form.title}\nEmail: ${this.form.email}`
+      return [`Title: ${this.form.title}`, `Email: ${this.form.email}`].join('\n')
     }
   }
 }
