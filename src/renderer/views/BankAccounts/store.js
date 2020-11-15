@@ -18,35 +18,26 @@ export default {
       const { data } = await BankAccountsService.FetchAll(query)
 
       const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-      
+
       itemList.forEach(element => {
-        CryptoUtils.decryptFields(element, EncryptedFields)  
-      });
+        CryptoUtils.decryptFields(element, EncryptedFields)
+      })
 
       state.ItemList = itemList
     },
 
-    async Get({ state }, id) {
-      const { data } = await BankAccountsService.Get(id)
-
-      const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-      CryptoUtils.decryptFields(detail, EncryptedFields)
-
-      state.Detail = detail
+    Delete(_, id) {
+      return BankAccountsService.Delete(id)
     },
 
-    async Delete(_, id) {
-      await BankAccountsService.Delete(id)
-    },
-
-    async Create(_, data) {
+    Create(_, data) {
       const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      await BankAccountsService.Create(payload)
+      return BankAccountsService.Create(payload)
     },
 
-    async Update(_, data) {
+    Update(_, data) {
       const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      await BankAccountsService.Update(data.id, payload)
+      return BankAccountsService.Update(data.id, payload)
     }
   }
 }

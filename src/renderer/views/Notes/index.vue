@@ -20,7 +20,7 @@
             :key="item.id"
             :active="$route.params.id == item.id"
             :data="item"
-            @click="onClickItem(item.id)"
+            @click="onClickItem(item)"
             type="Note"
           />
         </template>
@@ -64,10 +64,10 @@ export default {
   methods: {
     ...mapActions('Notes', ['FetchAll']),
 
-    onClickItem(id) {
+    onClickItem(detail) {
       this.$router.push({
         name: 'NoteDetail',
-        params: { id }
+        params: { detail, id: detail.id }
       })
     }
   },

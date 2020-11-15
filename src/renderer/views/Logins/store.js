@@ -18,33 +18,26 @@ export default {
       const { data } = await LoginsService.FetchAll(query)
 
       const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-      
+
       itemList.forEach(element => {
-        CryptoUtils.decryptFields(element, EncryptedFields)  
-      });
-      
+        CryptoUtils.decryptFields(element, EncryptedFields)
+      })
+
       state.ItemList = itemList
     },
 
-    async Get({ state }, id) {
-      const { data } = await LoginsService.Get(id)
-      const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-      CryptoUtils.decryptFields(detail, EncryptedFields)      
-      state.Detail = detail
+    Delete(_, id) {
+      return LoginsService.Delete(id)
     },
 
-    async Delete(_, id) {
-      await LoginsService.Delete(id)
-    },
-
-    async Create(_, data) {
+    Create(_, data) {
       const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      await LoginsService.Create(payload)
+      return LoginsService.Create(payload)
     },
 
-    async Update(_, data) {
+    Update(_, data) {
       const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      await LoginsService.Update(data.id, payload)
+      return LoginsService.Update(data.id, payload)
     }
   }
 }

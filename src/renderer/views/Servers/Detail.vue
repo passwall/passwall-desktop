@@ -234,8 +234,7 @@ export default {
       showPass: false,
       showHostingPass: false,
       showAdminPass: false,
-      showExtra: false,
-      form: {}
+      showExtra: false
     }
   },
 
@@ -244,29 +243,11 @@ export default {
     this.showPass = false
     this.showHostingPass = false
     this.showAdminPass = false
-    this.getDetail(to.params.id)
     next()
   },
 
-  created() {
-    this.getDetail(this.$route.params.id)
-  },
-
   methods: {
-    ...mapActions('Servers', ['Get', 'Delete', 'Update']),
-
-    getDetail(id) {
-      const onSuccess = async () => {
-        await this.Get(id)
-        this.form = { ...this.Detail }
-      }
-
-      const onError = () => {
-        this.$router.back()
-      }
-
-      this.$request(onSuccess, this.$waiters.Servers.Get, onError)
-    },
+    ...mapActions('Servers', ['Delete', 'Update']),
 
     onClickDelete() {
       const onSuccess = async () => {
@@ -275,7 +256,7 @@ export default {
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
-        this.$router.push({ name: 'Servers', params: { refresh: true } })
+        this.$router.push({ name: 'Servers', params: { openFirst: true } })
       }
 
       this.$request(onSuccess, this.$waiters.Servers.Delete)
@@ -314,7 +295,7 @@ export default {
     },
 
     getTitle() {
-      return this.form.title ? this.form.title : this.form.url
+      return this.form.title || this.form.url
     }
   }
 }

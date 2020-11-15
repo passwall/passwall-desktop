@@ -20,33 +20,24 @@ export default {
       const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
 
       itemList.forEach(element => {
-        CryptoUtils.decryptFields(element, EncryptedFields)  
-      });
-      
+        CryptoUtils.decryptFields(element, EncryptedFields)
+      })
+
       state.ItemList = itemList
     },
 
-    async Get({ state }, id) {
-      const { data } = await CreditCardsService.Get(id)
-
-      const detail = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-      CryptoUtils.decryptFields(detail, EncryptedFields)
-
-      state.Detail = detail
+    Delete(_, id) {
+      return CreditCardsService.Delete(id)
     },
 
-    async Delete(_, id) {
-      await CreditCardsService.Delete(id)
-    },
-
-    async Create(_, data) {
+    Create(_, data) {
       const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      await CreditCardsService.Create(payload)
+      return CreditCardsService.Create(payload)
     },
 
-    async Update(_, data) {
+    Update(_, data) {
       const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      await CreditCardsService.Update(data.id, payload)
+      return CreditCardsService.Update(data.id, payload)
     }
   }
 }

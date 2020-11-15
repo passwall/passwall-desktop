@@ -20,7 +20,7 @@
             :key="item.id"
             :active="$route.params.id == item.id"
             :data="item"
-            @click="onClickItem(item.id)"
+            @click="onClickItem(item)"
             type="BankAccount"
           />
         </template>
@@ -64,10 +64,10 @@ export default {
   methods: {
     ...mapActions('BankAccounts', ['FetchAll']),
 
-    onClickItem(id) {
+    onClickItem(detail) {
       this.$router.push({
         name: 'BankAccountDetail',
-        params: { id }
+        params: { detail, id: detail.id }
       })
     }
   },

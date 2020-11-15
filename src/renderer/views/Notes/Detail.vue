@@ -85,43 +85,27 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import DetailMixin from '@/mixins/detail'
 
 export default {
+  mixins: [DetailMixin],
+
   data() {
     return {
       isEditMode: false,
       showPass: false,
-      showNote: false,
-      form: {}
+      showNote: false
     }
   },
 
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
-    this.showPass = false
-    this.getDetail(to.params.id)
+    this.showNote = false
     next()
   },
 
-  created() {
-    this.getDetail(this.$route.params.id)
-  },
-
   methods: {
-    ...mapActions('Notes', ['Get', 'Delete', 'Update']),
-
-    getDetail(id) {
-      const onSuccess = async () => {
-        await this.Get(id)
-        this.form = { ...this.Detail }
-      }
-
-      const onError = () => {
-        this.$router.back()
-      }
-
-      this.$request(onSuccess, this.$waiters.Notes.Get, onError)
-    },
+    ...mapActions('Notes', ['Delete', 'Update']),
 
     onClickDelete() {
       const onSuccess = async () => {
@@ -130,7 +114,7 @@ export default {
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
-        this.$router.push({ name: 'Notes', params: { refresh: true } })
+        this.$router.push({ name: 'Notes', params: { openFirst: true } })
       }
 
       this.$request(onSuccess, this.$waiters.Notes.Delete)
