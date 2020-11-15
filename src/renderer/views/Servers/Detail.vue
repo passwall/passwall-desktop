@@ -8,7 +8,7 @@
       <!-- Summary -->
       <div class="detail-page-header-summary">
         <span v-text="getTitle" class="url" />
-        <span v-text="form.username" class="email" />
+        <span v-text="form.ip" class="email" />
       </div>
 
       <!-- Copy -->
