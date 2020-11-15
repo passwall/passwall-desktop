@@ -226,8 +226,11 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import DetailMixin from '@/mixins/detail'
 
 export default {
+  mixins: [DetailMixin],
+
   data() {
     return {
       isEditMode: false,
