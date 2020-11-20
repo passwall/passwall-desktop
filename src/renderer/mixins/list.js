@@ -41,7 +41,10 @@ export default {
     filteredList() {
       return this.ItemList.filter(item =>
         Object.values(item).some(value =>
-          (value ? value.toString() : '').includes(this.searchQuery.toLowerCase())
+          (value || '')
+            .toString()
+            .toLowerCase()
+            .includes(this.searchQuery.toLowerCase())
         )
       )
     }
