@@ -20,9 +20,9 @@ export default {
   props: {
     name: String,
     value: String,
-    sensitive: Boolean
+    sensitive: Boolean,
   },
-
+  
   computed: {
     getError() {
       const error = this.errors.items.find(e => e.field == this.name)

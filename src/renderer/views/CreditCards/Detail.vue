@@ -41,7 +41,11 @@
         <FormRowText v-model="form.title" :title="$t('CARD NAME')" :edit-mode="isEditMode" />
 
         <!-- CardholderName -->
-        <FormRowText v-model="form.cardholder_name" :title="$t('CARDHOLDER NAME')" :edit-mode="isEditMode" />
+        <FormRowText
+          v-model="form.cardholder_name"
+          :title="$t('CARDHOLDER NAME')"
+          :edit-mode="isEditMode"
+        />
 
         <!-- Type -->
         <FormRowText v-model="form.type" :title="$t('TYPE')" :edit-mode="isEditMode" />
@@ -50,7 +54,11 @@
         <FormRowText v-model="form.number" :title="$t('NUMBER')" :edit-mode="isEditMode" />
 
         <!-- ExpiryDate -->
-        <FormRowText v-model="form.expiry_date" :title="$t('EXPIRY DATE')" :edit-mode="isEditMode" />
+        <FormRowText
+          v-model="form.expiry_date"
+          :title="$t('EXPIRY DATE')"
+          :edit-mode="isEditMode"
+        />
 
         <!-- VerificationNumber -->
         <div class="form-row">
@@ -97,51 +105,35 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import DetailMixin from '@/mixins/detail'
 
 export default {
+  mixins: [DetailMixin],
+
   data() {
     return {
       isEditMode: false,
       showPass: false,
-      form: {}
     }
   },
 
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
-    this.getDetail(to.params.id)
     next()
   },
 
-  created() {
-    this.getDetail(this.$route.params.id)
-  },
-
   methods: {
-    ...mapActions('CreditCards', ['Get', 'Delete', 'Update']),
+    ...mapActions('CreditCards', ['Delete', 'Update']),
 
-    getDetail(id) {
-      const onSuccess = async () => {
-        await this.Get(id)
-        this.form = { ...this.Detail }
-      }
-
-      const onError = () => {
-        this.$router.back()
-      }
-
-      this.$request(onSuccess, this.$waiters.CreditCards.Get, onError)
-    },
-
-   onClickDelete() {
+    onClickDelete() {
       const onSuccess = async () => {
         await this.Delete(this.form.id)
         const index = this.ItemList.findIndex(item => item.id == this.form.id)
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
-        this.$router.push({ name: 'CreditCards', params: { refresh: true } })
+        this.$router.push({ name: 'CreditCards', params: { openFirst: true } })
       }
 
       this.$request(onSuccess, this.$waiters.CreditCards.Delete)
@@ -166,12 +158,12 @@ export default {
     },
 
     creditCardCopyContent() {
-      return (
-        `Card Name: ${this.form.title}\n` +
-        `Cardholder Name: ${this.form.cardholder_name}\n` +
-        `Type: ${this.form.type}\n` +
+      return [
+        `Card Name: ${this.form.title}`,
+        `Cardholder Name: ${this.form.cardholder_name}`,
+        `Type: ${this.form.type}`,
         `Number: ${this.form.number}`
-      )
+      ].join('\n')
     }
   }
 }

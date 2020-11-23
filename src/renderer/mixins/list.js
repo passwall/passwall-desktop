@@ -8,7 +8,9 @@ export default {
   },
 
   beforeRouteUpdate(to, from, next) {
-    if (to.params.refresh) {
+    if (to.params.openFirst) {
+      this.openFirstItem()
+    } else if (to.params.refresh) {
       this.fetchAll()
     }
     next()
@@ -21,25 +23,29 @@ export default {
   methods: {
     async fetchAll() {
       try {
-        await this.FetchAll()
-
-        if (this.ItemList.length > 0) {
-          this.onClickItem(this.ItemList[0].id)
-        }
+        await this.$request(this.FetchAll)
+        this.openFirstItem()
       } catch (error) {
         console.log(error)
+      }
+    },
+
+    openFirstItem() {
+      if (this.ItemList.length > 0) {
+        this.onClickItem(this.ItemList[0])
       }
     }
   },
 
-
   computed: {
     filteredList() {
-      // return this.ItemList.filter(i =>
-      //   i.title.toLowerCase().includes(this.searchQuery.toLowerCase())
-      // )
       return this.ItemList.filter(item =>
-        Object.values(item).some(value => (value ? value.toString() : '').includes(this.searchQuery.toLowerCase()))
+        Object.values(item).some(value =>
+          (value || '')
+            .toString()
+            .toLowerCase()
+            .includes(this.searchQuery.toLowerCase())
+        )
       )
     }
   }

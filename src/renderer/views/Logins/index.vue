@@ -20,7 +20,7 @@
             :key="item.id"
             :data="item"
             :active="$route.params.id == item.id"
-            @click="onClickItem(item.id)"
+            @click="onClickItem(item)"
             type="Login"
           />
         </template>
@@ -64,10 +64,10 @@ export default {
   methods: {
     ...mapActions('Logins', ['FetchAll']),
 
-    onClickItem(id) {
+    onClickItem(detail) {
       this.$router.push({
         name: 'LoginDetail',
-        params: { id }
+        params: { detail, id: detail.id }
       })
     }
   },

@@ -15,7 +15,7 @@
         :class="{ '--lock': !hasProPlan }"
       >
         <VIcon name="credit-card" size="14px" class="icon" />
-        {{ $t('Credit Cards') }}
+        {{ $t('Credit Card') }}
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
@@ -27,7 +27,7 @@
         :class="{ '--lock': !hasProPlan }"
       >
         <VIcon name="bank-account" size="14px" class="icon" />
-        {{ $t('Bank Accounts') }}
+        {{ $t('Bank Account') }}
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
@@ -39,7 +39,7 @@
         :class="{ '--lock': !hasProPlan }"
       >
         <VIcon name="email" size="14px" class="icon" />
-        {{ $t('Emails') }}
+        {{ $t('Email') }}
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
@@ -51,7 +51,7 @@
         :class="{ '--lock': !hasProPlan }"
       >
         <VIcon name="private-note" size="14px" class="icon" />
-        {{ $t('Private Notes') }}
+        {{ $t('Private Note') }}
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
@@ -63,7 +63,7 @@
         :class="{ '--lock': !hasProPlan }"
       >
         <VIcon name="server" size="14px" class="icon" />
-        {{ $t('Servers') }}
+        {{ $t('Server') }}
         <!-- Premium -->
         <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>

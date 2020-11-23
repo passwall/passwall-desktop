@@ -1,6 +1,6 @@
 {
   "name": "passwall",
-  "version": "v1.0.0",
+  "version": "1.0.1",
   "author": "PassWall <hello@passwall.io>",
   "description": "PassWall Desktop",
   "license": "MIT",
@@ -11,17 +11,16 @@
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
     "build:darwin": "cross-env BUILD_TARGET=darwin node .electron-vue/build.js",
-    "build:linux": "cross-env BUILD_TARGET=linux node .electron-vue/build.js",
+    "build:linux": "electron-packager . --overwrite --asar --platform=linux --arch=x64 --icon=build/icons/512x512.png --prune=true --out=build --version-string.CompanyName=PassWall --version-string.FileDescription=PassWall",
     "build:mas": "cross-env BUILD_TARGET=mas node .electron-vue/build.js",
-    "build:win3": "cross-env BUILD_TARGET=win32 node .electron-vue/build.js",
-    "build:win32": "electron-packager . --overwrite --asar --platform=win32 --arch=ia32 --icon=build/icons/icon.ico --prune=true --out=build --version-string.CompanyName=PassWall --version-string.FileDescription=PassWall",
+    "build:win32": "electron-packager . --overwrite --asar --platform=win32 --arch=x64 --icon=build/icons/icon.ico --prune=true --out=build --version-string.CompanyName=PassWall --version-string.FileDescription=PassWall",
     "dev": "node .electron-vue/dev-runner.js",
     "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src test",
     "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src test",
     "pack": "npm run pack:main && npm run pack:renderer",
     "pack:linux": "electron-packager . passwall --platform linux --arch x64 --out build",
-    "installer:deb": "npx electron-installer-debian --src build/passwall-linux-x64 --arch amd64 --dest installers/ --icon build/icons/256x256.png",
-    "installer:rpm": "npx electron-installer-redhat --src build/passwall-linux-x64 --arch amd64 --dest installers/ --icon build/icons/256x256.png",
+    "installer:deb": "npx electron-installer-debian --src build/passwall-linux-x64 --arch amd64 --dest installers/ --icon build/icons/512x512.png",
+    "installer:rpm": "npx electron-installer-redhat --src build/passwall-linux-x64 --arch amd64 --dest installers/ --icon build/icons/512x512.png",
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
     "test": "npm run unit",
@@ -59,7 +58,7 @@
       "icon": "build/icons/icon.ico"
     },
     "linux": {
-      "icon": "build/icons"
+      "icon": "build/icons/icon.png"
     }
   },
   "dependencies": {
@@ -99,7 +98,7 @@
     "css-loader": "^0.28.11",
     "del": "^3.0.0",
     "devtron": "^1.4.0",
-    "electron": "6.0.12",
+    "electron": "^7.0.0",
     "electron-builder": "21.2.0",
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",

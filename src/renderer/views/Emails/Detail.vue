@@ -39,7 +39,7 @@
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
         <FormRowText v-model="form.title" :title="$t('TITLE')" :edit-mode="isEditMode" />
-        
+
         <!-- Email -->
         <FormRowText v-model="form.email" :title="$t('EMAIL')" :edit-mode="isEditMode" />
 
@@ -90,42 +90,26 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import DetailMixin from '@/mixins/detail'
 
 export default {
+  mixins: [DetailMixin],
+
   data() {
     return {
       isEditMode: false,
-      showPass: false,
-      form: {}
+      showPass: false
     }
   },
 
   beforeRouteUpdate(to, from, next) {
     this.isEditMode = false
     this.showPass = false
-    this.getDetail(to.params.id)
     next()
   },
 
-  created() {
-    this.getDetail(this.$route.params.id)
-  },
-
   methods: {
-    ...mapActions('Emails', ['Get', 'Delete', 'Update']),
-
-    getDetail(id) {
-      const onSuccess = async () => {
-        await this.Get(id)
-        this.form = { ...this.Detail }
-      }
-
-      const onError = () => {
-        this.$router.back()
-      }
-
-      this.$request(onSuccess, this.$waiters.Emails.Get, onError)
-    },
+    ...mapActions('Emails', ['Delete', 'Update']),
 
     onClickDelete() {
       const onSuccess = async () => {
@@ -134,7 +118,7 @@ export default {
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
-        this.$router.push({ name: 'Emails', params: { refresh: true } })
+        this.$router.push({ name: 'Emails', params: { openFirst: true } })
       }
 
       this.$request(onSuccess, this.$waiters.Emails.Delete)
@@ -159,7 +143,7 @@ export default {
     },
 
     emailCopyContent() {
-      return `Title: ${this.form.title}\nEmail: ${this.form.email}`
+      return [`Title: ${this.form.title}`, `Email: ${this.form.email}`].join('\n')
     }
   }
 }

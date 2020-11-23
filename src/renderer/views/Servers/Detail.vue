@@ -8,7 +8,7 @@
       <!-- Summary -->
       <div class="detail-page-header-summary">
         <span v-text="getTitle" class="url" />
-        <span v-text="form.username" class="email" />
+        <span v-text="form.ip" class="email" />
       </div>
 
       <!-- Copy -->
@@ -122,7 +122,7 @@
               <span v-text="showHostingPass ? form.hosting_password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.password" />
+            <ClipboardButton :copy="form.hosting_password" />
             <!-- Generate -->
             <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.hosting_password" />
             <!-- Show/Hide -->
@@ -167,7 +167,7 @@
               <span v-text="showAdminPass ? form.admin_password : '●●●●●●'" class="mr-2" />
             </div>
             <!-- Copy -->
-            <ClipboardButton :copy="form.password" />
+            <ClipboardButton :copy="form.admin_password" />
             <!-- Generate -->
             <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.admin_password" />
             <!-- Show/Hide -->
@@ -226,16 +226,18 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import DetailMixin from '@/mixins/detail'
 
 export default {
+  mixins: [DetailMixin],
+
   data() {
     return {
       isEditMode: false,
       showPass: false,
       showHostingPass: false,
       showAdminPass: false,
-      showExtra: false,
-      form: {}
+      showExtra: false
     }
   },
 
@@ -244,29 +246,11 @@ export default {
     this.showPass = false
     this.showHostingPass = false
     this.showAdminPass = false
-    this.getDetail(to.params.id)
     next()
   },
 
-  created() {
-    this.getDetail(this.$route.params.id)
-  },
-
   methods: {
-    ...mapActions('Servers', ['Get', 'Delete', 'Update']),
-
-    getDetail(id) {
-      const onSuccess = async () => {
-        await this.Get(id)
-        this.form = { ...this.Detail }
-      }
-
-      const onError = () => {
-        this.$router.back()
-      }
-
-      this.$request(onSuccess, this.$waiters.Servers.Get, onError)
-    },
+    ...mapActions('Servers', ['Delete', 'Update']),
 
     onClickDelete() {
       const onSuccess = async () => {
@@ -275,7 +259,7 @@ export default {
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }
-        this.$router.push({ name: 'Servers', params: { refresh: true } })
+        this.$router.push({ name: 'Servers', params: { openFirst: true } })
       }
 
       this.$request(onSuccess, this.$waiters.Servers.Delete)
@@ -300,21 +284,21 @@ export default {
     },
 
     serverCopyContent() {
-      return (
-        `Title: ${this.form.title}\n` +
-        `IP: ${this.form.ip}\n` +
-        `Username: ${this.form.username}\n` +
-        `Password: ${this.form.password}\n` +
-        `URL: ${this.form.url}\n` +
-        `Hosting Username: ${this.form.hosting_username}\n` +
-        `Hosting Password: ${this.form.hosting_password}\n` +
-        `Admin Username: ${this.form.admin_username}\n` +
+      return [
+        `Title: ${this.form.title}`,
+        `IP: ${this.form.ip}`,
+        `Username: ${this.form.username}`,
+        `Password: ${this.form.password}`,
+        `URL: ${this.form.url}`,
+        `Hosting Username: ${this.form.hosting_username}`,
+        `Hosting Password: ${this.form.hosting_password}`,
+        `Admin Username: ${this.form.admin_username}`,
         `Admin Password: ${this.form.admin_password}`
-      )
+      ].join('\n')
     },
-    
-    getTitle(){
-      return this.form.title ? this.form.title : this.form.url
+
+    getTitle() {
+      return this.form.title || this.form.url
     }
   }
 }
