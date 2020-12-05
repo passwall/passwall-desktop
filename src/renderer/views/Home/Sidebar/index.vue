@@ -34,13 +34,6 @@
               {{ $t('Cancel') }}
             </button>
           </template>
-
-          <hr />
-          <!-- Logout -->
-          <button @click="onClickLogout">
-            <VIcon name="logout" size="14px" rotation="180" class="c-danger mr-2" />
-            {{ $t('Logout') }}
-          </button>
         </div>
       </div>
     </div>
@@ -136,8 +129,6 @@ export default {
   },
 
   methods: {
-    ...mapActions(['Logout']),
-
     onClickUpdateApp() {
       electron.shell.openExternal(this.updateLink || 'https://passwall.io')
     },
@@ -176,11 +167,6 @@ export default {
 
     onClickCancel() {
       electron.shell.openExternal(this.user.cancel_url)
-    },
-
-    onClickLogout() {
-      this.Logout()
-      this.$router.push({ name: 'Login' })
     }
   }
 }
@@ -190,7 +176,7 @@ export default {
 .sidebar {
   width: 200px;
   min-width: 200px;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   user-select: none;
@@ -222,11 +208,11 @@ export default {
         border: 1px solid $color-gray-400;
 
         &.--free-plan {
-          height: 130px;
+          height: 85px;
         }
 
         &.--pro-plan {
-          height: 167px;
+          height: 120px;
         }
       }
 

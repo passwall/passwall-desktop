@@ -20,5 +20,6 @@ export default {
 <style lang="scss">
 .main-container {
   display: flex;
+  height: calc(100vh - 56px);
 }
 </style>

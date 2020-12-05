@@ -14,6 +14,7 @@ export default {
   CreditCards: 'Credit Cards',
   Identities: 'Identities',
   GiveFeedback: 'Give Feedback',
+  'Search passwords, websites, notes': 'Search passwords, websites, notes',
   Trash: 'Trash',
   Share: 'Share',
   Delete: 'Delete',
@@ -32,5 +33,6 @@ export default {
   'Search passwords, websites, notes': 'Search passwords, websites, notes',
   'There is nothing here, yet...': 'There is nothing here, yet...',
   ContentHidden: 'This content is hidden',
-  API500ErrorMessage: 'An unexpected error seems to have occured. Or you can contact us if the problem persists.',
+  API500ErrorMessage:
+    'An unexpected error seems to have occured. Or you can contact us if the problem persists.'
 }

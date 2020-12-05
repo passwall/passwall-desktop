@@ -198,7 +198,7 @@ hr {
 /** Detail Page **/
 .detail-page {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   border-left: 1px solid black;
   background-color: $color-gray-600;
 
@@ -282,7 +282,7 @@ hr {
   flex-direction: column;
   min-width: 295px;
   max-width: 295px;
-  height: 100vh;
+  height: 100%;
 
   & > .ps {
     height: 100%;
