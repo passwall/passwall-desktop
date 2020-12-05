@@ -25,6 +25,7 @@ export default new Vuex.Store({
       refresh_token: localStorage.refresh_token,
       transmission_key: localStorage.transmission_key,
       master_hash: localStorage.master_hash,
+      searchQuery: '',
       user: {}
     }
   },
@@ -76,6 +77,12 @@ export default new Vuex.Store({
     async Export() {
       const { data } = SystemService.Export()
       return data
+    }
+  },
+
+  mutations: {
+    onInputSearchQuery(state, event) {
+      state.searchQuery = event.target.value
     }
   },
 

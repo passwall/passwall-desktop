@@ -1,16 +1,6 @@
 <template>
   <div class="content-container">
     <div class="items-container">
-      <!-- Search -->
-      <div class="search-wrapper">
-        <VFormText
-          :placeholder="$t('Search passwords, websites, notes')"
-          theme="black"
-          v-model="searchQuery"
-          v-debounce:300="fetchAll"
-          class="w-100"
-        />
-      </div>
       <!-- Items -->
       <PerfectScrollbar>
         <!-- List -->

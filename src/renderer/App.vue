@@ -10,7 +10,12 @@
       <!-- Search -->
       <div class="app-header-search" v-if="access_token">
         <div class="app-header-search-wrapper">
-          <input type="text" :placeholder="$t('Search passwords, websites, notes')" />
+          <input
+            type="text"
+            :value="searchQuery"
+            @input="onInputSearchQuery"
+            :placeholder="$t('Search passwords, websites, notes')"
+          />
           <VIcon name="search" size="16px" />
         </div>
       </div>
@@ -44,19 +49,17 @@
 <script>
 import fs from 'fs'
 import Papa from 'papaparse'
-import { ipcRenderer } from 'electron'
-import { remote, app } from 'electron'
-import { mapActions, mapState } from 'vuex'
+import { remote, app, ipcRenderer } from 'electron'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import CryptoUtils from '@/utils/crypto'
 
 export default {
-  computed: {
-    ...mapState(['access_token', 'user'])
-  },
+  computed: mapState(['access_token', 'searchQuery']),
 
   methods: {
     ...mapActions(['Import', 'Export', 'Logout']),
     ...mapActions('Logins', ['FetchAll']),
+    ...mapMutations(['onInputSearchQuery']),
 
     onClickClose() {
       app.quit()
@@ -76,21 +79,10 @@ export default {
 
     onClickLogout() {
       this.Logout()
-      this.$router.push({ name: 'Login' })
-    },
-
-    checkAccess() {
-      if (!this.access_token) {
-        this.$notifyError(this.$t('You are not logged in. Please log in and try again'))
-      }
-      return Boolean(this.access_token)
+      this.$router.replace({ name: 'Login' })
     },
 
     async onExport() {
-      if (!this.checkAccess()) {
-        return
-      }
-
       const filePath = remote.dialog.showSaveDialogSync(null)
 
       if (!filePath) {
@@ -112,10 +104,6 @@ export default {
     },
 
     onImport() {
-      if (!this.checkAccess()) {
-        return
-      }
-
       remote.dialog.showOpenDialog({ properties: ['openFile'] }).then(async ({ filePaths }) => {
         if (filePaths.length === 0) {
           return
@@ -172,13 +160,14 @@ export default {
 
     &-wrapper {
       position: relative;
+      width: 260px;
 
       input {
-        width: 260px;
+        width: 100%;
         height: 40px;
         background-color: #000;
         border-radius: 8px;
-        padding: 0 56px 0 24px;
+        padding: 0 46px 0 24px;
         color: white;
         border: 0;
         font-size: 12px;
@@ -192,7 +181,7 @@ export default {
 
     .v-icon {
       top: 12px;
-      right: 24px;
+      right: 20px;
       position: absolute;
       color: $color-gray-300;
     }

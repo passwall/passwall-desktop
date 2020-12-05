@@ -1,16 +1,6 @@
 <template>
   <div class="content-container">
     <div class="items-container">
-      <!-- Search -->
-      <div class="search-wrapper">
-        <VFormText
-          :placeholder="$t('Search passwords, websites, notes')"
-          theme="black"
-          v-model="searchQuery"
-          v-debounce:300="fetchAll"
-          class="w-100"
-        />
-      </div>
       <!-- Items -->
       <PerfectScrollbar>
         <!-- List -->
@@ -18,10 +8,10 @@
           <ListItem
             v-for="item in filteredList"
             :key="item.id"
-            :active="$route.params.id == item.id"
+            type="Email"
             :data="item"
             @click="onClickItem(item)"
-            type="Email"
+            :active="$route.params.id == item.id"
           />
         </template>
         <!-- Empty State -->

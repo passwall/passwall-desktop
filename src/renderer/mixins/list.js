@@ -1,7 +1,8 @@
+import { mapState } from 'vuex'
+
 export default {
   data() {
     return {
-      searchQuery: '',
       itemMenuActive: false,
       emptyCenterStateActive: false
     }
@@ -38,6 +39,8 @@ export default {
   },
 
   computed: {
+    ...mapState(['searchQuery']),
+
     filteredList() {
       return this.ItemList.filter(item =>
         Object.values(item).some(value =>
