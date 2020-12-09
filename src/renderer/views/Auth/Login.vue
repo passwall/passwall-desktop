@@ -2,7 +2,7 @@
   <div class="login-container">
     <!-- Left Background -->
     <div>
-      <VIcon name="passwall-back" class="login-background" width="450px" height="560px" />
+      <VIcon name="passwall-back" class="login-background" width="450px" height="544px" />
       <VIcon name="right-corner" class="login-right-corner" size="82px" />
     </div>
     <!-- Login Form -->
@@ -83,7 +83,7 @@ export default {
 <style lang="scss">
 .login-container {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 56px);
   position: relative;
   display: flex;
   justify-content: space-between;
