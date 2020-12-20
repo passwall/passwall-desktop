@@ -146,6 +146,10 @@ export default {
   -webkit-user-select: none;
   -webkit-app-region: drag;
 
+  & > * {
+    -webkit-app-region: no-drag;
+  }
+
   &,
   &-control-buttons {
     display: flex;
@@ -190,13 +194,14 @@ export default {
   &-control-buttons {
     width: 184px;
     height: 48px;
-    -webkit-app-region: no-drag;
+    -webkit-app-region: drag;
 
     button {
       width: 12px;
       height: 12px;
       border-radius: 50%;
       margin-right: 6px;
+      -webkit-app-region: no-drag;
     }
 
     .btn-close {
