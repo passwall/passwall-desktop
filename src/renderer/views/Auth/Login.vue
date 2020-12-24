@@ -7,8 +7,19 @@
     </div>
     <!-- Login Form -->
     <form class="login-form" @submit.stop.prevent="onLogin">
-      <!-- E-Mail Address -->
+      <!-- Server -->
       <div>
+        <label v-text="$t('ServerURL')" />
+        <VFormText
+          v-model="LoginForm.server"
+          size="medium"
+          v-validate="'required|url'"
+          name="Server"
+          placeholder="Server URL"
+        />
+      </div>
+      <!-- E-Mail Address -->
+      <div class="mt-4">
         <label v-text="$t('EMailAddress')" />
         <VFormText
           v-model="LoginForm.email"
@@ -47,6 +58,7 @@ export default {
   data() {
     return {
       LoginForm: {
+        server: localStorage.server || 'https://vault.passwall.io',
         email: localStorage.email || '',
         master_password: ''
       }
@@ -124,7 +136,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 130px;
+  padding-top: 60px;
   background-color: black;
   z-index: 9;
 }

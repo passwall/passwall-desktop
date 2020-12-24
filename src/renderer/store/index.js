@@ -50,6 +50,7 @@ export default new Vuex.Store({
       state.user = data
 
       localStorage.email = payload.email
+      localStorage.server = payload.server
       localStorage.access_token = data.access_token
       localStorage.refresh_token = data.refresh_token
       if (process.env.NODE_ENV !== 'production') {
@@ -66,7 +67,7 @@ export default new Vuex.Store({
       state.transmission_key = null
       state.master_hash = null
       state.user = null
-      const lsKeys = Object.keys(localStorage).filter(key => ['email'].includes(key) === false)
+      const lsKeys = Object.keys(localStorage).filter(key => ['email','server'].includes(key) === false)
       lsKeys.forEach(key => localStorage.removeItem(key))
     },
 
