@@ -13,8 +13,8 @@
         <VFormText
           v-model="LoginForm.server"
           size="medium"
-          v-validate="'required|url'"
           name="Server"
+          v-validate="'required'"
           placeholder="Server URL"
         />
       </div>
@@ -53,6 +53,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import HTTPClient from '@/api/HTTPClient'
 
 export default {
   data() {
@@ -69,10 +70,12 @@ export default {
     ...mapActions(['Login']),
 
     onLogin() {
-      this.$validator.validate().then(async result => {
+      this.$validator.validate().then(async (result) => {
         if (!result) return
 
-        const onError = error => {
+        HTTPClient.setBaseURL(this.LoginForm.server)
+
+        const onError = (error) => {
           let text = this.$t('Ooops! Something went wrong!')
           if (error.response.status == 401) {
             text = this.$t(error.response.data.message)

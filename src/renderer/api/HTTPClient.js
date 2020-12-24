@@ -48,4 +48,8 @@ export default class HTTPClient {
   static setHeader(key, value) {
     client.defaults.headers.common[key] = value
   }
+
+  static setBaseURL(url) {
+    client.defaults.baseURL = url
+  }
 }
