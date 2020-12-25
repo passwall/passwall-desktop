@@ -3,7 +3,7 @@
     <header class="app-header">
       <!-- Control Buttons -->
       <div class="app-header-control-buttons">
-        <button class="btn-close" @click="onClickClose" />
+        <button class="btn-quit" @click="onClickQuit" />
         <button class="btn-min" @click="onClickMin" />
         <button class="btn-max" @click="onClickMax" />
       </div>
@@ -49,7 +49,7 @@
 <script>
 import fs from 'fs'
 import Papa from 'papaparse'
-import { remote, app, ipcRenderer } from 'electron'
+import { remote, ipcRenderer } from 'electron'
 import { mapActions, mapMutations, mapState } from 'vuex'
 import CryptoUtils from '@/utils/crypto'
 
@@ -61,8 +61,8 @@ export default {
     ...mapActions('Logins', ['FetchAll']),
     ...mapMutations(['onInputSearchQuery']),
 
-    onClickClose() {
-      app.quit()
+    onClickQuit() {
+      remote.app.quit()
     },
 
     onClickMin() {
@@ -204,7 +204,7 @@ export default {
       -webkit-app-region: no-drag;
     }
 
-    .btn-close {
+    .btn-quit {
       background-color: #e82649;
     }
 
