@@ -104,7 +104,9 @@ export default {
     },
 
     onImport() {
+
       remote.dialog.showOpenDialog({ properties: ['openFile'] }).then(async ({ filePaths }) => {
+
         if (filePaths.length === 0) {
           return
         }
