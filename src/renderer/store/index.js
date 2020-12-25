@@ -25,6 +25,7 @@ export default new Vuex.Store({
       refresh_token: localStorage.refresh_token,
       transmission_key: localStorage.transmission_key,
       master_hash: localStorage.master_hash,
+      searchQuery: '',
       user: {}
     }
   },
@@ -49,6 +50,7 @@ export default new Vuex.Store({
       state.user = data
 
       localStorage.email = payload.email
+      localStorage.server = payload.server
       localStorage.access_token = data.access_token
       localStorage.refresh_token = data.refresh_token
       if (process.env.NODE_ENV !== 'production') {
@@ -65,7 +67,7 @@ export default new Vuex.Store({
       state.transmission_key = null
       state.master_hash = null
       state.user = null
-      const lsKeys = Object.keys(localStorage).filter(key => ['email'].includes(key) === false)
+      const lsKeys = Object.keys(localStorage).filter(key => ['email','server'].includes(key) === false)
       lsKeys.forEach(key => localStorage.removeItem(key))
     },
 
@@ -76,6 +78,12 @@ export default new Vuex.Store({
     async Export() {
       const { data } = SystemService.Export()
       return data
+    }
+  },
+
+  mutations: {
+    onInputSearchQuery(state, event) {
+      state.searchQuery = event.target.value
     }
   },
 

@@ -1,6 +1,6 @@
 {
   "name": "passwall",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "PassWall <hello@passwall.io>",
   "description": "PassWall Desktop",
   "license": "MIT",
@@ -64,7 +64,6 @@
   "dependencies": {
     "axios": "^0.18.0",
     "crypto-js": "^4.0.0",
-    "date-fns": "^2.14.0",
     "papaparse": "^5.2.0",
     "v-tooltip": "^2.0.3",
     "vee-validate": "2.2.15",

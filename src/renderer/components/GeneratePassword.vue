@@ -1,6 +1,10 @@
 <template>
   <v-popover offset="16">
-    <button type="button" @click="onClickGenerate" class="btn-generate-pass">
+    <button 
+      type="button" 
+      @click="onClickGenerate" 
+      class="btn-generate-pass"
+      v-tooltip="$t('Generate')">
       <VIcon name="refresh" size="14px" />
     </button>
 

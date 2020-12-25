@@ -2,13 +2,24 @@
   <div class="login-container">
     <!-- Left Background -->
     <div>
-      <VIcon name="passwall-back" class="login-background" width="450px" height="560px" />
+      <VIcon name="passwall-back" class="login-background" width="450px" height="504px" />
       <VIcon name="right-corner" class="login-right-corner" size="82px" />
     </div>
     <!-- Login Form -->
     <form class="login-form" @submit.stop.prevent="onLogin">
-      <!-- E-Mail Address -->
+      <!-- Server -->
       <div>
+        <label v-text="$t('ServerURL')" />
+        <VFormText
+          v-model="LoginForm.server"
+          size="medium"
+          name="Server"
+          v-validate="'required'"
+          placeholder="Server URL"
+        />
+      </div>
+      <!-- E-Mail Address -->
+      <div class="mt-4">
         <label v-text="$t('EMailAddress')" />
         <VFormText
           v-model="LoginForm.email"
@@ -42,11 +53,13 @@
 
 <script>
 import { mapActions } from 'vuex'
+import HTTPClient from '@/api/HTTPClient'
 
 export default {
   data() {
     return {
       LoginForm: {
+        server: localStorage.server || 'https://vault.passwall.io',
         email: localStorage.email || '',
         master_password: ''
       }
@@ -57,10 +70,12 @@ export default {
     ...mapActions(['Login']),
 
     onLogin() {
-      this.$validator.validate().then(async result => {
+      this.$validator.validate().then(async (result) => {
         if (!result) return
 
-        const onError = error => {
+        HTTPClient.setBaseURL(this.LoginForm.server)
+
+        const onError = (error) => {
           let text = this.$t('Ooops! Something went wrong!')
           if (error.response.status == 401) {
             text = this.$t(error.response.data.message)
@@ -83,7 +98,7 @@ export default {
 <style lang="scss">
 .login-container {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 56px);
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -124,7 +139,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 130px;
+  padding-top: 60px;
   background-color: black;
   z-index: 9;
 }

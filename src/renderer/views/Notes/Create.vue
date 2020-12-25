@@ -3,7 +3,7 @@
     <div class="detail-page-header">
       <!-- Avatar -->
       <div class="detail-page-header-avatar">
-        <img v-if="form.src" :src="form.src" />
+        <CompanyLogo :url="form.title" />
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
