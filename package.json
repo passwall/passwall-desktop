@@ -62,7 +62,7 @@
     }
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "crypto-js": "^4.0.0",
     "papaparse": "^5.2.0",
     "v-tooltip": "^2.0.3",
