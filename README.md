@@ -13,10 +13,25 @@ If you want to use this client with official PassWall Server, please first sign 
 
 ### Requirements
 
-- [Node.js](https://nodejs.org)
+- [Node.js](https://nodejs.org) (Version 12.14.0)
 - [Electron](https://www.electronjs.org)
 
+### Node Version
+Passwall desktop uses Node 12.14.0 version. For an easy Node setup, you can install NVM and change Node version easily.  
+
+``` bash
+# install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
+
+# install desired node version
+nvm install 12.14.0
+
+# change version
+nvm use 12.14.0
+```
+
 ### Run the app
+After installing yarn, you can download dependencies and run the app with the commands below.
 
 ``` bash
 # install dependencies
@@ -27,28 +42,4 @@ yarn run dev
 
 # build electron application for production
 yarn run build
-```
-
-You can adjust your API endpoint settings in `src/renderer/api/HTTPClient.js` by changing the `baseURL`. For example:
-
-```js
-const client = Axios.create({
-  baseURL: 'https://vault.passwall.io',
-  headers: {
-    'Content-Type': 'application/json; charset=utf-8',
-    Accept: 'application/json, text/plain, */*'
-  }
-})
-```
-
-If you want to point your local passwall server address, you can set:
-
-```js
-const client = Axios.create({
-  baseURL: 'http://localhost:3625',
-  headers: {
-    'Content-Type': 'application/json; charset=utf-8',
-    Accept: 'application/json, text/plain, */*'
-  }
-})
 ```
