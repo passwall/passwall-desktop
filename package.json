@@ -11,6 +11,7 @@
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
     "build:darwin": "cross-env BUILD_TARGET=darwin node .electron-vue/build.js",
+    "build:darwinamd64": "cross-env BUILD_TARGET=darwin node .electron-vue/build.js",
     "build:linux": "electron-packager . --overwrite --asar --platform=linux --arch=x64 --icon=build/icons/512x512.png --prune=true --out=build --version-string.CompanyName=PassWall --version-string.FileDescription=PassWall",
     "build:mas": "cross-env BUILD_TARGET=mas node .electron-vue/build.js",
     "build:win32": "electron-packager . --overwrite --asar --platform=win32 --arch=x64 --icon=build/icons/icon.ico --prune=true --out=build --version-string.CompanyName=PassWall --version-string.FileDescription=PassWall",
