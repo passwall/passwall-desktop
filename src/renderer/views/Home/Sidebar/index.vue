@@ -154,11 +154,7 @@ export default {
     },
 
     onClickUpgrade() {
-      window.Paddle.Checkout.open({
-        product: 630862,
-        email: this.user.email,
-        successCallback: this.onClickLogout
-      })
+      electron.shell.openExternal('https://signup.passwall.io/upgrade')
     },
 
     onClickUpdate() {
