@@ -5,6 +5,10 @@ export default class AuthService {
     return HTTPClient.post(`/auth/signin`, payload)
   }
 
+  static async Logout(payload) {
+    return HTTPClient.post(`/auth/signout`, payload)
+  }
+
   static async Check(payload) {
     return HTTPClient.post('/auth/check', payload)
   }
