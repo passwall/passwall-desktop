@@ -90,15 +90,15 @@
 
       {{ $t('GiveFeedback') }}
       <div class="icon">
-        <VIcon name="external-link" size="11px" />
+        <VIcon name="external-link" size="14px" />
       </div>
     </button>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
-import HTTPClient from '@/api/HTTPClient'
+import { mapGetters, mapState } from 'vuex'
+import Axios from 'axios'
 import MenuItem from './MenuItem'
 import electron from 'electron'
 
@@ -136,12 +136,7 @@ export default {
     async checkUpdate() {
       const { version } = require('../../../../../package.json')
       try {
-        const { data } = await HTTPClient.get(
-          'https://api.github.com/repos/passwall/passwall-desktop/releases/latest',
-          {},
-          { Authorization: null }
-        )
-
+        const { data } = await Axios.get('https://api.github.com/repos/passwall/passwall-desktop/releases/latest',{})
         this.hasUpdate = data.tag_name != version
         this.updateLink = data.html_url
       } catch (err) {
