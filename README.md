@@ -43,3 +43,23 @@ yarn run dev
 # build electron application for production
 yarn run build
 ```
+
+### Build From Source Code
+After installing yarn, you can download dependencies and run the app with the commands below.
+
+``` bash
+# auto choose platform and architecture
+yarn build
+
+# MacOS x64 (intel)
+yarn build --mac --x64
+
+# MacOS arm64 (M1)
+yarn build --mac --arm64
+
+# Linux Debian Package
+yarn build --linux deb
+
+# Windows x64
+yarn build --win  --x64
+```
