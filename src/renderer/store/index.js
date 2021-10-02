@@ -21,18 +21,22 @@ export default new Vuex.Store({
     CryptoUtils.transmissionKey = localStorage.transmission_key
 
     return {
-      access_token: localStorage.access_token,
-      refresh_token: localStorage.refresh_token,
       transmission_key: localStorage.transmission_key,
       master_hash: localStorage.master_hash,
       searchQuery: '',
+      authenticated: false,
+      pro: false,
       user: {}
     }
   },
 
   getters: {
     hasProPlan(state) {
-      return state.user.type == 'pro'
+      return state.pro
+    },
+
+    isAuthenticated(state)  {
+      return state.authenticated
     }
   },
 
@@ -41,34 +45,33 @@ export default new Vuex.Store({
       payload.master_password = CryptoUtils.sha256Encrypt(payload.master_password)
 
       const { data } = await AuthService.Login(payload)
-      state.access_token = data.access_token
-      state.refresh_token = data.refresh_token
-      state.transmission_key = data.transmission_key.substr(0, 32)
+      state.transmission_key = data.transmission_key
       state.master_hash = CryptoUtils.pbkdf2Encrypt(data.secret, payload.master_password)
       CryptoUtils.encryptKey = state.master_hash
       CryptoUtils.transmissionKey = state.transmission_key
       state.user = data
+      state.pro = state.user.type == 'pro'
+      state.authenticated = true
 
       localStorage.email = payload.email
       localStorage.server = payload.server
-      localStorage.access_token = data.access_token
-      localStorage.refresh_token = data.refresh_token
       if (process.env.NODE_ENV !== 'production') {
         localStorage.master_hash = state.master_hash
         localStorage.transmission_key = state.transmission_key
       }
 
-      HTTPClient.setHeader('Authorization', `Bearer ${state.access_token}`)
     },
 
-    Logout({ state }) {
-      state.access_token = null
-      state.refresh_token = null
+    Logout({ state }, payload) {
+      const { data } = AuthService.Logout(payload)
       state.transmission_key = null
       state.master_hash = null
       state.user = null
+      state.authenticated = false
+      state.pro = false
       const lsKeys = Object.keys(localStorage).filter(key => ['email','server'].includes(key) === false)
       lsKeys.forEach(key => localStorage.removeItem(key))
+      
     },
 
     async Import(_, data) {

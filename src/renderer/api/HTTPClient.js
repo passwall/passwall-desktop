@@ -10,7 +10,8 @@ const client = Axios.create({
   headers: {
     'Content-Type': 'application/json; charset=utf-8',
     Accept: 'application/json, text/plain, */*'
-  }
+  },
+  withCredentials: true,
 })
 
 export default class HTTPClient {

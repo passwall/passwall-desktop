@@ -8,7 +8,7 @@
         <button class="btn-max" @click="onClickMax" />
       </div>
       <!-- Search -->
-      <div class="app-header-search" v-if="access_token">
+      <div class="app-header-search" v-if="authenticated">
         <div class="app-header-search-wrapper">
           <input
             type="text"
@@ -20,7 +20,7 @@
         </div>
       </div>
       <!-- Right Section -->
-      <div class="app-header-right-section" v-if="access_token">
+      <div class="app-header-right-section" v-if="authenticated">
         <!-- Import -->
         <button class="c-gray-300 mr-5" @click="onImport">
           {{ $t('Import') }}
@@ -54,7 +54,7 @@ import { mapActions, mapMutations, mapState } from 'vuex'
 import CryptoUtils from '@/utils/crypto'
 
 export default {
-  computed: mapState(['access_token', 'searchQuery']),
+  computed: mapState(['authenticated', 'searchQuery']),
 
   methods: {
     ...mapActions(['Import', 'Export', 'Logout']),
