@@ -61,5 +61,5 @@ yarn build --mac --arm64
 yarn build --linux --x64 
 
 # Windows x64
-yarn build --win  --x64
+yarn build --win --x64
 ```
