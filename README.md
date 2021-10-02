@@ -58,7 +58,7 @@ yarn build --mac --x64
 yarn build --mac --arm64
 
 # Linux Debian Package
-yarn build --linux deb
+yarn build --linux --x64 
 
 # Windows x64
 yarn build --win  --x64
