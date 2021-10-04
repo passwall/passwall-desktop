@@ -80,4 +80,8 @@ export default {
   color: $color-gray-300;
 }
 
+.password-check-btn:hover {
+  color: $color-secondary;
+}
+
 </style>

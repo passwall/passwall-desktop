@@ -39,4 +39,8 @@ export default {
   background-color: $color-gray-500;
   color: $color-gray-300;
 }
+
+.showpass-btn:hover {
+  color: $color-secondary;
+}
 </style>
