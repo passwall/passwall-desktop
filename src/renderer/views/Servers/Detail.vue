@@ -11,6 +11,16 @@
         <span v-text="form.ip" class="email" />
       </div>
 
+      <!-- Edit Btn -->
+      <button
+        v-if="!isEditMode"
+        class="detail-page-header-icon edit-btn"
+        v-tooltip="$t('Edit')"
+        @click="isEditMode = true"
+      >
+        <VIcon name="pencil" size="14px" />
+      </button>
+
       <!-- Copy -->
       <button
         class="detail-page-header-icon"
@@ -26,15 +36,6 @@
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
-      <!-- Edit Btn -->
-      <button
-        v-if="!isEditMode"
-        class="detail-page-header-icon edit-btn"
-        v-tooltip="$t('Edit')"
-        @click="isEditMode = true"
-      >
-        <VIcon name="pencil" size="14px" />
-      </button>
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
@@ -61,19 +62,11 @@
             <div v-else class="d-flex flex-items-center px-3 py-2">
               <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
             </div>
-            <!-- Copy -->
+            
+            <GeneratePassword v-if="isEditMode" v-model="form.password" />
+            <CheckPassword :password="form.password" />
+            <ShowPassButton @click="showPass = $event" />
             <ClipboardButton :copy="form.password" />
-            <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.password" />
-            <!-- Show/Hide -->
-            <button
-              type="button"
-              @click="showPass = !showPass"
-              class="detail-page-header-icon ml-2"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
-            >
-              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
-            </button>
           </div>
         </div>
         <!-- URL -->
@@ -121,19 +114,11 @@
             <div v-else class="d-flex flex-items-center px-3 py-2">
               <span v-text="showHostingPass ? form.hosting_password : '●●●●●●'" class="mr-2" />
             </div>
-            <!-- Copy -->
+
+            <GeneratePassword v-if="isEditMode" v-model="form.hosting_password" />
+            <CheckPassword :password="form.hosting_password" />
+            <ShowPassButton @click="showHostingPass = $event" />
             <ClipboardButton :copy="form.hosting_password" />
-            <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.hosting_password" />
-            <!-- Show/Hide -->
-            <button
-              type="button"
-              @click="showHostingPass = !showHostingPass"
-              class="detail-page-header-icon ml-2"
-              v-tooltip="$t(showHostingPass ? 'Hide' : 'Show')"
-            >
-              <VIcon :name="showHostingPass ? 'eye-off' : 'eye'" size="12px" />
-            </button>
           </div>
         </div>
         <!-- AdminUsername -->
@@ -166,19 +151,11 @@
             <div v-else class="d-flex flex-items-center px-3 py-2">
               <span v-text="showAdminPass ? form.admin_password : '●●●●●●'" class="mr-2" />
             </div>
-            <!-- Copy -->
+
+            <GeneratePassword v-if="isEditMode" v-model="form.admin_password" />
+            <CheckPassword :password="form.admin_password" />
+            <ShowPassButton @click="showAdminPass = $event" />
             <ClipboardButton :copy="form.admin_password" />
-            <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.admin_password" />
-            <!-- Show/Hide -->
-            <button
-              type="button"
-              @click="showAdminPass = !showAdminPass"
-              class="detail-page-header-icon ml-2"
-              v-tooltip="$t(showAdminPass ? 'Hide' : 'Show')"
-            >
-              <VIcon :name="showAdminPass ? 'eye-off' : 'eye'" size="12px" />
-            </button>
           </div>
         </div>
 

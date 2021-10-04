@@ -3,7 +3,7 @@
     <button 
       type="button" 
       @click="onClickGenerate" 
-      class="btn-generate-pass"
+      class="btn-generate-pass ml-1"
       v-tooltip="$t('Generate')">
       <VIcon name="refresh" size="14px" />
     </button>

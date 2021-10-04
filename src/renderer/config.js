@@ -44,6 +44,8 @@ import Notifications from 'vue-notification'
 Vue.use(Notifications, { duration: 2500 })
 
 Vue.prototype.$notifyError = text => Vue.prototype.$notify({ type: 'error', text })
+Vue.prototype.$notifyWarn = text => Vue.prototype.$notify({ type: 'warn', text })
+Vue.prototype.$notifySuccess = text => Vue.prototype.$notify({ type: 'success', text })
 
 Vue.prototype.$request = async (callback, waitKey, errorCallback = null) => {
   try {

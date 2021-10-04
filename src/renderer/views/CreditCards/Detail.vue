@@ -11,6 +11,16 @@
         <span v-text="form.number" class="email" />
       </div>
 
+      <!-- Edit Btn -->
+      <button
+        v-if="!isEditMode"
+        class="detail-page-header-icon"
+        v-tooltip="$t('Edit')"
+        @click="isEditMode = true"
+      >
+        <VIcon name="pencil" size="14px" />
+      </button>
+
       <!-- Copy -->
       <button
         class="detail-page-header-icon"
@@ -26,15 +36,6 @@
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
-      <!-- Edit Btn -->
-      <button
-        v-if="!isEditMode"
-        class="detail-page-header-icon edit-btn"
-        v-tooltip="$t('Edit')"
-        @click="isEditMode = true"
-      >
-        <VIcon name="pencil" size="14px" />
-      </button>
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- CardName -->

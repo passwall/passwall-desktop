@@ -57,7 +57,7 @@ export default {
 
     &::placeholder {
       font-weight: normal;
-      font-size: $font-size-small;
+      font-size: $font-size-medium;
       color: $color-gray-300;
     }
 
