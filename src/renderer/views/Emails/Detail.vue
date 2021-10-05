@@ -10,25 +10,9 @@
         <span v-text="form.title" class="url" />
         <span v-text="form.email" class="email" />
       </div>
-      <!-- Edit Btn -->
-      <button
-        v-if="!isEditMode"
-        class="detail-page-header-icon"
-        v-tooltip="$t('Edit')"
-        @click="isEditMode = true"
-      >
-        <VIcon name="pencil" size="14px" />
-      </button>
-
-      <!-- Copy -->
-      <button
-        class="detail-page-header-icon"
-        v-tooltip="$t('Copy')"
-        v-clipboard:copy="emailCopyContent"
-      >
-        <VIcon name="duplicate" size="14px" />
-      </button>
-      <!-- Delete -->
+      
+      <EditButton v-if="!isEditMode" @click="isEditMode = $event" />
+      <ClipboardButton :copy="copyContent" />
       <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
         <VIcon name="trash" size="14px" />
       </button>
@@ -134,7 +118,7 @@ export default {
       return this.$wait.is(this.$waiters.Emails.Update)
     },
 
-    emailCopyContent() {
+    copyContent() {
       return [`Title: ${this.form.title}`, `Email: ${this.form.email}`].join('\n')
     }
   }

@@ -11,25 +11,8 @@
         <span v-text="form.ip" class="email" />
       </div>
 
-      <!-- Edit Btn -->
-      <button
-        v-if="!isEditMode"
-        class="detail-page-header-icon edit-btn"
-        v-tooltip="$t('Edit')"
-        @click="isEditMode = true"
-      >
-        <VIcon name="pencil" size="14px" />
-      </button>
-
-      <!-- Copy -->
-      <button
-        class="detail-page-header-icon"
-        v-tooltip="$t('Copy')"
-        v-clipboard:copy="serverCopyContent"
-      >
-        <VIcon name="duplicate" size="14px" />
-      </button>
-      <!-- Delete -->
+      <EditButton v-if="!isEditMode" @click="isEditMode = $event" />
+      <ClipboardButton :copy="copyContent" />
       <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
         <VIcon name="trash" size="14px" />
       </button>
@@ -260,7 +243,7 @@ export default {
       return this.$wait.is(this.$waiters.Servers.Update)
     },
 
-    serverCopyContent() {
+    copyContent() {
       return [
         `Title: ${this.form.title}`,
         `IP: ${this.form.ip}`,
