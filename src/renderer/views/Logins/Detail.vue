@@ -56,25 +56,16 @@
           <div class="d-flex flex-items-end flex-content-between">
             <label v-text="$t('EXTRA')" />
             <div class="d-flex flex-items-center">
-              <!-- Copy -->
               <ClipboardButton :copy="form.extra" />
-              <!-- Show/Hide -->
-              <button
-                type="button"
-                @click="showExtra = !showExtra"
-                class="detail-page-header-icon ml-2"
-                v-tooltip="$t(showExtra ? 'Hide' : 'Show')"
-              >
-                <VIcon :name="showExtra ? 'eye-off' : 'eye'" size="12px" />
-              </button>
+              <ShowPassButton @click="showExtra = $event" />
             </div>
           </div>
           <div class="d-flex">
             <VTextArea
               v-model="form.extra"
-              :sensitive="!isEditMode && !showExtra"
+              :sensitive="!showExtra"
               :placeholder="$t(isEditMode ? 'ClickToFill' : 'ContentHidden')"
-              :disabled="!isEditMode"
+              :disabled="!isEditMode || !showExtra"
             />
           </div>
         </div>

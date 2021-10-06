@@ -66,20 +66,25 @@
             <ClipboardButton :copy="form.password" />
           </div>
         </div>
+        
         <!-- Extra -->
         <div class="form-row">
-          <div class="d-flex flex-content-between">
+          <div class="d-flex flex-items-end flex-content-between">
             <label v-text="$t('EXTRA')" />
-            <!-- Show/Hide -->
-            <button
-              class="detail-page-header-icon mt-2 ml-n1"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
-            >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
-            </button>
+            <div class="d-flex flex-items-center">
+              <ClipboardButton :copy="form.extra" />
+              <ShowPassButton @click="showExtra = $event" />
+            </div>
           </div>
-          <VTextArea :placeholder="$t('ClickToFill')" v-model="form.extra" name="Extra" />
+          <div class="d-flex">
+            <VTextArea 
+              v-model="form.extra" 
+              :sensitive="!showExtra"
+              :placeholder="$t('ClickToFill')" 
+              :disabled="!showExtra"
+              name="Extra"
+            />
+          </div>
         </div>
 
         <!-- Save & Cancel -->
@@ -103,6 +108,7 @@ export default {
   data() {
     return {
       showPass: false,
+      showExtra: false,
       form: {
         title: '',
         url: '',
