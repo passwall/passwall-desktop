@@ -13,9 +13,7 @@
       
       <EditButton v-if="!isEditMode" @click="isEditMode = $event" />
       <ClipboardButton :copy="copyContent" />
-      <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
-        <VIcon name="trash" size="14px" />
-      </button>
+      <DeleteButton @click="onClickDelete" />
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">

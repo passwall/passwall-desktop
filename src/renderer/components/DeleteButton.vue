@@ -2,6 +2,7 @@
     <button 
     class="delete-btn ml-1" 
     v-tooltip="$t('Delete')"
+    v-on:click="deleteItem"
     >
     <VIcon name="trash" size="14px" />
     </button>
@@ -9,7 +10,12 @@
 
 <script>
 export default {
-  name: 'DeleteButton'
+  name: 'DeleteButton',
+  methods: {
+    deleteItem() {
+      this.$emit('click')
+    }
+  }
 }
 </script>
 
