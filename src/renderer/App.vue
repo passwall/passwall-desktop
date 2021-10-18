@@ -21,20 +21,22 @@
       </div>
       <!-- Right Section -->
       <div class="app-header-right-section" v-if="authenticated">
+        <!-- Always On Top -->
+        <button class="top-btn mr-3" :class="[isAlwaysOnTop ? 'active' : '']" @click="onAlwaysOnTop">
+          <VIcon name="always-on-top" size="14px" v-tooltip="$t('AlwaysOnTop')" />
+        </button>
         <!-- Import -->
-        <button class="c-gray-300 mr-5" @click="onImport">
-          {{ $t('Import') }}
-          <VIcon name="download" size="14px" class="ml-2" />
+        <button class="top-btn mr-3" @click="onImport">
+          <VIcon name="download" size="14px" v-tooltip="$t('Import')" />
         </button>
         <!-- Export -->
-        <button class="c-gray-300 mr-5" @click="onExport">
-          {{ $t('Export') }}
-          <VIcon name="upload" size="14px" class="ml-2" />
+        <button class="top-btn mr-3" @click="onExport">
+          <VIcon name="upload" size="14px" v-tooltip="$t('Export')" />
         </button>
         <!-- Logout -->
         <button class="c-danger mr-3" @click="onClickLogout">
           {{ $t('Logout') }}
-          <VIcon name="logout" size="14px" rotation="180" class="ml-2" />
+          <VIcon name="logout" size="14px" rotation="180" class="ml-2" v-tooltip="$t('Logout')" />
         </button>
       </div>
     </header>
@@ -54,6 +56,12 @@ import { mapActions, mapMutations, mapState } from 'vuex'
 import CryptoUtils from '@/utils/crypto'
 
 export default {
+  data() {
+    return {
+      isAlwaysOnTop: false,
+    }
+  },
+  
   computed: mapState(['authenticated', 'searchQuery']),
 
   methods: {
@@ -75,6 +83,11 @@ export default {
       } else {
         remote.getCurrentWindow().maximize()
       }
+    },
+
+    onAlwaysOnTop() {
+      this.isAlwaysOnTop = !this.isAlwaysOnTop
+      remote.getCurrentWindow().setAlwaysOnTop(!remote.getCurrentWindow().isAlwaysOnTop())
     },
 
     onClickLogout() {
@@ -217,6 +230,14 @@ export default {
     .btn-max {
       background-color: #1fe061;
     }
+  }
+
+  .top-btn {
+    color: $color-gray-300;
+  }
+
+  .top-btn:hover, .top-btn.active {
+    color: $color-secondary;
   }
 
   &-right-section {

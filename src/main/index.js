@@ -65,6 +65,12 @@ function createMenu() {
       label: 'Application',
       submenu: [
         { label: 'About PassWall', selector: 'orderFrontStandardAboutPanel:' },
+        {
+          label: 'Always On Top',
+          click: function() {
+            mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop())
+          }
+        },
         { type: 'separator' },
         {
           label: 'Quit',

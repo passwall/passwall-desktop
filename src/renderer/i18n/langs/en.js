@@ -35,5 +35,6 @@ export default {
   'There is nothing here, yet...': 'There is nothing here, yet...',
   ContentHidden: 'This content is hidden',
   API500ErrorMessage: 'An unexpected error seems to have occured. Or you can contact us if the problem persists.',
-  CheckIfExposed: 'Check if password has been exposed.'
+  CheckIfExposed: 'Check if password has been exposed.',
+  AlwaysOnTop: 'Always On Top',
 }
