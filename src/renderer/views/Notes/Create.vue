@@ -25,27 +25,26 @@
             theme="no-border"
           />
         </div>
-        <!-- Note -->
+        
+        <!-- Extra -->
         <div class="form-row">
-          <div class="d-flex flex-content-between">
+          <div class="d-flex flex-items-end flex-content-between">
             <label v-text="$t('PRIVATE NOTE')" />
-            <!-- Show/Hide -->
-            <button
-              type="button"
-              class="detail-page-header-icon mt-1 ml-n1"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
-            >
-              <VIcon name="eye-off" v-if="showPass" size="12px" @click="showPass = false" />
-              <VIcon name="eye" v-else size="12px" @click="showPass = true" />
-            </button>
+            <div class="d-flex flex-items-center">
+              <ClipboardButton :copy="form.note" />
+              <ShowPassButton @click="showNote = $event" />
+            </div>
           </div>
-          <VTextArea
-            :placeholder="$t('ClickToFill')"
-            v-model="form.note"
-            v-validate="'required'"
-            name="Note"
-            rows="17"
-          />
+          <div class="d-flex">
+            <VTextArea 
+              v-model="form.note" 
+              :sensitive="!showNote"
+              :placeholder="$t('ClickToFill')" 
+              :disabled="!showNote"
+              name="Extra"
+              rows="16"
+            />
+          </div>
         </div>
 
         <!-- Save & Cancel -->
@@ -69,6 +68,7 @@ export default {
   data() {
     return {
       showPass: false,
+      showNote: false,
       form: {
         title: '',
         note: ''

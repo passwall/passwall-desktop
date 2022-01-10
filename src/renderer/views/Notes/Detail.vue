@@ -11,30 +11,12 @@
         <!-- <span v-text="form.username" class="email" /> -->
       </div>
 
-      <!-- Copy -->
-      <button
-        class="detail-page-header-icon"
-        v-tooltip="$t('Copy')"
-        v-clipboard:copy="noteCopyContent"
-      >
-        <VIcon name="duplicate" size="14px" />
-      </button>
-      <!-- Delete -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
-        <VIcon name="trash" size="14px" />
-      </button>
+      <EditButton v-if="!isEditMode" @click="isEditMode = $event" />
+      <ClipboardButton :copy="copyContent" />
+      <DeleteButton @click="onClickDelete" />
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
-      <!-- Edit Btn -->
-      <button
-        v-if="!isEditMode"
-        class="detail-page-header-icon edit-btn"
-        v-tooltip="$t('Edit')"
-        @click="isEditMode = true"
-      >
-        <VIcon name="pencil" size="14px" />
-      </button>
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
@@ -45,26 +27,17 @@
           <div class="d-flex flex-items-end flex-content-between">
             <label v-text="$t('PRIVATE NOTE')" />
             <div class="d-flex flex-items-center">
-              <!-- Copy -->
               <ClipboardButton :copy="form.note" />
-              <!-- Show/Hide -->
-              <button
-                type="button"
-                @click="showNote = !showNote"
-                class="detail-page-header-icon ml-2"
-                v-tooltip="$t(showNote ? 'Hide' : 'Show')"
-              >
-                <VIcon :name="showNote ? 'eye-off' : 'eye'" size="12px" />
-              </button>
+              <ShowPassButton @click="showNote = $event" />
             </div>
           </div>
           <div class="d-flex">
             <VTextArea
               v-model="form.note"
-              :sensitive="!isEditMode && !showNote"
+              :sensitive="!showNote"
               :placeholder="$t(isEditMode ? 'ClickToFill' : 'ContentHidden')"
-              :disabled="!isEditMode"
-              rows="17"
+              :disabled="!isEditMode || !showNote"
+              rows="16"
             />
           </div>
         </div>
@@ -138,7 +111,7 @@ export default {
       return this.$wait.is(this.$waiters.Notes.Update)
     },
 
-    noteCopyContent() {
+    copyContent() {
       return [`Title: ${this.form.title}`, `Note: ${this.form.note}`].join('\n')
     }
   }

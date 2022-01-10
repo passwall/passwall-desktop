@@ -17,6 +17,10 @@ export default class CryptoUtils {
   static transmissionKey
   static encryptKey
 
+  static sha1(msg) {
+    return CryptoJS.SHA1(msg).toString().toUpperCase();
+  }
+
   static hmac(msg, transmissionKey = this.transmissionKey) {
     const encrypted = CryptoJS.HmacSHA256(msg, transmissionKey)
     return encrypted.toString()

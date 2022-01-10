@@ -11,30 +11,12 @@
         <span v-text="form.number" class="email" />
       </div>
 
-      <!-- Copy -->
-      <button
-        class="detail-page-header-icon"
-        v-tooltip="$t('Copy')"
-        v-clipboard:copy="creditCardCopyContent"
-      >
-        <VIcon name="duplicate" size="14px" />
-      </button>
-      <!-- Delete -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
-        <VIcon name="trash" size="14px" />
-      </button>
+      <EditButton v-if="!isEditMode" @click="isEditMode = $event" />
+      <ClipboardButton :copy="copyContent" />
+      <DeleteButton @click="onClickDelete" />
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
-      <!-- Edit Btn -->
-      <button
-        v-if="!isEditMode"
-        class="detail-page-header-icon edit-btn"
-        v-tooltip="$t('Edit')"
-        @click="isEditMode = true"
-      >
-        <VIcon name="pencil" size="14px" />
-      </button>
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- CardName -->
@@ -157,7 +139,7 @@ export default {
       return this.$wait.is(this.$waiters.CreditCards.Update)
     },
 
-    creditCardCopyContent() {
+    copyContent() {
       return [
         `Card Name: ${this.form.title}`,
         `Cardholder Name: ${this.form.cardholder_name}`,

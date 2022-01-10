@@ -3,7 +3,7 @@
     <button 
       type="button" 
       @click="onClickGenerate" 
-      class="btn-generate-pass"
+      class="btn-generate-pass ml-1"
       v-tooltip="$t('Generate')">
       <VIcon name="refresh" size="14px" />
     </button>
@@ -69,6 +69,10 @@ export default {
   background-color: $color-gray-500;
   margin-left: $spacer-2;
   color: $color-gray-300;
+}
+
+.btn-generate-pass:hover {
+  color: $color-secondary;
 }
 
 .generate-password {

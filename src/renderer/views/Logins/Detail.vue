@@ -11,30 +11,12 @@
         <span v-text="form.username" class="email" />
       </div>
 
-      <!-- Copy -->
-      <button
-        class="detail-page-header-icon"
-        v-tooltip="$t('Copy')"
-        v-clipboard:copy="loginCopyContent"
-      >
-        <VIcon name="duplicate" size="14px" />
-      </button>
-      <!-- Delete -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
-        <VIcon name="trash" size="14px" />
-      </button>
+      <EditButton v-if="!isEditMode" @click="isEditMode = $event" />
+      <ClipboardButton :copy="copyContent" />
+      <DeleteButton @click="onClickDelete" />
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
-      <!-- Edit Btn -->
-      <button
-        v-if="!isEditMode"
-        class="detail-page-header-icon edit-btn"
-        v-tooltip="$t('Edit')"
-        @click="isEditMode = true"
-      >
-        <VIcon name="pencil" size="14px" />
-      </button>
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
@@ -61,19 +43,11 @@
             <div v-else class="d-flex px-3 py-2">
               <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
             </div>
-            <!-- Copy -->
+
+            <GeneratePassword v-if="isEditMode" v-model="form.password" />
+            <CheckPassword :password="form.password" />
+            <ShowPassButton @click="showPass = $event" />
             <ClipboardButton :copy="form.password" />
-            <!-- Generate -->
-            <GeneratePassword v-if="isEditMode" class="mx-1" v-model="form.password" />
-            <!-- Show/Hide -->
-            <button
-              type="button"
-              @click="showPass = !showPass"
-              class="detail-page-header-icon ml-2"
-              v-tooltip="$t(showPass ? 'Hide' : 'Show')"
-            >
-              <VIcon :name="showPass ? 'eye-off' : 'eye'" size="12px" />
-            </button>
           </div>
         </div>
 
@@ -82,25 +56,16 @@
           <div class="d-flex flex-items-end flex-content-between">
             <label v-text="$t('EXTRA')" />
             <div class="d-flex flex-items-center">
-              <!-- Copy -->
               <ClipboardButton :copy="form.extra" />
-              <!-- Show/Hide -->
-              <button
-                type="button"
-                @click="showExtra = !showExtra"
-                class="detail-page-header-icon ml-2"
-                v-tooltip="$t(showExtra ? 'Hide' : 'Show')"
-              >
-                <VIcon :name="showExtra ? 'eye-off' : 'eye'" size="12px" />
-              </button>
+              <ShowPassButton @click="showExtra = $event" />
             </div>
           </div>
           <div class="d-flex">
             <VTextArea
               v-model="form.extra"
-              :sensitive="!isEditMode && !showExtra"
+              :sensitive="!showExtra"
               :placeholder="$t(isEditMode ? 'ClickToFill' : 'ContentHidden')"
-              :disabled="!isEditMode"
+              :disabled="!isEditMode || !showExtra"
             />
           </div>
         </div>
@@ -144,6 +109,10 @@ export default {
   methods: {
     ...mapActions('Logins', ['Delete', 'Update']),
 
+    parent() {
+      alert('Create')
+    },
+
     onClickDelete() {
       const onSuccess = async () => {
         await this.Delete(this.form.id)
@@ -175,7 +144,7 @@ export default {
       return this.$wait.is(this.$waiters.Logins.Update)
     },
 
-    loginCopyContent() {
+    copyContent() {
       return [
         `Title: ${this.form.title}`,
         `URL: ${this.form.url}`,

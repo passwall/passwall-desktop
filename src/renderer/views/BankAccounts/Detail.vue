@@ -11,30 +11,12 @@
         <span v-text="form.account_name" class="email" />
       </div>
 
-      <!-- Copy -->
-      <button
-        v-tooltip="$t('Copy')"
-        class="detail-page-header-icon"
-        v-clipboard:copy="bankAccountCopyContent"
-      >
-        <VIcon name="duplicate" size="14px" />
-      </button>
-      <!-- Delete -->
-      <button class="detail-page-header-icon" v-tooltip="$t('Delete')" @click="onClickDelete">
-        <VIcon name="trash" size="14px" />
-      </button>
+      <EditButton v-if="!isEditMode" @click="isEditMode = $event" />
+      <ClipboardButton :copy="copyContent" />
+      <DeleteButton @click="onClickDelete" />
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
-      <!-- Edit Btn -->
-      <button
-        v-if="!isEditMode"
-        class="detail-page-header-icon edit-btn"
-        v-tooltip="$t('Edit')"
-        @click="isEditMode = true"
-      >
-        <VIcon name="pencil" size="14px" />
-      </button>
 
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- BankName -->
@@ -160,7 +142,7 @@ export default {
       return this.$wait.is(this.$waiters.BankAccounts.Update)
     },
 
-    bankAccountCopyContent() {
+    copyContent() {
       return [
         `Bank Name: ${this.form.title}`,
         `Bank Code: ${this.form.bank_code}`,
