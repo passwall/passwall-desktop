@@ -62,4 +62,7 @@ yarn build --linux --x64
 
 # Windows x64
 yarn build --win --x64
+
+# All Platforms
+yarn run build -wml --arm64 --x64
 ```
