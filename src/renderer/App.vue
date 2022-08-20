@@ -54,6 +54,7 @@ import Papa from 'papaparse'
 import { remote, ipcRenderer } from 'electron'
 import { mapActions, mapMutations, mapState } from 'vuex'
 import CryptoUtils from '@/utils/crypto'
+import SystemService from '@/api/services/System'
 
 export default {
   data() {
@@ -101,15 +102,35 @@ export default {
       if (!filePath) {
         return
       }
-
+      
       try {
-        const data = await this.Export()
-
-        const itemList = JSON.parse(CryptoUtils.aesDecrypt(data))
-        itemList.forEach(item => CryptoUtils.decryptFields(item))
-
-        const csvContent = Papa.unparse(itemList)
-        fs.writeFileSync(filePath, csvContent)
+        const { data } = await SystemService.Export()
+        
+        const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+        
+        // console.log(itemList.Logins)
+        const LoginEncryptedFields = ['username', 'password', 'extra']
+        itemList.Logins.forEach(item => CryptoUtils.decryptFields(item, LoginEncryptedFields))
+        
+        const ServerEncryptedFields = ['ip','username','password','hosting_username','hosting_password','admin_username','admin_password','extra']
+        itemList.Servers.forEach(item => CryptoUtils.decryptFields(item, ServerEncryptedFields))
+        
+        const NoteEncryptedFields = ['note']
+        itemList.Notes.forEach(item => CryptoUtils.decryptFields(item, NoteEncryptedFields))
+        
+        const EmailEncryptedFields = ['email', 'password']
+        itemList.Emails.forEach(item => CryptoUtils.decryptFields(item, EmailEncryptedFields))
+        
+        const CreditCardEncryptedFields = ['type', 'number', 'expiry_date', 'cardholder_name', 'verification_number']
+        itemList.CreditCards.forEach(item => CryptoUtils.decryptFields(item, CreditCardEncryptedFields))
+        
+        const BankAccountEncryptedFields = ['account_name', 'account_number', 'iban', 'currency', 'password']
+        itemList.BankAccounts.forEach(item => CryptoUtils.decryptFields(item, BankAccountEncryptedFields))
+        
+        // const content = Papa.unparse(itemList.Logins)
+         const content = JSON.stringify(itemList)
+        
+        fs.writeFileSync(filePath, content)
       } catch (error) {
         this.$notifyError(this.$t('Something went wrong.'))
         console.log(error)
