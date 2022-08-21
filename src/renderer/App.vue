@@ -50,6 +50,7 @@
 
 <script>
 import fs from 'fs'
+import path from 'path'
 import Papa from 'papaparse'
 import { remote, ipcRenderer } from 'electron'
 import { mapActions, mapMutations, mapState } from 'vuex'
@@ -97,9 +98,12 @@ export default {
     },
 
     async onExport() {
-      const filePath = remote.dialog.showSaveDialogSync(null)
+      const dir = remote.dialog.showOpenDialogSync({ 
+        title: 'Select Export Directory',
+        properties: ['openDirectory', 'createDirectory'] 
+      })
 
-      if (!filePath) {
+      if (dir.length === 0) {
         return
       }
       
@@ -127,10 +131,56 @@ export default {
         const BankAccountEncryptedFields = ['account_name', 'account_number', 'iban', 'currency', 'password']
         itemList.BankAccounts.forEach(item => CryptoUtils.decryptFields(item, BankAccountEncryptedFields))
         
-        // const content = Papa.unparse(itemList.Logins)
-         const content = JSON.stringify(itemList)
+        const contentLogins = Papa.unparse(itemList.Logins)
+        fs.writeFile(path.join(dir[0],"logins.csv"), contentLogins, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
         
-        fs.writeFileSync(filePath, content)
+        const contentServer = Papa.unparse(itemList.Servers)
+        fs.writeFile(path.join(dir[0],"servers.csv"), contentServer, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        const contentNote = Papa.unparse(itemList.Notes)
+        fs.writeFile(path.join(dir[0],"notes.csv"), contentNote, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        const contentEmail = Papa.unparse(itemList.Emails)
+        fs.writeFile(path.join(dir[0],"emails.csv"), contentEmail, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        const contentCreditCard = Papa.unparse(itemList.CreditCards)
+        fs.writeFile(path.join(dir[0],"credit_cards.csv"), contentCreditCard, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        const contentBankAccount = Papa.unparse(itemList.BankAccounts)
+        fs.writeFile(path.join(dir[0],"credit_cards.csv"), contentBankAccount, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        this.$notifySuccess(this.$t(`All records exported successfully.`))
+          
       } catch (error) {
         this.$notifyError(this.$t('Something went wrong.'))
         console.log(error)
