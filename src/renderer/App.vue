@@ -50,10 +50,12 @@
 
 <script>
 import fs from 'fs'
+import path from 'path'
 import Papa from 'papaparse'
 import { remote, ipcRenderer } from 'electron'
 import { mapActions, mapMutations, mapState } from 'vuex'
 import CryptoUtils from '@/utils/crypto'
+import SystemService from '@/api/services/System'
 
 export default {
   data() {
@@ -96,20 +98,89 @@ export default {
     },
 
     async onExport() {
-      const filePath = remote.dialog.showSaveDialogSync(null)
+      const dir = remote.dialog.showOpenDialogSync({ 
+        title: 'Select Export Directory',
+        properties: ['openDirectory', 'createDirectory'] 
+      })
 
-      if (!filePath) {
+      if (dir.length === 0) {
         return
       }
-
+      
       try {
-        const data = await this.Export()
-
-        const itemList = JSON.parse(CryptoUtils.aesDecrypt(data))
-        itemList.forEach(item => CryptoUtils.decryptFields(item))
-
-        const csvContent = Papa.unparse(itemList)
-        fs.writeFileSync(filePath, csvContent)
+        const { data } = await SystemService.Export()
+        
+        const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
+        
+        // console.log(itemList.Logins)
+        const LoginEncryptedFields = ['username', 'password', 'extra']
+        itemList.Logins.forEach(item => CryptoUtils.decryptFields(item, LoginEncryptedFields))
+        
+        const ServerEncryptedFields = ['ip','username','password','hosting_username','hosting_password','admin_username','admin_password','extra']
+        itemList.Servers.forEach(item => CryptoUtils.decryptFields(item, ServerEncryptedFields))
+        
+        const NoteEncryptedFields = ['note']
+        itemList.Notes.forEach(item => CryptoUtils.decryptFields(item, NoteEncryptedFields))
+        
+        const EmailEncryptedFields = ['email', 'password']
+        itemList.Emails.forEach(item => CryptoUtils.decryptFields(item, EmailEncryptedFields))
+        
+        const CreditCardEncryptedFields = ['type', 'number', 'expiry_date', 'cardholder_name', 'verification_number']
+        itemList.CreditCards.forEach(item => CryptoUtils.decryptFields(item, CreditCardEncryptedFields))
+        
+        const BankAccountEncryptedFields = ['account_name', 'account_number', 'iban', 'currency', 'password']
+        itemList.BankAccounts.forEach(item => CryptoUtils.decryptFields(item, BankAccountEncryptedFields))
+        
+        const contentLogins = Papa.unparse(itemList.Logins)
+        fs.writeFile(path.join(dir[0],"logins.csv"), contentLogins, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        const contentServer = Papa.unparse(itemList.Servers)
+        fs.writeFile(path.join(dir[0],"servers.csv"), contentServer, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        const contentNote = Papa.unparse(itemList.Notes)
+        fs.writeFile(path.join(dir[0],"notes.csv"), contentNote, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        const contentEmail = Papa.unparse(itemList.Emails)
+        fs.writeFile(path.join(dir[0],"emails.csv"), contentEmail, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        const contentCreditCard = Papa.unparse(itemList.CreditCards)
+        fs.writeFile(path.join(dir[0],"credit_cards.csv"), contentCreditCard, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        const contentBankAccount = Papa.unparse(itemList.BankAccounts)
+        fs.writeFile(path.join(dir[0],"credit_cards.csv"), contentBankAccount, function (err) {
+            if (err) {
+              this.$notifyError(this.$t('Something went wrong.'))
+              console.log(err)
+            }
+        });
+        
+        this.$notifySuccess(this.$t(`All records exported successfully.`))
+          
       } catch (error) {
         this.$notifyError(this.$t('Something went wrong.'))
         console.log(error)

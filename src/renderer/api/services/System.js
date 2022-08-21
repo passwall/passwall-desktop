@@ -10,6 +10,6 @@ export default class SystemService {
   }
 
   static async Export() {
-    return HTTPClient.post(`/api/system/export`)
+    return HTTPClient.get(`/api/system/export`)
   }
 }
