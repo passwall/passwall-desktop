@@ -16,22 +16,23 @@
             @input="onInputSearchQuery"
             :placeholder="$t('Search passwords, websites, notes')"
           />
-          <VIcon name="search" size="16px" />
+          <button
+            type="button"
+            class="search-action-btn"
+            :disabled="!searchQuery"
+            @click="onSearchAction"
+          >
+            <VIcon v-if="searchQuery" name="x" size="14px" />
+            <VIcon v-else name="search" size="16px" />
+          </button>
         </div>
       </div>
       <!-- Right Section -->
       <div class="app-header-right-section" v-if="authenticated">
-        <!-- Always On Top -->
-        <button class="top-btn mr-3" :class="[isAlwaysOnTop ? 'active' : '']" @click="onAlwaysOnTop">
-          <VIcon name="always-on-top" size="14px" v-tooltip="$t('AlwaysOnTop')" />
-        </button>
-        <!-- Import -->
-        <button class="top-btn mr-3" @click="onImport">
-          <VIcon name="download" size="14px" v-tooltip="$t('Import')" />
-        </button>
-        <!-- Export -->
-        <button class="top-btn mr-3" @click="onExport">
-          <VIcon name="upload" size="14px" v-tooltip="$t('Export')" />
+        <!-- Vault -->
+        <button class="vault-link mr-3" @click="onClickVault">
+          {{ $t('Vault') }}
+          <VIcon name="external-link" size="12px" class="ml-2 vault-link__icon" />
         </button>
         <!-- Logout -->
         <button class="c-danger mr-3" @click="onClickLogout">
@@ -49,137 +50,157 @@
 </template>
 
 <script>
-import fs from 'fs'
-import path from 'path'
 import Papa from 'papaparse'
-import { remote, ipcRenderer } from 'electron'
 import { mapActions, mapMutations, mapState } from 'vuex'
-import CryptoUtils from '@/utils/crypto'
+import { decryptFields, decodeBase64Json, encryptPayload } from '@/utils/crypto'
 import SystemService from '@/api/services/System'
 
 export default {
   data() {
     return {
       isAlwaysOnTop: false,
+      menuCleanup: []
     }
+  },
+
+  created() {
+    if (window.electronAPI) {
+      const removeExport = window.electronAPI.onMenuExport(() => this.onExport())
+      const removeImport = window.electronAPI.onMenuImport(() => this.onImport())
+      this.menuCleanup = [removeExport, removeImport].filter(Boolean)
+    }
+  },
+
+  beforeUnmount() {
+    this.menuCleanup.forEach(removeListener => removeListener())
   },
   
   computed: mapState(['authenticated', 'searchQuery']),
+  watch: {
+    searchQuery(value) {
+    }
+  },
 
   methods: {
     ...mapActions(['Import', 'Export', 'Logout']),
-    ...mapActions('Logins', ['FetchAll']),
+    ...mapActions('Passwords', ['FetchAll']),
     ...mapMutations(['onInputSearchQuery']),
 
     onClickQuit() {
-      remote.app.quit()
-    },
-
-    onClickMin() {
-      remote.getCurrentWindow().minimize()
-    },
-
-    onClickMax() {
-      if (remote.getCurrentWindow().isMaximized()) {
-        remote.getCurrentWindow().unmaximize()
-      } else {
-        remote.getCurrentWindow().maximize()
+      if (window.electronAPI) {
+        window.electronAPI.app.quit()
       }
     },
 
-    onAlwaysOnTop() {
-      this.isAlwaysOnTop = !this.isAlwaysOnTop
-      remote.getCurrentWindow().setAlwaysOnTop(!remote.getCurrentWindow().isAlwaysOnTop())
+    onClickMin() {
+      if (window.electronAPI) {
+        window.electronAPI.window.minimize()
+      }
     },
 
-    onClickLogout() {
-      this.Logout()
-      this.$router.replace({ name: 'Login' })
+    onClickMax() {
+      if (window.electronAPI) {
+        window.electronAPI.window.toggleMaximize()
+      }
+    },
+
+    async onAlwaysOnTop() {
+      if (!window.electronAPI) {
+        return
+      }
+
+      this.isAlwaysOnTop = await window.electronAPI.window.toggleAlwaysOnTop()
+    },
+
+    async onClickLogout() {
+      try {
+        await this.Logout()
+      } finally {
+        this.$router.replace({ name: 'Login' })
+      }
+    },
+
+    onClearSearch() {
+      this.onInputSearchQuery({ target: { value: '' } })
+    },
+
+    onSearchAction() {
+      if (this.searchQuery) {
+        this.onClearSearch()
+      }
+    },
+
+    onClickVault() {
+      if (window.electronAPI) {
+        window.electronAPI.shell.openExternal('https://vault.passwall.io')
+      }
     },
 
     async onExport() {
-      const dir = remote.dialog.showOpenDialogSync({ 
-        title: 'Select Export Directory',
-        properties: ['openDirectory', 'createDirectory'] 
-      })
+      if (!window.electronAPI) {
+        return
+      }
 
-      if (dir.length === 0) {
+      const userKey = this.$store.state.userKey
+      if (!userKey) {
+        this.$notifyError(this.$t('Something went wrong.'))
+        return
+      }
+
+      const dir = await window.electronAPI.dialog.selectExportDirectory()
+
+      if (!dir) {
         return
       }
       
       try {
         const { data } = await SystemService.Export()
+
+        const itemList = decodeBase64Json(data.data)
         
-        const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-        
-        // console.log(itemList.Logins)
-        const LoginEncryptedFields = ['username', 'password', 'extra']
-        itemList.Logins.forEach(item => CryptoUtils.decryptFields(item, LoginEncryptedFields))
+        const passwordItems = itemList.Passwords || []
+        const PasswordEncryptedFields = ['username', 'password', 'notes', 'totp_secret']
+        await Promise.all(
+          passwordItems.map(item => decryptFields(item, PasswordEncryptedFields, userKey))
+        )
         
         const ServerEncryptedFields = ['ip','username','password','hosting_username','hosting_password','admin_username','admin_password','extra']
-        itemList.Servers.forEach(item => CryptoUtils.decryptFields(item, ServerEncryptedFields))
+        await Promise.all(
+          itemList.Servers.map(item => decryptFields(item, ServerEncryptedFields, userKey))
+        )
         
         const NoteEncryptedFields = ['note']
-        itemList.Notes.forEach(item => CryptoUtils.decryptFields(item, NoteEncryptedFields))
+        await Promise.all(
+          itemList.Notes.map(item => decryptFields(item, NoteEncryptedFields, userKey))
+        )
         
         const EmailEncryptedFields = ['email', 'password']
-        itemList.Emails.forEach(item => CryptoUtils.decryptFields(item, EmailEncryptedFields))
+        await Promise.all(
+          itemList.Emails.map(item => decryptFields(item, EmailEncryptedFields, userKey))
+        )
         
         const CreditCardEncryptedFields = ['type', 'number', 'expiry_date', 'cardholder_name', 'verification_number']
-        itemList.CreditCards.forEach(item => CryptoUtils.decryptFields(item, CreditCardEncryptedFields))
+        await Promise.all(
+          itemList.CreditCards.map(item => decryptFields(item, CreditCardEncryptedFields, userKey))
+        )
         
         const BankAccountEncryptedFields = ['account_name', 'account_number', 'iban', 'currency', 'password']
-        itemList.BankAccounts.forEach(item => CryptoUtils.decryptFields(item, BankAccountEncryptedFields))
+        await Promise.all(
+          itemList.BankAccounts.map(item => decryptFields(item, BankAccountEncryptedFields, userKey))
+        )
         
-        const contentLogins = Papa.unparse(itemList.Logins)
-        fs.writeFile(path.join(dir[0],"logins.csv"), contentLogins, function (err) {
-            if (err) {
-              this.$notifyError(this.$t('Something went wrong.'))
-              console.log(err)
-            }
-        });
-        
-        const contentServer = Papa.unparse(itemList.Servers)
-        fs.writeFile(path.join(dir[0],"servers.csv"), contentServer, function (err) {
-            if (err) {
-              this.$notifyError(this.$t('Something went wrong.'))
-              console.log(err)
-            }
-        });
-        
-        const contentNote = Papa.unparse(itemList.Notes)
-        fs.writeFile(path.join(dir[0],"notes.csv"), contentNote, function (err) {
-            if (err) {
-              this.$notifyError(this.$t('Something went wrong.'))
-              console.log(err)
-            }
-        });
-        
-        const contentEmail = Papa.unparse(itemList.Emails)
-        fs.writeFile(path.join(dir[0],"emails.csv"), contentEmail, function (err) {
-            if (err) {
-              this.$notifyError(this.$t('Something went wrong.'))
-              console.log(err)
-            }
-        });
-        
-        const contentCreditCard = Papa.unparse(itemList.CreditCards)
-        fs.writeFile(path.join(dir[0],"credit_cards.csv"), contentCreditCard, function (err) {
-            if (err) {
-              this.$notifyError(this.$t('Something went wrong.'))
-              console.log(err)
-            }
-        });
-        
-        const contentBankAccount = Papa.unparse(itemList.BankAccounts)
-        fs.writeFile(path.join(dir[0],"credit_cards.csv"), contentBankAccount, function (err) {
-            if (err) {
-              this.$notifyError(this.$t('Something went wrong.'))
-              console.log(err)
-            }
-        });
-        
-        this.$notifySuccess(this.$t(`All records exported successfully.`))
+        const files = [
+          { name: 'passwords.csv', content: Papa.unparse(passwordItems) },
+          { name: 'servers.csv', content: Papa.unparse(itemList.Servers) },
+          { name: 'notes.csv', content: Papa.unparse(itemList.Notes) },
+          { name: 'emails.csv', content: Papa.unparse(itemList.Emails) },
+          { name: 'credit_cards.csv', content: Papa.unparse(itemList.CreditCards) },
+          { name: 'bank_accounts.csv', content: Papa.unparse(itemList.BankAccounts) }
+        ]
+
+        await window.electronAPI.fs.writeFiles(dir, files)
+
+        this.$notifySuccess(this.$t('All records exported successfully.'))
           
       } catch (error) {
         this.$notifyError(this.$t('Something went wrong.'))
@@ -188,16 +209,25 @@ export default {
     },
 
     onImport() {
+      if (!window.electronAPI) {
+        return
+      }
 
-      remote.dialog.showOpenDialog({ properties: ['openFile'] }).then(async ({ filePaths }) => {
+      const userKey = this.$store.state.userKey
+      if (!userKey) {
+        this.$notifyError(this.$t('Something went wrong.'))
+        return
+      }
 
-        if (filePaths.length === 0) {
+      window.electronAPI.dialog.selectImportFile().then(async filePath => {
+        if (!filePath) {
           return
         }
-        try {
-          const fileContent = fs.readFileSync(filePaths[0]).toString()
 
-          let parsedCSV = Papa.parse(fileContent.trim(), {
+        try {
+          const fileContent = await window.electronAPI.fs.readFile(filePath)
+
+          const parsedCSV = Papa.parse(fileContent.trim(), {
             header: true // creates array of { head: value }
           })
 
@@ -206,9 +236,11 @@ export default {
             return
           }
 
-          const itemList = parsedCSV.data.map(item => {
-            return CryptoUtils.encryptPayload(item, ['username', 'password', 'extra'])
-          })
+          const itemList = await Promise.all(
+            parsedCSV.data.map(item =>
+              encryptPayload(item, ['username', 'password', 'notes', 'totp_secret'], userKey)
+            )
+          )
 
           await this.Import(itemList)
           this.FetchAll()

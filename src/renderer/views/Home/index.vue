@@ -7,8 +7,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import Sidebar from './Sidebar/index'
+import Sidebar from './Sidebar/index.vue'
 
 export default {
   components: {

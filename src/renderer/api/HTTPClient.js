@@ -1,9 +1,7 @@
 import Axios from 'axios'
 
-let baseURL = 'http://localhost:3625'
-if (process.env.NODE_ENV === 'production') {
-  baseURL = 'https://vault.passwall.io'
-}
+const storedServer = typeof localStorage !== 'undefined' ? localStorage.server : ''
+let baseURL = storedServer || 'https://api.passwall.io'
 
 const client = Axios.create({
   baseURL,
@@ -11,10 +9,20 @@ const client = Axios.create({
     'Content-Type': 'application/json; charset=utf-8',
     Accept: 'application/json, text/plain, */*'
   },
-  withCredentials: true,
+  withCredentials: false,
 })
 
+const storedAccessToken =
+  typeof localStorage !== 'undefined' ? localStorage.access_token : ''
+
+if (storedAccessToken) {
+  client.defaults.headers.common.Authorization = `Bearer ${storedAccessToken}`
+}
+
 export default class HTTPClient {
+  static normalizeBaseURL(url) {
+    return url
+  }
   static async head(path) {
     return client.head(path)
   }
@@ -51,6 +59,6 @@ export default class HTTPClient {
   }
 
   static setBaseURL(url) {
-    client.defaults.baseURL = url
+    client.defaults.baseURL = HTTPClient.normalizeBaseURL(url)
   }
 }

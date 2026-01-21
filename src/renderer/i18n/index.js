@@ -1,13 +1,11 @@
-import Vue from 'vue';
-import VueI18n from 'vue-i18n';
-import en from './langs/en';
+import { createI18n } from 'vue-i18n'
+import en from './langs/en'
 
-Vue.use(VueI18n);
-
-export default new VueI18n({
+export default createI18n({
+  legacy: true,
   locale: 'en',
   fallbackLocale: 'en',
   messages: {
-    en,
-  },
-});
+    en
+  }
+})

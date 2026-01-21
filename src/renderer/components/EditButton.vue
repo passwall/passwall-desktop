@@ -3,7 +3,7 @@
     v-if="!isEditMode"
     class="edit-btn ml-1"
     v-tooltip="$t('Edit')"
-    v-on="inputListeners"
+    @click="onToggle"
     >
     <VIcon name="pencil" size="14px" />
     </button>
@@ -15,14 +15,10 @@ export default {
   data() {
     return { isEditMode: false }
   },
-  computed: {
-    inputListeners() {
-      return Object.assign({}, this.$listeners, {
-        click: event => {
-          this.isEditMode = !this.isEditMode
-          return this.$emit('click', this.isEditMode)
-        }
-      })
+  methods: {
+    onToggle() {
+      this.isEditMode = !this.isEditMode
+      this.$emit('click', this.isEditMode)
     }
   }
 }

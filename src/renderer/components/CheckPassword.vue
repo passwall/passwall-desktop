@@ -11,7 +11,7 @@
 
 <script>
 import Axios from 'axios'
-import CryptoUtils from '@/utils/crypto'
+import { sha1 } from '@/utils/crypto'
 
 export default {
   name: 'CheckPassword',
@@ -31,9 +31,9 @@ export default {
         this.$notifyError(text)
         return
       }
-      var hash = CryptoUtils.sha1(this.password)
-      var first = hash.substring(0, 5)
-      var last = hash.slice(hash.length - 5)
+      const hash = await sha1(this.password)
+      const first = hash.substring(0, 5)
+      const last = hash.slice(hash.length - 5)
       var found = false
       var times = ""
 

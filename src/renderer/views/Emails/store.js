@@ -1,5 +1,5 @@
-import EmailsService from '@/api/services/Emails'
-import CryptoUtils from '@/utils/crypto'
+import ItemsService from '@/api/services/Items'
+import { ItemType, buildEncryptedPayload, decryptItemList } from '@/utils/item-mappers'
 
 const EncryptedFields = ['email', 'password']
 
@@ -14,30 +14,42 @@ export default {
   },
 
   actions: {
-    async FetchAll({ state }, query) {
-      const { data } = await EmailsService.FetchAll(query)
-
-      const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-
-      itemList.forEach(element => {
-        CryptoUtils.decryptFields(element, EncryptedFields)
+    async FetchAll({ state, rootState }, query) {
+      const { data } = await ItemsService.FetchAll({
+        ...query,
+        type: ItemType.Email
       })
 
+      const itemList = await decryptItemList(data.items, EncryptedFields, rootState.userKey)
       state.ItemList = itemList
     },
 
     Delete(_, id) {
-      return EmailsService.Delete(id)
+      return ItemsService.Delete(id)
     },
 
-    Create(_, data) {
-      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      return EmailsService.Create(payload)
+    async Create({ rootState }, data) {
+      const payload = await buildEncryptedPayload(
+        ItemType.Email,
+        data,
+        EncryptedFields,
+        rootState.userKey
+      )
+      return ItemsService.Create(payload)
     },
 
-    Update(_, data) {
-      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      return EmailsService.Update(data.id, payload)
+    async Update({ rootState }, data) {
+      const payload = await buildEncryptedPayload(
+        ItemType.Email,
+        data,
+        EncryptedFields,
+        rootState.userKey
+      )
+      return ItemsService.Update(data.id, {
+        data: payload.data,
+        metadata: payload.metadata,
+        item_key_enc: payload.item_key_enc
+      })
     }
   }
 }

@@ -22,9 +22,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 import SystemService from '@/api/services/System'
-import CryptoUtils from '@/utils/crypto'
 
 export default {
   name: 'GeneratePassword',

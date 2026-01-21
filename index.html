@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PassWall Desktop</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      (function () {
+        if (typeof globalThis.global === 'undefined') {
+          globalThis.global = globalThis
+        }
+        fetch('http://127.0.0.1:7245/ingest/301a298b-8a35-4d16-b773-217101081ca2', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: 'index.html:12',
+            message: 'Pre-bundle globals',
+            data: {
+              hasGlobal: typeof globalThis.global !== 'undefined',
+              hasBuffer: typeof globalThis.Buffer !== 'undefined'
+            },
+            timestamp: Date.now(),
+            sessionId: 'debug-session',
+            runId: 'run1',
+            hypothesisId: 'H1'
+          })
+        }).catch(function () {})
+      })()
+    </script>
+    <script type="module" src="/src/renderer/main.js"></script>
+  </body>
+</html>

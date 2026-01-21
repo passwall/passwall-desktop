@@ -1,12 +1,17 @@
+const CLEARBIT_LOGO_ENABLED = false
+
 export default {
   data() {
     return {
-      logoIsAvailable: true
+      logoIsAvailable: CLEARBIT_LOGO_ENABLED
     }
   },
 
   methods: {
     getLogo(url) {
+      if (!CLEARBIT_LOGO_ENABLED) {
+        return ''
+      }
       return `http://logo.clearbit.com/${this.domainFromURL(url)}`
     },
 
@@ -26,7 +31,7 @@ export default {
 
   watch: {
     url() {
-      this.logoIsAvailable = true
+      this.logoIsAvailable = CLEARBIT_LOGO_ENABLED
     }
   }
 }

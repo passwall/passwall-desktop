@@ -1,19 +1,18 @@
 // Config
-@import 'config/variables';
-@import 'config/font-face';
-@import 'config/formalize';
+@use 'config/font-face';
+@use 'config/formalize';
 
 // Plugins
-@import 'plugins/v-tooltip';
-@import 'plugins/vue-notifications.scss';
+@use 'plugins/v-tooltip';
+@use 'plugins/vue-notifications';
 
 // Utilities
-@import 'utilities/space';
-@import 'utilities/colors';
-@import 'utilities/flexbox';
-@import 'utilities/typography';
-@import 'utilities/display';
-@import 'utilities/visibility';
+@use 'utilities/space';
+@use 'utilities/colors';
+@use 'utilities/flexbox';
+@use 'utilities/typography';
+@use 'utilities/display';
+@use 'utilities/visibility';
 
 html {
   color: $color-primary;
@@ -61,6 +60,70 @@ html {
   &-leave-to {
     opacity: 0;
   }
+}
+
+.detail-page-content,
+.logins {
+  scrollbar-width: thin;
+  scrollbar-color: #7c3aed rgba($color-gray-600, 0.6);
+  overflow-x: hidden;
+}
+.app-header-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-action-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $color-gray-300;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-action-btn:enabled:hover {
+  color: $color-secondary;
+}
+
+.vault-link {
+  color: #fff;
+  background-color: $color-secondary;
+  border: 1px solid $color-secondary;
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+.vault-link:hover {
+  background-color: rgba($color-secondary, 0.8);
+}
+
+.vault-link__icon {
+  color: $color-secondary;
+}
+
+
+.detail-page-content::-webkit-scrollbar,
+.logins::-webkit-scrollbar {
+  width: 10px;
+}
+
+.detail-page-content::-webkit-scrollbar-track,
+.logins::-webkit-scrollbar-track {
+  background: rgba($color-gray-600, 0.6);
+  border-radius: 8px;
+}
+
+.detail-page-content::-webkit-scrollbar-thumb,
+.logins::-webkit-scrollbar-thumb {
+  background: #7c3aed;
+  border-radius: 8px;
+  border: 2px solid rgba($color-gray-600, 0.6);
 }
 
 .ps__rail-x {
@@ -122,6 +185,44 @@ html {
       border: 0;
     }
   }
+}
+
+.pw-select {
+  width: 260px;
+  max-width: 100%;
+  height: 40px;
+  background-color: #000;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0 12px;
+  border: 0;
+  font-size: 12px;
+}
+
+.pw-select:disabled {
+  color: $color-gray-300;
+  opacity: 0.7;
+}
+
+.password-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.password-setting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid $color-gray-500;
+  border-radius: 8px;
+  background-color: $color-gray-600;
+  font-size: 12px;
+}
+
+.password-setting input[type='checkbox'] {
+  accent-color: $color-secondary;
 }
 
 .vue-notification-group {
@@ -253,8 +354,8 @@ hr {
   &-content {
     position: relative;
     height: calc(100% - 64px);
-    overflow-x: auto;
-    width: 99%;
+    overflow-x: hidden;
+    width: 100%;
 
     .form-row {
       span {

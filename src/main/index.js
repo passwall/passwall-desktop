@@ -1,20 +1,17 @@
-import { app, BrowserWindow, Menu } from 'electron' // eslint-disable-line
-
-/**
- * Set `__static` path to static files in production
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
- */
-if (process.env.NODE_ENV !== 'development') {
-  global.__static = require('path')
-    .join(__dirname, '/static')
-    .replace(/\\/g, '\\\\') // eslint-disable-line
-}
+import { app, BrowserWindow, Menu, dialog, ipcMain, shell } from 'electron'
+import fs from 'fs/promises'
+import path from 'path'
 
 let mainWindow
-const winURL =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:9080'
-    : `file://${__dirname}/index.html`
+const isDev = !app.isPackaged
+
+const getRendererUrl = () => {
+  if (isDev && process.env.VITE_DEV_SERVER_URL) {
+    return process.env.VITE_DEV_SERVER_URL
+  }
+
+  return `file://${path.join(__dirname, '../renderer/index.html')}`
+}
 
 function createWindow() {
   /**
@@ -29,14 +26,17 @@ function createWindow() {
     useContentSize: true,
     frame: false,
     webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true
+      contextIsolation: true,
+      nodeIntegration: false,
+      preload: path.join(__dirname, 'preload.js')
     }
   })
 
-  mainWindow.loadURL(winURL)
+  mainWindow.loadURL(getRendererUrl())
 
-  // mainWindow.webContents.closeDevTools()
+  if (isDev) {
+    mainWindow.webContents.openDevTools({ mode: 'detach' })
+  }
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -100,14 +100,14 @@ function createMenu() {
           label: 'Export',
           accelerator: 'CmdOrCtrl+E',
           click: function() {
-            mainWindow.webContents.send('export')
+            mainWindow.webContents.send('menu:export')
           }
         },
         {
           label: 'Import',
           accelerator: 'CmdOrCtrl+I',
           click: function() {
-            mainWindow.webContents.send('import')
+            mainWindow.webContents.send('menu:import')
           }
         }
       ]
@@ -116,6 +116,92 @@ function createMenu() {
 
   Menu.setApplicationMenu(Menu.buildFromTemplate(template))
 }
+
+ipcMain.handle('app:quit', () => {
+  app.quit()
+})
+
+ipcMain.handle('app:getVersion', () => {
+  return app.getVersion()
+})
+
+ipcMain.handle('window:minimize', () => {
+  if (mainWindow) {
+    mainWindow.minimize()
+  }
+})
+
+ipcMain.handle('window:toggleMaximize', () => {
+  if (!mainWindow) {
+    return false
+  }
+
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize()
+    return false
+  }
+
+  mainWindow.maximize()
+  return true
+})
+
+ipcMain.handle('window:toggleAlwaysOnTop', () => {
+  if (!mainWindow) {
+    return false
+  }
+
+  const nextValue = !mainWindow.isAlwaysOnTop()
+  mainWindow.setAlwaysOnTop(nextValue)
+  return nextValue
+})
+
+ipcMain.handle('shell:openExternal', (_event, url) => {
+  return shell.openExternal(url)
+})
+
+ipcMain.handle('dialog:selectExportDirectory', async () => {
+  if (!mainWindow) {
+    return null
+  }
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Select Export Directory',
+    properties: ['openDirectory', 'createDirectory']
+  })
+
+  if (result.canceled) {
+    return null
+  }
+
+  return result.filePaths[0] || null
+})
+
+ipcMain.handle('dialog:selectImportFile', async () => {
+  if (!mainWindow) {
+    return null
+  }
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Select Import File',
+    properties: ['openFile']
+  })
+
+  if (result.canceled) {
+    return null
+  }
+
+  return result.filePaths[0] || null
+})
+
+ipcMain.handle('fs:readFile', async (_event, filePath) => {
+  return fs.readFile(filePath, 'utf8')
+})
+
+ipcMain.handle('fs:writeFiles', async (_event, dirPath, files) => {
+  await Promise.all(
+    files.map(file => fs.writeFile(path.join(dirPath, file.name), file.content))
+  )
+})
 
 /**
  * Auto Updater

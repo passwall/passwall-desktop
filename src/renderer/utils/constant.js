@@ -1,5 +1,5 @@
 export const Services = {
-  Logins: 'Logins',
+  Passwords: 'Passwords',
   BankAccounts: 'BankAccounts',
   CreditCards: 'CreditCards',
   Emails: 'Emails',

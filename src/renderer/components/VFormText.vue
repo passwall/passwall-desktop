@@ -2,7 +2,7 @@
   <div class="form-text-wrapper">
     <input
       :type="$attrs.type || 'text'"
-      :value="value"
+      :value="modelValue ?? value ?? ''"
       :class="clazz"
       class="form-text"
       autocorrect="off"
@@ -19,9 +19,12 @@
 <script>
 export default {
   name: 'VFormText',
+  inheritAttrs: false,
+  emits: ['update:modelValue', 'input'],
 
   props: {
     name: String,
+    modelValue: String,
     value: String,
     theme: {
       type: String,
@@ -44,9 +47,12 @@ export default {
     },
 
     inputListeners() {
-      return Object.assign({}, this.$listeners, {
-        input: event => this.$emit('input', event.target.value)
-      })
+      return {
+        input: event => {
+          this.$emit('update:modelValue', event.target.value)
+          this.$emit('input', event.target.value)
+        }
+      }
     }
   }
 }

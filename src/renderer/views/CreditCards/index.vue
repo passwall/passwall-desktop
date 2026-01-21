@@ -57,7 +57,7 @@ export default {
     onClickItem(detail) {
       this.$router.push({
         name: 'CreditCardDetail',
-        params: { detail, id: detail.id }
+        params: { id: detail.id }
       })
     }
   },

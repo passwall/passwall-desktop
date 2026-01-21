@@ -2,7 +2,7 @@
   <div class="content-container">
     <div class="items-container">
       <!-- Items -->
-      <PerfectScrollbar class="logins">
+      <PerfectScrollbar class="logins" @scroll="onListScroll">
         <!-- List -->
         <template v-if="filteredList.length > 0">
           <ListItem
@@ -11,7 +11,7 @@
             :data="item"
             :active="$route.params.id == item.id"
             @click="onClickItem(item)"
-            type="Login"
+            type="Password"
           />
         </template>
         <!-- Empty State -->
@@ -36,7 +36,7 @@
     <!-- Detail -->
     <div
       class="w-100 h-100 flex-center c-gray-700"
-      v-if="ItemList.length > 0 && $route.name == 'Logins'"
+      v-if="ItemList.length > 0 && $route.name == 'Passwords'"
     >
       {{ $t('Select one item to see it’s details...') }}
     </div>
@@ -52,18 +52,22 @@ export default {
   mixins: [ListMixin],
 
   methods: {
-    ...mapActions('Logins', ['FetchAll']),
+    ...mapActions('Passwords', ['FetchAll']),
+
+    onListScroll(event) {
+      const el = event?.target
+    },
 
     onClickItem(detail) {
       this.$router.push({
-        name: 'LoginDetail',
-        params: { detail, id: detail.id }
+        name: 'PasswordDetail',
+        params: { id: detail.id }
       })
     }
   },
 
   computed: {
-    ...mapState('Logins', ['ItemList'])
+    ...mapState('Passwords', ['ItemList'])
   }
 }
 </script>

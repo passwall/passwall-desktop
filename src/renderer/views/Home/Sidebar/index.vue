@@ -2,10 +2,10 @@
   <div class="sidebar">
     <div class="account">
       <!-- Avatar -->
-      <VAvatar :pro="hasProPlan" :name="user.name" />
+      <VAvatar :pro="hasProPlan" :name="user?.name || ''" />
       <!-- Info -->
       <div class="account-info">
-        <span class="account-info-name" v-text="user.name" />
+        <span class="account-info-name" v-text="user?.name || ''" />
         <span class="account-info-plan" v-text="hasProPlan ? 'PRO' : 'FREE'" />
       </div>
       <!-- Menu Button -->
@@ -38,8 +38,8 @@
       </div>
     </div>
 
-    <!-- Logins -->
-    <MenuItem :service="$C.Services.Logins" :name="$t('Logins')" icon="lock-closed" />
+    <!-- Passwords -->
+    <MenuItem :service="$C.Services.Passwords" :name="$t('Passwords')" icon="lock-closed" />
 
     <!-- Credit Cards -->
     <MenuItem
@@ -99,8 +99,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import Axios from 'axios'
-import MenuItem from './MenuItem'
-import electron from 'electron'
+import MenuItem from './MenuItem.vue'
 
 export default {
   components: {
@@ -115,8 +114,8 @@ export default {
     }
   },
 
-  created() {
-    this.checkUpdate()
+  async created() {
+    await this.checkUpdate()
   },
 
   computed: {
@@ -130,11 +129,17 @@ export default {
 
   methods: {
     onClickUpdateApp() {
-      electron.shell.openExternal(this.updateLink || 'https://passwall.io')
+      if (window.electronAPI) {
+        window.electronAPI.shell.openExternal(this.updateLink || 'https://passwall.io')
+      }
     },
 
     async checkUpdate() {
-      const { version } = require('../../../../../package.json')
+      if (!window.electronAPI) {
+        return
+      }
+
+      const version = await window.electronAPI.app.getVersion()
       try {
         const { data } = await Axios.get('https://api.github.com/repos/passwall/passwall-desktop/releases/latest',{})
         this.hasUpdate = data.tag_name != version
@@ -145,19 +150,27 @@ export default {
     },
 
     onClickFeedback() {
-      electron.shell.openExternal('https://passwall.typeform.com/to/GAv1h2')
+      if (window.electronAPI) {
+        window.electronAPI.shell.openExternal('https://passwall.typeform.com/to/GAv1h2')
+      }
     },
 
     onClickUpgrade() {
-      electron.shell.openExternal('https://signup.passwall.io/upgrade')
+      if (window.electronAPI) {
+        window.electronAPI.shell.openExternal('https://signup.passwall.io/upgrade')
+      }
     },
 
     onClickUpdate() {
-      electron.shell.openExternal(this.user.update_url)
+      if (window.electronAPI) {
+        window.electronAPI.shell.openExternal(this.user.update_url)
+      }
     },
 
     onClickCancel() {
-      electron.shell.openExternal(this.user.cancel_url)
+      if (window.electronAPI) {
+        window.electronAPI.shell.openExternal(this.user.cancel_url)
+      }
     }
   }
 }

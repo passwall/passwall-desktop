@@ -36,15 +36,19 @@ export default {
   },
   computed: {
     getTitle: function() {
-      if (this.type === 'Login') return this.data.title ? this.data.title : this.data.url
-      else return this.data.title
+      if (this.type === 'Login' || this.type === 'Password') {
+        return this.data.name || this.data.title || this.data.url
+      }
+      return this.data.title || this.data.name
     },
     getUrl: function() {
-      if (this.type === 'Login') return this.data.url ? this.data.url : this.data.title
-      else return this.data.title
+      if (this.type === 'Login' || this.type === 'Password') {
+        return this.data.url || this.data.title || this.data.name
+      }
+      return this.data.title || this.data.name
     },
     getUsername: function() {
-      if (this.type === 'Login') return this.data.username
+      if (this.type === 'Login' || this.type === 'Password') return this.data.username
       else if (this.type === 'Email') return this.data.email
       else if (this.type === 'BankAccount') return this.data.iban
       else if (this.type === 'CreditCard') return this.data.number

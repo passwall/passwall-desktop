@@ -1,15 +1,13 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import CheckAuth from './auth-check'
 
-Vue.use(Router)
-
-const router = new Router({
+const router = createRouter({
+  history: createWebHashHistory(),
   routes: [
     {
       path: '/login',
       name: 'Login',
-      component: require('@/views/Auth/Login').default,
+      component: () => import('@/views/Auth/Login.vue'),
       meta: {
         auth: true
       }
@@ -17,120 +15,122 @@ const router = new Router({
     {
       path: '/',
       name: 'Home',
-      redirect: '/logins',
-      component: require('@/views/Home/index').default,
+      redirect: '/passwords',
+      component: () => import('@/views/Home/index.vue'),
       children: [
         {
-          path: '/logins',
-          name: 'Logins',
-          component: require('@/views/Logins/index').default,
+          path: '/passwords',
+          name: 'Passwords',
+          component: () => import('@/views/Passwords/index.vue'),
           children: [
             {
               path: 'create',
-              name: 'LoginCreate',
-              component: require('@/views/Logins/Create').default
+              name: 'PasswordCreate',
+              component: () => import('@/views/Passwords/Create.vue')
             },
             {
               path: ':id',
-              name: 'LoginDetail',
-              component: require('@/views/Logins/Detail').default
+              name: 'PasswordDetail',
+              component: () => import('@/views/Passwords/Detail.vue')
             }
           ]
         },
         {
           path: '/credit-cards',
           name: 'CreditCards',
-          component: require('@/views/CreditCards/index').default,
+          component: () => import('@/views/CreditCards/index.vue'),
           children: [
             {
               path: 'create',
               name: 'CreditCardCreate',
-              component: require('@/views/CreditCards/Create').default
+              component: () => import('@/views/CreditCards/Create.vue')
             },
             {
               path: ':id',
               name: 'CreditCardDetail',
-              component: require('@/views/CreditCards/Detail').default
+              component: () => import('@/views/CreditCards/Detail.vue')
             }
           ]
         },
         {
           path: '/bank-accounts',
           name: 'BankAccounts',
-          component: require('@/views/BankAccounts/index').default,
+          component: () => import('@/views/BankAccounts/index.vue'),
           children: [
             {
               path: 'create',
               name: 'BankAccountCreate',
-              component: require('@/views/BankAccounts/Create').default
+              component: () => import('@/views/BankAccounts/Create.vue')
             },
             {
               path: ':id',
               name: 'BankAccountDetail',
-              component: require('@/views/BankAccounts/Detail').default
+              component: () => import('@/views/BankAccounts/Detail.vue')
             }
           ]
         },
         {
           path: '/emails',
           name: 'Emails',
-          component: require('@/views/Emails/index').default,
+          component: () => import('@/views/Emails/index.vue'),
           children: [
             {
               path: 'create',
               name: 'EmailCreate',
-              component: require('@/views/Emails/Create').default
+              component: () => import('@/views/Emails/Create.vue')
             },
             {
               path: ':id',
               name: 'EmailDetail',
-              component: require('@/views/Emails/Detail').default
+              component: () => import('@/views/Emails/Detail.vue')
             }
           ]
         },
         {
           path: '/notes',
           name: 'Notes',
-          component: require('@/views/Notes/index').default,
+          component: () => import('@/views/Notes/index.vue'),
           children: [
             {
               path: 'create',
               name: 'NoteCreate',
-              component: require('@/views/Notes/Create').default
+              component: () => import('@/views/Notes/Create.vue')
             },
             {
               path: ':id',
               name: 'NoteDetail',
-              component: require('@/views/Notes/Detail').default
+              component: () => import('@/views/Notes/Detail.vue')
             }
           ]
         },
         {
           path: '/servers',
           name: 'Servers',
-          component: require('@/views/Servers/index').default,
+          component: () => import('@/views/Servers/index.vue'),
           children: [
             {
               path: 'create',
               name: 'ServerCreate',
-              component: require('@/views/Servers/Create').default
+              component: () => import('@/views/Servers/Create.vue')
             },
             {
               path: ':id',
               name: 'ServerDetail',
-              component: require('@/views/Servers/Detail').default
+              component: () => import('@/views/Servers/Detail.vue')
             }
           ]
         }
       ]
     },
     {
-      path: '*',
+      path: '/:pathMatch(.*)*',
       redirect: '/'
     }
   ]
 })
 
-router.beforeEach(CheckAuth)
+router.beforeEach((to, from) => {
+  return CheckAuth(to)
+})
 
 export default router

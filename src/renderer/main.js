@@ -1,21 +1,27 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
+import { Buffer } from 'buffer'
 
 import './styles/app.scss'
-import './config'
-import App from './App'
+import App from './App.vue'
 import router from './router'
 import store from './store'
 import i18n from './i18n'
+import { setupApp } from './config'
 
-store.dispatch('Logout')
+// Avoid calling logout on startup; it triggers server call before UI loads.
 
-Vue.config.productionTip = false
+if (typeof globalThis.global === 'undefined') {
+  globalThis.global = globalThis
+}
+if (typeof globalThis.Buffer === 'undefined') {
+  globalThis.Buffer = Buffer
+}
 
-/* eslint-disable no-new */
-window.vm = new Vue({
-  router,
-  store,
-  i18n,
-  wait: window.wait,
-  render: h => h(App)
-}).$mount('#app')
+const app = createApp(App)
+setupApp(app)
+app.use(store)
+app.use(router)
+app.use(i18n)
+app.mount('#app')
+
+window.vm = app

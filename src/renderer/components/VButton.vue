@@ -5,7 +5,6 @@
     :class="clazz"
     class="btn"
     v-bind="$attrs"
-    v-on="inputListeners"
   >
     <slot />
     <VIcon v-if="loading" name="refresh" size="14px" class="spin c-white ml-2" />
@@ -35,17 +34,6 @@ export default {
   computed: {
     clazz() {
       return [`--${this.size}`, `--theme-${this.theme}`, { '--loading': this.loading }]
-    },
-
-    getError() {
-      const error = this.errors.items.find(e => e.field == this.name)
-      return error ? error.msg : ''
-    },
-
-    inputListeners() {
-      return Object.assign({}, this.$listeners, {
-        input: event => this.$emit('input', event.target.value)
-      })
     }
   }
 }

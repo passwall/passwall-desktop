@@ -1,32 +1,39 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-Vue.use(Vuex)
+import { createStore } from 'vuex'
 
-import CryptoUtils from '@/utils/crypto'
+import { cryptoService, PBKDF2_MIN_ITERATIONS, SymmetricKey } from '@/utils/crypto'
 
 import AuthService from '@/api/services/Auth'
 import SystemService from '@/api/services/System'
 import HTTPClient from '@/api/HTTPClient'
 
-import Logins from '@/views/Logins/store'
+import Passwords from '@/views/Passwords/store'
 import CreditCards from '@/views/CreditCards/store'
 import BankAccounts from '@/views/BankAccounts/store'
 import Emails from '@/views/Emails/store'
 import Notes from '@/views/Notes/store'
 import Servers from '@/views/Servers/store'
 
-export default new Vuex.Store({
+export default createStore({
   state() {
-    CryptoUtils.encryptKey = localStorage.master_hash
-    CryptoUtils.transmissionKey = localStorage.transmission_key
+    const userKeyBase64 = sessionStorage.getItem('userKey')
+    const masterKeyBase64 = sessionStorage.getItem('masterKey')
+    const userKey = userKeyBase64
+      ? SymmetricKey.fromBytes(cryptoService.base64ToArray(userKeyBase64))
+      : null
+    const masterKey = masterKeyBase64 ? cryptoService.base64ToArray(masterKeyBase64) : null
+    const accessToken = localStorage.access_token || ''
+    const user = localStorage.user ? JSON.parse(localStorage.user) : {}
+    const pro = !!user
 
     return {
-      transmission_key: localStorage.transmission_key,
-      master_hash: localStorage.master_hash,
       searchQuery: '',
-      authenticated: false,
-      pro: false,
-      user: {}
+      authenticated: !!accessToken && !!userKey,
+      pro,
+      user,
+      access_token: accessToken,
+      refresh_token: localStorage.refresh_token || '',
+      userKey,
+      masterKey
     }
   },
 
@@ -36,42 +43,84 @@ export default new Vuex.Store({
     },
 
     isAuthenticated(state)  {
-      return state.authenticated
+      return state.authenticated && !!state.userKey && !!state.access_token
     }
   },
 
   actions: {
-    async Login({ state }, payload) {
-      payload.master_password = CryptoUtils.sha256Encrypt(payload.master_password)
+    async Login({ state, dispatch }, payload) {
+      const { email, master_password, server } = payload
 
-      const { data } = await AuthService.Login(payload)
-      state.transmission_key = data.transmission_key
-      state.master_hash = CryptoUtils.pbkdf2Encrypt(data.secret, payload.master_password)
-      CryptoUtils.encryptKey = state.master_hash
-      CryptoUtils.transmissionKey = state.transmission_key
-      state.user = data
-      state.pro = state.user.type == 'pro'
-      state.authenticated = true
+      HTTPClient.setBaseURL(server)
 
-      localStorage.email = payload.email
-      localStorage.server = payload.server
-      if (process.env.NODE_ENV !== 'production') {
-        localStorage.master_hash = state.master_hash
-        localStorage.transmission_key = state.transmission_key
+      const { data: kdfConfig } = await AuthService.PreLogin(email)
+
+      if (kdfConfig.kdf_type === 0 && kdfConfig.kdf_iterations < PBKDF2_MIN_ITERATIONS) {
+        throw new Error(
+          `KDF iterations too low (${kdfConfig.kdf_iterations}). ` +
+            `Minimum required: ${PBKDF2_MIN_ITERATIONS}.`
+        )
       }
 
+      state.masterKey = await cryptoService.makeMasterKey(
+        master_password,
+        kdfConfig.kdf_salt,
+        kdfConfig
+      )
+
+      const authKey = await cryptoService.hashMasterKey(state.masterKey)
+      const authKeyBase64 = cryptoService.arrayToBase64(authKey)
+
+      const { data } = await AuthService.SignIn({
+        email,
+        master_password_hash: authKeyBase64,
+        app: 'desktop'
+      })
+
+      const stretchedMasterKey = await cryptoService.stretchMasterKey(state.masterKey)
+      state.userKey = await cryptoService.unwrapUserKey(data.protected_user_key, stretchedMasterKey)
+
+      state.access_token = data.access_token
+      state.refresh_token = data.refresh_token
+      state.user = data.user || data
+      state.pro = !!state.user
+      state.authenticated = true
+
+      HTTPClient.setHeader('Authorization', `Bearer ${state.access_token}`)
+
+      await dispatch('persistSessionKeys', { userKey: state.userKey, masterKey: state.masterKey })
+
+      localStorage.email = email
+      localStorage.server = server
+      localStorage.access_token = data.access_token
+      localStorage.refresh_token = data.refresh_token
+      localStorage.user = JSON.stringify(state.user || {})
     },
 
-    Logout({ state }, payload) {
-      const { data } = AuthService.Logout(payload)
-      state.transmission_key = null
-      state.master_hash = null
-      state.user = null
+    async Logout({ state }, payload) {
+      try {
+        await AuthService.Logout(payload)
+      } catch (_error) {
+        // Ignore server-side logout errors; proceed to clear local session.
+      }
+
+      state.userKey = null
+      state.masterKey = null
+      state.user = {}
       state.authenticated = false
       state.pro = false
-      const lsKeys = Object.keys(localStorage).filter(key => ['email','server'].includes(key) === false)
+      state.access_token = ''
+      state.refresh_token = ''
+
+      HTTPClient.setHeader('Authorization', '')
+
+      sessionStorage.removeItem('userKey')
+      sessionStorage.removeItem('masterKey')
+
+      const lsKeys = Object.keys(localStorage).filter(
+        (key) => ['email', 'server'].includes(key) === false
+      )
       lsKeys.forEach(key => localStorage.removeItem(key))
-      
     },
 
     async Import(_, data) {
@@ -81,6 +130,18 @@ export default new Vuex.Store({
     async Export() {
       const { data } = SystemService.Export()
       return data
+    },
+
+    async persistSessionKeys(_, { userKey, masterKey }) {
+      const userKeyB64 = userKey ? cryptoService.arrayToBase64(userKey.toBytes()) : null
+      const masterKeyB64 = masterKey ? cryptoService.arrayToBase64(masterKey) : null
+
+      if (userKeyB64) {
+        sessionStorage.setItem('userKey', userKeyB64)
+      }
+      if (masterKeyB64) {
+        sessionStorage.setItem('masterKey', masterKeyB64)
+      }
     }
   },
 
@@ -91,7 +152,7 @@ export default new Vuex.Store({
   },
 
   modules: {
-    Logins,
+    Passwords,
     CreditCards,
     BankAccounts,
     Emails,

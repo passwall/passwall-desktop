@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 // Form size
 $input-height: 48px !default;
 
@@ -53,7 +55,7 @@ $color-gray-700: #444952 !default;
 // space
 $spacer: 8px !default;
 $spacer-0: 0 !default; // 0
-$spacer-1: round($spacer / 2) !default; // 4px
+$spacer-1: math.round(math.div($spacer, 2)) !default; // 4px
 $spacer-2: $spacer !default; // 8px
 $spacer-3: $spacer * 2 !default; // 16px
 $spacer-4: $spacer * 3 !default; // 24px

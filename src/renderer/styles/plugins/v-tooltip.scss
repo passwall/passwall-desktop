@@ -1,3 +1,5 @@
+@use '../config/variables' as *;
+
 .tooltip {
   $arrow-size: 8px;
   display: block !important;

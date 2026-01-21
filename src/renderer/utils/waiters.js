@@ -10,12 +10,12 @@ export const BankAccounts = {
   Get: 'BankAccounts_Get'
 }
 
-export const Logins = {
-  All: 'Logins_All',
-  Create: 'Logins_Create',
-  Update: 'Logins_Update',
-  Delete: 'Logins_Delete',
-  Get: 'Logins_Get'
+export const Passwords = {
+  All: 'Passwords_All',
+  Create: 'Passwords_Create',
+  Update: 'Passwords_Update',
+  Delete: 'Passwords_Delete',
+  Get: 'Passwords_Get'
 }
 
 export const CreditCards = {

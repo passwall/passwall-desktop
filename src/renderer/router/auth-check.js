@@ -1,18 +1,16 @@
-import store from '@/store';
+import store from '@/store'
 
-export default (to, from, next) => {
-    
-    const isAuthPage = to.matched.some(record => record.meta.auth)
+export default (to) => {
+  const isAuthPage = to.matched.some(record => record.meta.auth)
+  const isAuthenticated = store.getters['isAuthenticated']
 
-    const isAuthenticated = store.getters['isAuthenticated']
-    if (isAuthenticated) {
-        if (isAuthPage) {
-            return next({ name: 'Home' })
-        }
-    } else {
-        if (!isAuthPage) {
-            return next({ name: 'Login' })
-        }
-    }
-    next()
+  if (isAuthenticated && isAuthPage) {
+    return { name: 'Home' }
+  }
+
+  if (!isAuthenticated && !isAuthPage) {
+    return { name: 'Login' }
+  }
+
+  return true
 }

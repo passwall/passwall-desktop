@@ -1,7 +1,7 @@
 <template>
   <div class="text-area-wrapper">
     <textarea
-      :value="sensitive ? '*********' : value"
+      :value="sensitive ? '*********' : (modelValue ?? value ?? '')"
       autocorrect="off"
       autocomplete="off"
       spellcheck="false"
@@ -16,9 +16,12 @@
 <script>
 export default {
   name: 'VTextArea',
+  inheritAttrs: false,
+  emits: ['update:modelValue', 'input'],
 
   props: {
     name: String,
+    modelValue: String,
     value: String,
     sensitive: Boolean,
   },
@@ -30,9 +33,12 @@ export default {
     },
 
     inputListeners() {
-      return Object.assign({}, this.$listeners, {
-        input: event => this.$emit('input', event.target.value)
-      })
+      return {
+        input: event => {
+          this.$emit('update:modelValue', event.target.value)
+          this.$emit('input', event.target.value)
+        }
+      }
     }
   }
 }

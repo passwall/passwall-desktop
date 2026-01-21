@@ -3,16 +3,17 @@
     :width="width || size"
     :height="height || size"
     :transform="`rotate(${rotation} 0 0)`"
-    v-on="$listeners"
+    v-bind="$attrs"
     class="v-icon"
   >
-    <use :xlink:href="`#${name}`" />
+    <use :href="`#${name}`" />
   </svg>
 </template>
 
 <script>
 export default {
   name: 'VIcon',
+  inheritAttrs: false,
 
   props: {
     name: String,

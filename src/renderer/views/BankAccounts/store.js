@@ -1,7 +1,17 @@
-import BankAccountsService from '@/api/services/BankAccounts'
-import CryptoUtils from '@/utils/crypto'
+import ItemsService from '@/api/services/Items'
+import { ItemType, buildEncryptedPayload, decryptItemList } from '@/utils/item-mappers'
 
-const EncryptedFields = ['account_name', 'account_number', 'iban', 'currency', 'password']
+const EncryptedFields = [
+  'routing_number',
+  'account_number',
+  'iban_number',
+  'pin',
+  'bank_code',
+  'account_name',
+  'iban',
+  'currency',
+  'password'
+]
 
 export default {
   namespaced: true,
@@ -14,30 +24,42 @@ export default {
   },
 
   actions: {
-    async FetchAll({ state }, query) {
-      const { data } = await BankAccountsService.FetchAll(query)
-
-      const itemList = JSON.parse(CryptoUtils.aesDecrypt(data.data))
-
-      itemList.forEach(element => {
-        CryptoUtils.decryptFields(element, EncryptedFields)
+    async FetchAll({ state, rootState }, query) {
+      const { data } = await ItemsService.FetchAll({
+        ...query,
+        type: ItemType.Bank
       })
 
+      const itemList = await decryptItemList(data.items, EncryptedFields, rootState.userKey)
       state.ItemList = itemList
     },
 
     Delete(_, id) {
-      return BankAccountsService.Delete(id)
+      return ItemsService.Delete(id)
     },
 
-    Create(_, data) {
-      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      return BankAccountsService.Create(payload)
+    async Create({ rootState }, data) {
+      const payload = await buildEncryptedPayload(
+        ItemType.Bank,
+        data,
+        EncryptedFields,
+        rootState.userKey
+      )
+      return ItemsService.Create(payload)
     },
 
-    Update(_, data) {
-      const payload = CryptoUtils.encryptPayload(data, EncryptedFields)
-      return BankAccountsService.Update(data.id, payload)
+    async Update({ rootState }, data) {
+      const payload = await buildEncryptedPayload(
+        ItemType.Bank,
+        data,
+        EncryptedFields,
+        rootState.userKey
+      )
+      return ItemsService.Update(data.id, {
+        data: payload.data,
+        metadata: payload.metadata,
+        item_key_enc: payload.item_key_enc
+      })
     }
   }
 }

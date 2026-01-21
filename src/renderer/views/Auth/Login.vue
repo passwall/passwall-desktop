@@ -47,6 +47,15 @@
       <VButton type="submit" :loading="$wait.is($waiters.Auth.Login)" size="medium">
         {{ $t('Login') }}
       </VButton>
+      <!-- Sign Up -->
+      <VButton
+        type="button"
+        size="medium"
+        class="login-signup-btn"
+        @click="onClickSignUp"
+      >
+        Sign Up
+      </VButton>
     </form>
   </div>
 </template>
@@ -59,7 +68,7 @@ export default {
   data() {
     return {
       LoginForm: {
-        server: localStorage.server || 'https://vault.passwall.io',
+        server: localStorage.server || 'https://api.passwall.io',
         email: localStorage.email || '',
         master_password: ''
       }
@@ -68,6 +77,12 @@ export default {
 
   methods: {
     ...mapActions(['Login']),
+
+    onClickSignUp() {
+      if (window.electronAPI) {
+        window.electronAPI.shell.openExternal('https://signup.passwall.io')
+      }
+    },
 
     onLogin() {
       this.$validator.validate().then(async (result) => {
@@ -142,6 +157,16 @@ export default {
   padding-top: 60px;
   background-color: black;
   z-index: 9;
+}
+
+.login-signup-btn {
+  margin-top: 12px;
+  background-color: $color-gray-400;
+  color: #fff;
+}
+
+.login-signup-btn:hover {
+  background-color: rgba($color-gray-400, 0.85);
 }
 
 .login-form {

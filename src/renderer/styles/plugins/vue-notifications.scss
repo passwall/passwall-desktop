@@ -1,3 +1,5 @@
+@use '../config/variables' as *;
+
 .vue-notification {
   padding: 10px 10px 10px 35px;
   margin-top: 10px;
@@ -18,7 +20,7 @@
   &.error {
     background: #151c27;
     border-left-color: #151c27;
-    background-image: url(/static/img/error-notify.png);
+    background-image: url(/img/error-notify.png);
     background-repeat: no-repeat;
     background-position: 5px center;
   }

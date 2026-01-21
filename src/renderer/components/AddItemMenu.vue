@@ -2,10 +2,10 @@
   <div class="add-item-menu" :class="{ '--active': active }">
     <!-- Items -->
     <div class="add-item-menu-items">
-      <!-- Logins -->
-      <button @click="onClickItem('LoginCreate')" class="add-item-menu-item">
+      <!-- Passwords -->
+      <button @click="onClickItem('PasswordCreate')" class="add-item-menu-item">
         <VIcon name="lock-closed" size="14px" class="icon" />
-        {{ $t('Login') }}
+        {{ $t('Password') }}
       </button>
 
       <!-- Credit Cards -->
