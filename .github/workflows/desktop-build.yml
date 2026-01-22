@@ -17,19 +17,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: yarn
+          cache: pnpm
 
-      - name: Enable Yarn (classic)
-        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@10.28.1 --activate
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: yarn lint
-
-      - name: Format check
-        run: yarn format:check
+        run: pnpm run lint:ci
 
   windows:
     name: Windows (${{ matrix.arch }}) - MSI
@@ -49,19 +46,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: yarn
+          cache: pnpm
 
-      - name: Enable Yarn (classic)
-        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@10.28.1 --activate
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build MSI
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: |
-          if ("${{ matrix.arch }}" -eq "ia32") { yarn ci:build:win:ia32 } else { yarn ci:build:win:x64 }
+          if ("${{ matrix.arch }}" -eq "ia32") { pnpm run ci:build:win:ia32 } else { pnpm run ci:build:win:x64 }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -92,22 +89,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: yarn
+          cache: pnpm
 
-      - name: Enable Yarn (classic)
-        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@10.28.1 --activate
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build .app (dir target)
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: |
           if [ "${{ matrix.arch }}" = "arm64" ]; then
-            yarn ci:build:mac:arm64
+            pnpm run ci:build:mac:arm64
           else
-            yarn ci:build:mac:x64
+            pnpm run ci:build:mac:x64
           fi
 
       - name: Package .app as zip
@@ -153,22 +150,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: yarn
+          cache: pnpm
 
-      - name: Enable Yarn (classic)
-        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@10.28.1 --activate
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build packages (deb + rpm)
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: |
           if [ "${{ matrix.arch }}" = "arm64" ]; then
-            yarn ci:build:linux:arm64
+            pnpm run ci:build:linux:arm64
           else
-            yarn ci:build:linux:x64
+            pnpm run ci:build:linux:x64
           fi
 
       - name: Upload artifact
