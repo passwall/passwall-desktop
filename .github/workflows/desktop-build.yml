@@ -107,14 +107,12 @@ jobs:
       - name: Package .app as zip
         run: |
           set -euo pipefail
-          shopt -s nullglob globstar
-          apps=(build/**/*.app)
-          if [ ${#apps[@]} -eq 0 ]; then
+          APP_PATH="$(find build -type d -name '*.app' -print -quit)"
+          if [ -z "$APP_PATH" ]; then
             echo "No .app found under build/"
             ls -la build || true
             exit 1
           fi
-          APP_PATH="${apps[0]}"
           ZIP_NAME="PassWall-macos-${{ matrix.arch }}.app.zip"
           ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_NAME"
 
