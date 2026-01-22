@@ -1,6 +1,6 @@
-# PassWall'e Katkı
+# Passwall'e Katkı
 
-PassWall'e yardım etmek mi istiyorsun? Mükemmel, aramıza hoşgeldin. Bu dokümanı projeye nasıl katkıda bulunabileceğini göstermek için hazırladık. Gelecek katkıların için şimdiden teşekkürler.
+Passwall'e yardım etmek mi istiyorsun? Mükemmel, aramıza hoşgeldin. Bu dokümanı projeye nasıl katkıda bulunabileceğini göstermek için hazırladık. Gelecek katkıların için şimdiden teşekkürler.
 
 ## İletişim kanalları
 
@@ -39,7 +39,7 @@ Lütfen büyük kapsamlı ve ciddi pull request yapmadan önce bilgilendirme yap
 
 ### Branch adlandırma politikası
 
-PassWall aşağıdaki branch adlandırma politikasını kullanır.
+Passwall aşağıdaki branch adlandırma politikasını kullanır.
 
 <table>
   <thead>

@@ -1,15 +1,15 @@
-# PassWall Desktop
+# Passwall Desktop
 
 <p align="center">
     <img src="https://www.yakuter.com/wp-content/yuklemeler/passwall-cover.png" alt="" width="800" height="450" />
 </p>
 <p align="center">
-    The <strong>PassWall Desktop</strong> is an Electron Vue application that powers the web vault (https://vault.passwall.io/).
+    The <strong>Passwall Desktop</strong> is an Electron Vue application that powers the web vault (https://vault.passwall.io/).
 </p>
 
 ## Build/Run
 
-If you want to use this client with official PassWall Server, please first sign up via [PassWall Signup](https://signup.passwall.io)
+If you want to use this client with official Passwall Server, please first sign up via [Passwall Signup](https://signup.passwall.io)
 
 ### Requirements
 

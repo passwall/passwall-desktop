@@ -1,4 +1,4 @@
-# Changelog PassWall Desktop
+# Changelog Passwall Desktop
 
 ## [0.1.4] (04-08-2020)
 

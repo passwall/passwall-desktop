@@ -64,7 +64,7 @@ function createMenu() {
     {
       label: 'Application',
       submenu: [
-        { label: 'About PassWall', selector: 'orderFrontStandardAboutPanel:' },
+        { label: 'About Passwall', selector: 'orderFrontStandardAboutPanel:' },
         {
           label: 'Always On Top',
           click: function () {

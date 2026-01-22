@@ -113,7 +113,7 @@ jobs:
             ls -la build || true
             exit 1
           fi
-          ZIP_NAME="PassWall-macos-${{ matrix.arch }}.app.zip"
+          ZIP_NAME="Passwall-macos-${{ matrix.arch }}.app.zip"
           ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_NAME"
 
       - name: Upload artifact
@@ -121,7 +121,7 @@ jobs:
         with:
           name: passwall-desktop-macos-${{ matrix.arch }}
           path: |
-            PassWall-macos-${{ matrix.arch }}.app.zip
+            Passwall-macos-${{ matrix.arch }}.app.zip
 
   linux:
     name: Linux (${{ matrix.arch }}) - DEB/RPM

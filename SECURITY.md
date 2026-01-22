@@ -1,4 +1,4 @@
-# PassWall Desktop Security
+# Passwall Desktop Security
 
 ## Encryption
 

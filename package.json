@@ -1,8 +1,8 @@
 {
   "name": "passwall",
   "version": "1.2.1",
-  "author": "PassWall <hello@passwall.io>",
-  "description": "PassWall Desktop",
+  "author": "Passwall <hello@passwall.io>",
+  "description": "Passwall Desktop",
   "license": "MIT",
   "main": "./dist/main/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "unit": "karma start test/unit/karma.conf.js"
   },
   "build": {
-    "productName": "PassWall",
+    "productName": "Passwall",
     "appId": "io.passwalll.desktop",
     "directories": {
       "output": "build"

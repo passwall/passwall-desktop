@@ -1,6 +1,6 @@
-# Contributing to PassWall
+# Contributing to Passwall
 
-You are here to help on PassWall? Awesome, feel welcome and read the
+You are here to help on Passwall? Awesome, feel welcome and read the
 following sections in order to know how to ask questions and how to work on something.
 
 ## Get in touch
@@ -34,7 +34,7 @@ Good pull requests - patches, improvements, new features - are a fantastic help.
 
 Please ask first before embarking on any significant pull request (e.g. implementing features, refactoring code), otherwise you risk spending a lot of time working on something that the project's developers might not want to merge into the project.
 
-PassWall uses the branch naming policy below.
+Passwall uses the branch naming policy below.
 
 ### Branch naming policy
 
