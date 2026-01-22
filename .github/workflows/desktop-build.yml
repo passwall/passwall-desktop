@@ -135,7 +135,7 @@ jobs:
           - arch: x64
             runner: ubuntu-24.04
           - arch: arm64
-            runner: ubuntu-24.04-arm64
+            runner: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -145,6 +145,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Enable QEMU for arm64 (cross-build)
+        if: ${{ matrix.arch == 'arm64' }}
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
 
       - name: Enable pnpm
         run: corepack enable && corepack prepare pnpm@10.28.1 --activate
