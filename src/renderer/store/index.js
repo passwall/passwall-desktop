@@ -42,7 +42,7 @@ export default createStore({
       return state.pro
     },
 
-    isAuthenticated(state)  {
+    isAuthenticated(state) {
       return state.authenticated && !!state.userKey && !!state.access_token
     }
   },
@@ -120,7 +120,7 @@ export default createStore({
       const lsKeys = Object.keys(localStorage).filter(
         (key) => ['email', 'server'].includes(key) === false
       )
-      lsKeys.forEach(key => localStorage.removeItem(key))
+      lsKeys.forEach((key) => localStorage.removeItem(key))
     },
 
     async Import(_, data) {

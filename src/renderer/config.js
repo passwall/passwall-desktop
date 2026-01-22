@@ -121,7 +121,7 @@ export function setupApp(app) {
 
   // Auto register all components
   const componentModules = import.meta.glob('./components/**/*.vue', { eager: true })
-  Object.values(componentModules).forEach(componentModule => {
+  Object.values(componentModules).forEach((componentModule) => {
     const component = componentModule.default || componentModule
     if (component && component.name) {
       app.component(component.name, component)
@@ -129,9 +129,9 @@ export function setupApp(app) {
   })
 
   app.config.globalProperties.$notify = notify
-  app.config.globalProperties.$notifyError = text => notify({ type: 'error', text })
-  app.config.globalProperties.$notifyWarn = text => notify({ type: 'warn', text })
-  app.config.globalProperties.$notifySuccess = text => notify({ type: 'success', text })
+  app.config.globalProperties.$notifyError = (text) => notify({ type: 'error', text })
+  app.config.globalProperties.$notifyWarn = (text) => notify({ type: 'warn', text })
+  app.config.globalProperties.$notifySuccess = (text) => notify({ type: 'success', text })
   app.config.globalProperties.$notificationState = notificationState
 
   app.config.globalProperties.$request = async (callback, waitKey, errorCallback = null) => {

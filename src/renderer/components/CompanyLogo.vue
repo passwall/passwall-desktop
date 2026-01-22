@@ -37,7 +37,6 @@ export default {
     color: $color-secondary;
     font-weight: $font-weight-semibold;
   }
-
 }
 .company-logo {
   border-radius: 5px;

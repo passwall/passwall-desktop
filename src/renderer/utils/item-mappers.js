@@ -155,16 +155,13 @@ const mapItemToUi = (item, payload) => {
     }
     case ItemType.Card: {
       const data = normalizeCardData(payload || {}, item.metadata?.name || '')
-      const cardNumberFallback =
-        typeof payload.number === 'string' ? payload.number : ''
+      const cardNumberFallback = typeof payload.number === 'string' ? payload.number : ''
       const cardHolderFallback =
         typeof payload.cardholder_name === 'string' ? payload.cardholder_name : ''
-      const cardTypeFallback =
-        typeof payload.type === 'string' ? payload.type : ''
+      const cardTypeFallback = typeof payload.type === 'string' ? payload.type : ''
       const securityCodeFallback =
         typeof payload.verification_number === 'string' ? payload.verification_number : ''
-      const expiryFallback =
-        typeof payload.expiry_date === 'string' ? payload.expiry_date : ''
+      const expiryFallback = typeof payload.expiry_date === 'string' ? payload.expiry_date : ''
       return {
         title: data.name || item.metadata?.name || '',
         cardholder_name: data.name_on_card || cardHolderFallback || '',

@@ -67,7 +67,7 @@ function createMenu() {
         { label: 'About PassWall', selector: 'orderFrontStandardAboutPanel:' },
         {
           label: 'Always On Top',
-          click: function() {
+          click: function () {
             mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop())
           }
         },
@@ -75,7 +75,7 @@ function createMenu() {
         {
           label: 'Quit',
           accelerator: 'Command+Q',
-          click: function() {
+          click: function () {
             app.quit()
           }
         }
@@ -99,14 +99,14 @@ function createMenu() {
         {
           label: 'Export',
           accelerator: 'CmdOrCtrl+E',
-          click: function() {
+          click: function () {
             mainWindow.webContents.send('menu:export')
           }
         },
         {
           label: 'Import',
           accelerator: 'CmdOrCtrl+I',
-          click: function() {
+          click: function () {
             mainWindow.webContents.send('menu:import')
           }
         }
@@ -198,9 +198,7 @@ ipcMain.handle('fs:readFile', async (_event, filePath) => {
 })
 
 ipcMain.handle('fs:writeFiles', async (_event, dirPath, files) => {
-  await Promise.all(
-    files.map(file => fs.writeFile(path.join(dirPath, file.name), file.content))
-  )
+  await Promise.all(files.map((file) => fs.writeFile(path.join(dirPath, file.name), file.content)))
 })
 
 /**

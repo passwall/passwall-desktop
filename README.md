@@ -17,9 +17,10 @@ If you want to use this client with official PassWall Server, please first sign 
 - [Electron](https://www.electronjs.org)
 
 ### Node Version
-Passwall desktop uses Node 12.14.0 version. For an easy Node setup, you can install NVM and change Node version easily.  
 
-``` bash
+Passwall desktop uses Node 12.14.0 version. For an easy Node setup, you can install NVM and change Node version easily.
+
+```bash
 # install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 
@@ -31,9 +32,10 @@ nvm use 12.14.0
 ```
 
 ### Run the app
+
 After installing yarn, you can download dependencies and run the app with the commands below.
 
-``` bash
+```bash
 # install dependencies
 yarn
 
@@ -45,9 +47,10 @@ yarn run build
 ```
 
 ### Build From Source Code
+
 After installing yarn, you can download dependencies and run the app with the commands below.
 
-``` bash
+```bash
 # auto choose platform and architecture
 yarn build
 
@@ -58,7 +61,7 @@ yarn build --mac --x64
 yarn build --mac --arm64
 
 # Linux Debian Package
-yarn build --linux --x64 
+yarn build --linux --x64
 
 # Windows x64
 yarn build --win --x64

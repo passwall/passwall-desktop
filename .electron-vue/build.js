@@ -9,7 +9,6 @@ const { spawn } = require('child_process')
 const webpack = require('webpack')
 const Multispinner = require('multispinner')
 
-
 const mainConfig = require('./webpack.main.config')
 const rendererConfig = require('./webpack.renderer.config')
 const webConfig = require('./webpack.web.config')
@@ -23,13 +22,13 @@ if (process.env.BUILD_TARGET === 'clean') clean()
 else if (process.env.BUILD_TARGET === 'web') web()
 else build()
 
-function clean () {
+function clean() {
   del.sync(['build/*', '!build/icons', '!build/icons/icon.*'])
   console.log(`\n${doneLog}\n`)
   process.exit()
 }
 
-function build () {
+function build() {
   greeting()
 
   del.sync(['dist/electron/*', '!.gitkeep'])
@@ -49,28 +48,32 @@ function build () {
     process.exit()
   })
 
-  pack(mainConfig).then(result => {
-    results += result + '\n\n'
-    m.success('main')
-  }).catch(err => {
-    m.error('main')
-    console.log(`\n  ${errorLog}failed to build main process`)
-    console.error(`\n${err}\n`)
-    process.exit(1)
-  })
+  pack(mainConfig)
+    .then((result) => {
+      results += result + '\n\n'
+      m.success('main')
+    })
+    .catch((err) => {
+      m.error('main')
+      console.log(`\n  ${errorLog}failed to build main process`)
+      console.error(`\n${err}\n`)
+      process.exit(1)
+    })
 
-  pack(rendererConfig).then(result => {
-    results += result + '\n\n'
-    m.success('renderer')
-  }).catch(err => {
-    m.error('renderer')
-    console.log(`\n  ${errorLog}failed to build renderer process`)
-    console.error(`\n${err}\n`)
-    process.exit(1)
-  })
+  pack(rendererConfig)
+    .then((result) => {
+      results += result + '\n\n'
+      m.success('renderer')
+    })
+    .catch((err) => {
+      m.error('renderer')
+      console.log(`\n  ${errorLog}failed to build renderer process`)
+      console.error(`\n${err}\n`)
+      process.exit(1)
+    })
 }
 
-function pack (config) {
+function pack(config) {
   return new Promise((resolve, reject) => {
     config.mode = 'production'
     webpack(config, (err, stats) => {
@@ -78,42 +81,47 @@ function pack (config) {
       else if (stats.hasErrors()) {
         let err = ''
 
-        stats.toString({
-          chunks: false,
-          colors: true
-        })
-        .split(/\r?\n/)
-        .forEach(line => {
-          err += `    ${line}\n`
-        })
+        stats
+          .toString({
+            chunks: false,
+            colors: true
+          })
+          .split(/\r?\n/)
+          .forEach((line) => {
+            err += `    ${line}\n`
+          })
 
         reject(err)
       } else {
-        resolve(stats.toString({
-          chunks: false,
-          colors: true
-        }))
+        resolve(
+          stats.toString({
+            chunks: false,
+            colors: true
+          })
+        )
       }
     })
   })
 }
 
-function web () {
+function web() {
   del.sync(['dist/web/*', '!.gitkeep'])
   webConfig.mode = 'production'
   webpack(webConfig, (err, stats) => {
     if (err || stats.hasErrors()) console.log(err)
 
-    console.log(stats.toString({
-      chunks: false,
-      colors: true
-    }))
+    console.log(
+      stats.toString({
+        chunks: false,
+        colors: true
+      })
+    )
 
     process.exit()
   })
 }
 
-function greeting () {
+function greeting() {
   const cols = process.stdout.columns
   let text = ''
 

@@ -1,11 +1,7 @@
 <template>
-    <button 
-    class="delete-btn ml-1" 
-    v-tooltip="$t('Delete')"
-    v-on:click="deleteItem"
-    >
+  <button class="delete-btn ml-1" v-tooltip="$t('Delete')" v-on:click="deleteItem">
     <VIcon name="trash" size="14px" />
-    </button>
+  </button>
 </template>
 
 <script>

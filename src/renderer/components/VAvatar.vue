@@ -33,8 +33,8 @@ export default {
     background-clip: content-box, border-box;
     border: double 2px transparent;
 
-    background-image: linear-gradient(black, black),
-      linear-gradient(45deg, $color-secondary, $color-primary);
+    background-image:
+      linear-gradient(black, black), linear-gradient(45deg, $color-secondary, $color-primary);
   }
 
   &-content {

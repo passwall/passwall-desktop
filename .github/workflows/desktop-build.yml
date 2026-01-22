@@ -1,0 +1,180 @@
+name: Desktop - Lint/Format + Build Packages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Enable Yarn (classic)
+        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Format check
+        run: yarn format:check
+
+  windows:
+    name: Windows (${{ matrix.arch }}) - MSI
+    needs: quality
+    runs-on: windows-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ia32, x64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Enable Yarn (classic)
+        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build MSI
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          if ("${{ matrix.arch }}" -eq "ia32") { yarn ci:build:win:ia32 } else { yarn ci:build:win:x64 }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: passwall-desktop-windows-${{ matrix.arch }}
+          path: |
+            build/*.msi
+
+  macos:
+    name: macOS (${{ matrix.arch }}) - .app
+    needs: quality
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: macos-13
+          - arch: arm64
+            runner: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Enable Yarn (classic)
+        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build .app (dir target)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            yarn ci:build:mac:arm64
+          else
+            yarn ci:build:mac:x64
+          fi
+
+      - name: Package .app as zip
+        run: |
+          set -euo pipefail
+          shopt -s nullglob globstar
+          apps=(build/**/*.app)
+          if [ ${#apps[@]} -eq 0 ]; then
+            echo "No .app found under build/"
+            ls -la build || true
+            exit 1
+          fi
+          APP_PATH="${apps[0]}"
+          ZIP_NAME="PassWall-macos-${{ matrix.arch }}.app.zip"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_NAME"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: passwall-desktop-macos-${{ matrix.arch }}
+          path: |
+            PassWall-macos-${{ matrix.arch }}.app.zip
+
+  linux:
+    name: Linux (${{ matrix.arch }}) - DEB/RPM
+    needs: quality
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Enable Yarn (classic)
+        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build packages (deb + rpm)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            yarn ci:build:linux:arm64
+          else
+            yarn ci:build:linux:x64
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: passwall-desktop-linux-${{ matrix.arch }}
+          path: |
+            build/*.deb
+            build/*.rpm

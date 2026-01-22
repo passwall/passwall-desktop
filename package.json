@@ -6,16 +6,25 @@
   "license": "MIT",
   "main": "./dist/main/index.js",
   "scripts": {
-    "dev": "concurrently -k \"npm:dev:renderer\" \"npm:dev:main\" \"npm:dev:electron\"",
+    "dev": "concurrently -k \"pnpm:dev:renderer\" \"pnpm:dev:main\" \"pnpm:dev:electron\"",
     "dev:renderer": "vite",
     "dev:main": "node scripts/watch-main.js",
     "dev:electron": "wait-on tcp:5174 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5174 electron .",
-    "build": "npm run build:renderer && npm run build:main && electron-builder",
+    "build": "pnpm run build:renderer && pnpm run build:main && electron-builder",
     "build:renderer": "vite build",
     "build:main": "node scripts/build-main.js",
+    "ci:build:win:ia32": "pnpm run build:renderer && pnpm run build:main && electron-builder --win msi --ia32 --publish never",
+    "ci:build:win:x64": "pnpm run build:renderer && pnpm run build:main && electron-builder --win msi --x64 --publish never",
+    "ci:build:mac:x64": "pnpm run build:renderer && pnpm run build:main && electron-builder --mac dir --x64 --publish never",
+    "ci:build:mac:arm64": "pnpm run build:renderer && pnpm run build:main && electron-builder --mac dir --arm64 --publish never",
+    "ci:build:linux:x64": "pnpm run build:renderer && pnpm run build:main && electron-builder --linux deb rpm --x64 --publish never",
+    "ci:build:linux:arm64": "pnpm run build:renderer && pnpm run build:main && electron-builder --linux deb rpm --arm64 --publish never",
+    "format": "prettier --write \"src/**/*.{js,vue,json,css,scss,md}\" \"test/**/*.{js,vue,json,md}\" \"scripts/**/*.{js}\"",
+    "format:check": "prettier --check \"src/**/*.{js,vue,json,css,scss,md}\" \"test/**/*.{js,vue,json,md}\" \"scripts/**/*.{js}\"",
     "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src test",
     "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src test",
-    "test": "npm run unit",
+    "lint:ci": "eslint . && prettier --check .",
+    "test": "pnpm run unit",
     "unit": "karma start test/unit/karma.conf.js"
   },
   "build": {
@@ -49,12 +58,12 @@
     "win": {
       "icon": "build/icons/icon.ico"
     },
-    "linux":{
+    "linux": {
       "icon": "build/icons/512x512.png",
-      "target":[
-          "deb"
+      "target": [
+        "deb"
       ],
-      "category":"Development"
+      "category": "Development"
     }
   },
   "dependencies": {
@@ -95,13 +104,13 @@
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-packager": "^15.0.0",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-friendly-formatter": "^4.0.1",
-    "eslint-import-resolver-webpack": "^0.10.0",
+    "eslint-import-resolver-webpack": "^0.13.10",
     "eslint-loader": "^2.0.0",
-    "eslint-plugin-html": "^4.0.3",
-    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-html": "^8.1.3",
+    "eslint-plugin-import": "^2.29.1",
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.2.0",
     "inject-loader": "^4.0.1",
@@ -129,6 +138,8 @@
     "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.4",
     "webpack-hot-middleware": "^2.22.2",
-    "webpack-merge": "^4.1.3"
-  }
+    "webpack-merge": "^4.1.3",
+    "prettier": "^3.3.3"
+  },
+  "packageManager": "pnpm@10.28.1"
 }

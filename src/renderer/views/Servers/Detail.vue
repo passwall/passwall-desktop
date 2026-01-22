@@ -17,7 +17,6 @@
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
-
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
         <FormRowText v-model="form.title" :title="$t('TITLE')" :edit-mode="isEditMode" />
@@ -43,7 +42,7 @@
             <div v-else class="d-flex flex-items-center px-3 py-2">
               <span v-text="showPass ? form.password : '●●●●●●'" class="mr-2" />
             </div>
-            
+
             <GeneratePassword v-if="isEditMode" v-model="form.password" />
             <CheckPassword :password="form.password" />
             <ShowPassButton @click="showPass = $event" />
@@ -204,7 +203,7 @@ export default {
     onClickDelete() {
       const onSuccess = async () => {
         await this.Delete(this.form.id)
-        const index = this.ItemList.findIndex(item => item.id == this.form.id)
+        const index = this.ItemList.findIndex((item) => item.id == this.form.id)
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }

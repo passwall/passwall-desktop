@@ -21,12 +21,12 @@ export default {
     height: [String, Number],
     rotation: {
       type: [String, Number],
-      default: '0',
+      default: '0'
     },
     size: {
       type: [String, Number],
-      default: '24px',
-    },
-  },
-};
+      default: '24px'
+    }
+  }
+}
 </script>

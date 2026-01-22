@@ -19,7 +19,7 @@ export default {
         return
       }
 
-      const match = this.ItemList.find(item => item.id == id)
+      const match = this.ItemList.find((item) => item.id == id)
       this.form = match || {}
     }
   },
@@ -30,7 +30,7 @@ export default {
   },
 
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       vm.setFormFromRoute(to)
     })
   },

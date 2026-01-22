@@ -29,9 +29,7 @@
  */
 export function normalizePasswordItemData(value = {}) {
   const totpSecret =
-    typeof value.totp_secret === 'string' && value.totp_secret.trim()
-      ? value.totp_secret
-      : ''
+    typeof value.totp_secret === 'string' && value.totp_secret.trim() ? value.totp_secret : ''
 
   return {
     name: typeof value.name === 'string' ? value.name : '',

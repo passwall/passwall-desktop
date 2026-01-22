@@ -35,19 +35,19 @@ export default {
     }
   },
   computed: {
-    getTitle: function() {
+    getTitle: function () {
       if (this.type === 'Login' || this.type === 'Password') {
         return this.data.name || this.data.title || this.data.url
       }
       return this.data.title || this.data.name
     },
-    getUrl: function() {
+    getUrl: function () {
       if (this.type === 'Login' || this.type === 'Password') {
         return this.data.url || this.data.title || this.data.name
       }
       return this.data.title || this.data.name
     },
-    getUsername: function() {
+    getUsername: function () {
       if (this.type === 'Login' || this.type === 'Password') return this.data.username
       else if (this.type === 'Email') return this.data.email
       else if (this.type === 'BankAccount') return this.data.iban

@@ -14,7 +14,7 @@ $colors-map: (
   'gray-500': $color-gray-500,
   'gray-600': $color-gray-600,
   'gray-700': $color-gray-700,
-  'white': #fff,
+  'white': #fff
 ) !default;
 
 @each $name, $color in $colors-map {

@@ -140,14 +140,14 @@ export default {
   computed: {
     loading() {
       return this.$wait.is(this.$waiters.BankAccounts.Create)
-    },
+    }
   },
 
   methods: {
     ...mapActions('BankAccounts', ['Create', 'FetchAll']),
 
     onClickSave() {
-      this.$validator.validate().then(async result => {
+      this.$validator.validate().then(async (result) => {
         if (!result) return
 
         const onSuccess = async () => {

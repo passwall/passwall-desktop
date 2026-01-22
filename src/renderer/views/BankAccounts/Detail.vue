@@ -17,7 +17,6 @@
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content">
-
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- BankName -->
         <FormRowText v-model="form.title" :title="$t('BANK NAME')" :edit-mode="isEditMode" />
@@ -114,7 +113,7 @@ export default {
     onClickDelete() {
       const onSuccess = async () => {
         await this.Delete(this.form.id)
-        const index = this.ItemList.findIndex(item => item.id == this.form.id)
+        const index = this.ItemList.findIndex((item) => item.id == this.form.id)
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }

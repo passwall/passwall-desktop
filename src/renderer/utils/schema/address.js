@@ -34,8 +34,7 @@ export function normalizeAddressData(value = {}, fallbackTitle = '') {
   return {
     title: typeof value.title === 'string' ? value.title : fallbackTitle,
     first_name: typeof value.first_name === 'string' ? value.first_name : '',
-    middle_name:
-      typeof value.middle_name === 'string' ? value.middle_name : '',
+    middle_name: typeof value.middle_name === 'string' ? value.middle_name : '',
     last_name: typeof value.last_name === 'string' ? value.last_name : '',
     company: typeof value.company === 'string' ? value.company : '',
     address1: typeof value.address1 === 'string' ? value.address1 : '',

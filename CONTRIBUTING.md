@@ -1,19 +1,16 @@
-Contributing to PassWall
-=============================
+# Contributing to PassWall
 
 You are here to help on PassWall? Awesome, feel welcome and read the
 following sections in order to know how to ask questions and how to work on something.
 
-Get in touch
-------------
+## Get in touch
 
 - Ask usage questions ("How do I?") on [StackOverflow](https://stackoverflow.com/questions/tagged/passwall).
 - Report bugs or suggest features on [GitHub issues](https://github.com/pass-wall/passwall-server/issues).
 - Discuss topics on [Slack](https://passwall.slack.com).
 - Email us at [hello@passwall.io](mailto:hello@passwall.io).
 
-How to find something to contribute?
-------------
+## How to find something to contribute?
 
 1. First look for [help wanted](https://github.com/pass-wall/passwall-server/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22) issues.
 
@@ -21,18 +18,17 @@ How to find something to contribute?
 
 1. If you have a good idea as a `feature` or find a `bug`, feel free to open an issue about it and tell us that you want to work on this subject.
 
-Assignment
-------------
+## Assignment
 
 When you find something to contribute;
+
 1. Open an issue about it,
 
 1. Make sure that nobody assigned for that issue,
 
 1. Tell us that you want to work on the issue and get you assigned.
 
-Commits and Pull Requests
-------------
+## Commits and Pull Requests
 
 Good pull requests - patches, improvements, new features - are a fantastic help. They should remain focused in scope and avoid containing unrelated commits.
 
@@ -108,7 +104,7 @@ on how to send one :)
    ```
 
 4. Make sure to update or add to the tests when appropriate. Patches and
-   features will not be accepted without tests. 
+   features will not be accepted without tests.
 
 5. If you added or changed a feature, make sure to document it accordingly in
    the `README.md` file.
@@ -119,14 +115,13 @@ on how to send one :)
    git push origin <topic-branch-name>
    ```
 
-8. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/)
-    with a clear title and description.
-    
+7. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/)
+   with a clear title and description.
 
-How to report a bug
-------------
+## How to report a bug
 
 When filing an issue, make sure to answer these five questions:
+
 1. What version of Go are you using (go version)?
 2. What operating system and processor architecture are you using?
 3. What did you do?

@@ -4,7 +4,7 @@ export const Services = {
   CreditCards: 'CreditCards',
   Emails: 'Emails',
   Notes: 'Notes',
-  Servers: 'Servers',
+  Servers: 'Servers'
 }
 
 export const PremiumServices = [
@@ -12,5 +12,5 @@ export const PremiumServices = [
   Services.CreditCards,
   Services.Emails,
   Services.Notes,
-  Services.Servers,
+  Services.Servers
 ]

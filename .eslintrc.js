@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
   parserOptions: {
+    ecmaVersion: 2022,
     sourceType: 'module'
   },
   env: {
@@ -11,10 +11,7 @@ module.exports = {
   globals: {
     __static: true
   },
-  plugins: [
-    'html'
-  ],
-  'rules': {
+  rules: {
     'global-require': 0,
     'import/no-unresolved': 0,
     'no-param-reassign': 0,

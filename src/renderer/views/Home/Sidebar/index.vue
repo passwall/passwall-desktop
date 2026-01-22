@@ -141,7 +141,10 @@ export default {
 
       const version = await window.electronAPI.app.getVersion()
       try {
-        const { data } = await Axios.get('https://api.github.com/repos/passwall/passwall-desktop/releases/latest',{})
+        const { data } = await Axios.get(
+          'https://api.github.com/repos/passwall/passwall-desktop/releases/latest',
+          {}
+        )
         this.hasUpdate = data.tag_name != version
         this.updateLink = data.html_url
       } catch (err) {

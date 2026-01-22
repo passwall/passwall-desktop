@@ -26,12 +26,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     selectImportFile: () => ipcRenderer.invoke('dialog:selectImportFile')
   },
   fs: {
-    readFile: filePath => ipcRenderer.invoke('fs:readFile', filePath),
+    readFile: (filePath) => ipcRenderer.invoke('fs:readFile', filePath),
     writeFiles: (dirPath, files) => ipcRenderer.invoke('fs:writeFiles', dirPath, files)
   },
   shell: {
-    openExternal: url => ipcRenderer.invoke('shell:openExternal', url)
+    openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url)
   },
-  onMenuExport: callback => onMenuEvent('menu:export', callback),
-  onMenuImport: callback => onMenuEvent('menu:import', callback)
+  onMenuExport: (callback) => onMenuEvent('menu:export', callback),
+  onMenuImport: (callback) => onMenuEvent('menu:import', callback)
 })

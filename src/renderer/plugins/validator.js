@@ -9,9 +9,9 @@ function parseRules(rules = '') {
 
   return rules
     .split('|')
-    .map(rule => rule.trim())
+    .map((rule) => rule.trim())
     .filter(Boolean)
-    .map(rule => {
+    .map((rule) => {
       const [name, value] = rule.split(':')
       return { name, value }
     })
@@ -48,7 +48,7 @@ export function createValidator() {
   const fields = new Map()
 
   const setError = (fieldName, message) => {
-    const index = errors.items.findIndex(item => item.field === fieldName)
+    const index = errors.items.findIndex((item) => item.field === fieldName)
     if (index !== -1) {
       errors.items.splice(index, 1)
     }
@@ -58,7 +58,7 @@ export function createValidator() {
     }
   }
 
-  const validateField = field => {
+  const validateField = (field) => {
     if (!field) {
       return true
     }
@@ -94,7 +94,7 @@ export function createValidator() {
 
   const validateAll = () => {
     const results = []
-    fields.forEach(field => results.push(validateField(field)))
+    fields.forEach((field) => results.push(validateField(field)))
     return results.every(Boolean)
   }
 
@@ -113,7 +113,7 @@ export function createValidator() {
     return field
   }
 
-  const unregisterField = el => {
+  const unregisterField = (el) => {
     if (!el) {
       return
     }

@@ -1,7 +1,4 @@
-export {
-  normalizePasswordItemData,
-  buildPasswordItemDataFromForm
-} from './password'
+export { normalizePasswordItemData, buildPasswordItemDataFromForm } from './password'
 export { normalizeCardData } from './card'
 export { normalizeBankAccountData } from './bank-account'
 export { normalizeAddressData } from './address'

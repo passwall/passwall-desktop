@@ -48,12 +48,7 @@
         {{ $t('Login') }}
       </VButton>
       <!-- Sign Up -->
-      <VButton
-        type="button"
-        size="medium"
-        class="login-signup-btn"
-        @click="onClickSignUp"
-      >
+      <VButton type="button" size="medium" class="login-signup-btn" @click="onClickSignUp">
         Sign Up
       </VButton>
     </form>

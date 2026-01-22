@@ -9,11 +9,10 @@ const client = Axios.create({
     'Content-Type': 'application/json; charset=utf-8',
     Accept: 'application/json, text/plain, */*'
   },
-  withCredentials: false,
+  withCredentials: false
 })
 
-const storedAccessToken =
-  typeof localStorage !== 'undefined' ? localStorage.access_token : ''
+const storedAccessToken = typeof localStorage !== 'undefined' ? localStorage.access_token : ''
 
 if (storedAccessToken) {
   client.defaults.headers.common.Authorization = `Bearer ${storedAccessToken}`

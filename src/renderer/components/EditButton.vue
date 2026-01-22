@@ -1,12 +1,7 @@
 <template>
-    <button
-    v-if="!isEditMode"
-    class="edit-btn ml-1"
-    v-tooltip="$t('Edit')"
-    @click="onToggle"
-    >
+  <button v-if="!isEditMode" class="edit-btn ml-1" v-tooltip="$t('Edit')" @click="onToggle">
     <VIcon name="pencil" size="14px" />
-    </button>
+  </button>
 </template>
 
 <script>

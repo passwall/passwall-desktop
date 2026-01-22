@@ -24,7 +24,7 @@ const start = async () => {
   await ctx.watch()
 }
 
-start().catch(error => {
+start().catch((error) => {
   console.error(error)
   process.exit(1)
 })

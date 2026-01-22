@@ -96,7 +96,7 @@ export default {
     ...mapActions('Emails', ['Create', 'FetchAll']),
 
     onClickSave() {
-      this.$validator.validate().then(async result => {
+      this.$validator.validate().then(async (result) => {
         if (!result) return
 
         const onSuccess = async () => {

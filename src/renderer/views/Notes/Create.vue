@@ -25,7 +25,7 @@
             theme="no-border"
           />
         </div>
-        
+
         <!-- Extra -->
         <div class="form-row">
           <div class="d-flex flex-items-end flex-content-between">
@@ -36,10 +36,10 @@
             </div>
           </div>
           <div class="d-flex">
-            <VTextArea 
-              v-model="form.note" 
+            <VTextArea
+              v-model="form.note"
               :sensitive="!showNote"
-              :placeholder="$t('ClickToFill')" 
+              :placeholder="$t('ClickToFill')"
               :disabled="!showNote"
               name="Extra"
               rows="16"
@@ -86,7 +86,7 @@ export default {
     ...mapActions('Notes', ['Create', 'FetchAll']),
 
     onClickSave() {
-      this.$validator.validate().then(async result => {
+      this.$validator.validate().then(async (result) => {
         if (!result) return
 
         const onSuccess = async () => {

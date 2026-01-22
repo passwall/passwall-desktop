@@ -33,7 +33,7 @@ export default {
     },
     isNotPasswords() {
       return this.service !== 'Passwords'
-    },
+    }
   }
 }
 </script>

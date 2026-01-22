@@ -3,9 +3,9 @@
     <label v-text="title" />
     <VFormText
       v-if="editMode"
-    :value="displayValue"
+      :value="displayValue"
       theme="no-border"
-    @input="onInput"
+      @input="onInput"
       :placeholder="$t('ClickToFill')"
     />
     <!-- Text -->

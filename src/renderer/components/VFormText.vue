@@ -42,13 +42,13 @@ export default {
     },
 
     getError() {
-      const error = this.errors.items.find(e => e.field == this.name)
+      const error = this.errors.items.find((e) => e.field == this.name)
       return error ? error.msg : ''
     },
 
     inputListeners() {
       return {
-        input: event => {
+        input: (event) => {
           this.$emit('update:modelValue', event.target.value)
           this.$emit('input', event.target.value)
         }

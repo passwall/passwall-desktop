@@ -17,7 +17,6 @@
     </div>
     <!-- Content -->
     <PerfectScrollbar class="detail-page-content" @scroll="onDetailScroll">
-
       <form class="form" @submit.stop.prevent="onClickUpdate">
         <!-- Title -->
         <FormRowText v-model="form.name" :title="$t('NAME')" :edit-mode="isEditMode" />
@@ -29,7 +28,7 @@
         <div class="form-row">
           <label v-text="$t('Folder')" />
           <select :value="folderIdValue" class="pw-select" disabled>
-            <option value=""> {{ $t('No folder') }} </option>
+            <option value="">{{ $t('No folder') }}</option>
             <option v-for="folder in folders" :key="folder.id" :value="String(folder.id)">
               {{ folder.name }}
             </option>
@@ -76,9 +75,7 @@
               <span v-text="totpInfo.formattedCode || '-'" class="mr-2" />
             </div>
             <ClipboardButton v-if="totpInfo.code" :copy="totpInfo.code" />
-            <span class="ml-2 c-gray-300" v-if="totpInfo.code">
-              {{ totpInfo.remaining }}s
-            </span>
+            <span class="ml-2 c-gray-300" v-if="totpInfo.code"> {{ totpInfo.remaining }}s </span>
           </div>
         </div>
 
@@ -220,7 +217,7 @@ export default {
     onClickDelete() {
       const onSuccess = async () => {
         await this.Delete(this.form.id)
-        const index = this.ItemList.findIndex(item => item.id == this.form.id)
+        const index = this.ItemList.findIndex((item) => item.id == this.form.id)
         if (index !== -1) {
           this.ItemList.splice(index, 1)
         }

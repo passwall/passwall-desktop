@@ -144,10 +144,10 @@
             </div>
           </div>
           <div class="d-flex">
-            <VTextArea 
-              v-model="form.extra" 
+            <VTextArea
+              v-model="form.extra"
               :sensitive="!showExtra"
-              :placeholder="$t('ClickToFill')" 
+              :placeholder="$t('ClickToFill')"
               :disabled="!showExtra"
               name="Extra"
             />
@@ -196,14 +196,14 @@ export default {
   computed: {
     loading() {
       return this.$wait.is(this.$waiters.Servers.Create)
-    },
+    }
   },
 
   methods: {
     ...mapActions('Servers', ['Create', 'FetchAll']),
 
     onClickSave() {
-      this.$validator.validate().then(async result => {
+      this.$validator.validate().then(async (result) => {
         if (!result) return
 
         const onSuccess = async () => {

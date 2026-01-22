@@ -7,7 +7,7 @@ const notificationState = reactive({
 let notificationId = 0
 
 function removeNotification(id) {
-  const index = notificationState.items.findIndex(item => item.id === id)
+  const index = notificationState.items.findIndex((item) => item.id === id)
   if (index !== -1) {
     notificationState.items.splice(index, 1)
   }

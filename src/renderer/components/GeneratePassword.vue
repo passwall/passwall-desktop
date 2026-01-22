@@ -1,10 +1,11 @@
 <template>
   <v-popover offset="16">
-    <button 
-      type="button" 
-      @click="onClickGenerate" 
+    <button
+      type="button"
+      @click="onClickGenerate"
       class="btn-generate-pass ml-1"
-      v-tooltip="$t('Generate')">
+      v-tooltip="$t('Generate')"
+    >
       <VIcon name="refresh" size="14px" />
     </button>
 

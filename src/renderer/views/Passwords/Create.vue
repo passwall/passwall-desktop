@@ -39,7 +39,7 @@
         <div class="form-row">
           <label v-text="$t('Folder')" />
           <select v-model="form.folder_id" class="pw-select" :disabled="foldersLoading">
-            <option value=""> {{ $t('No folder') }} </option>
+            <option value="">{{ $t('No folder') }}</option>
             <option v-for="folder in folders" :key="folder.id" :value="String(folder.id)">
               {{ folder.name }}
             </option>
@@ -95,11 +95,7 @@
             </div>
           </div>
           <div class="d-flex">
-            <VTextArea
-              v-model="form.notes"
-              :placeholder="$t('ClickToFill')"
-              name="Notes"
-            />
+            <VTextArea v-model="form.notes" :placeholder="$t('ClickToFill')" name="Notes" />
           </div>
         </div>
 
@@ -192,7 +188,7 @@ export default {
     },
 
     onClickSave() {
-      this.$validator.validate().then(async result => {
+      this.$validator.validate().then(async (result) => {
         if (!result) return
 
         const onSuccess = async () => {

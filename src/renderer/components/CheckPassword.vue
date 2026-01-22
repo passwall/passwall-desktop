@@ -25,8 +25,8 @@ export default {
 
   methods: {
     async checkPassword() {
-      let text = ""
-      if (this.password === "") {
+      let text = ''
+      if (this.password === '') {
         text = this.$t(`Please enter your password to check if password has been exposed.`)
         this.$notifyError(text)
         return
@@ -35,7 +35,7 @@ export default {
       const first = hash.substring(0, 5)
       const last = hash.slice(hash.length - 5)
       var found = false
-      var times = ""
+      var times = ''
 
       try {
         const response = await Axios.get(`https://api.pwnedpasswords.com/range/${first}`)
@@ -50,13 +50,16 @@ export default {
         }
 
         if (found) {
-          text = this.$t(`Password has been exposed ${times} time(s) in data breaches. You should change it.`)
+          text = this.$t(
+            `Password has been exposed ${times} time(s) in data breaches. You should change it.`
+          )
           this.$notifyWarn(text)
         } else {
-          text = this.$t(`This password was not found in any known data breaches. It should be safe to use.`)
+          text = this.$t(
+            `This password was not found in any known data breaches. It should be safe to use.`
+          )
           this.$notifySuccess(text)
         }
-
       } catch (err) {
         let text = this.$t('Ooops! Something went wrong!')
         this.$notifyError(text)
@@ -83,5 +86,4 @@ export default {
 .password-check-btn:hover {
   color: $color-secondary;
 }
-
 </style>

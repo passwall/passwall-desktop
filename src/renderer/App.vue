@@ -72,13 +72,12 @@ export default {
   },
 
   beforeUnmount() {
-    this.menuCleanup.forEach(removeListener => removeListener())
+    this.menuCleanup.forEach((removeListener) => removeListener())
   },
-  
+
   computed: mapState(['authenticated', 'searchQuery']),
   watch: {
-    searchQuery(value) {
-    }
+    searchQuery(value) {}
   },
 
   methods: {
@@ -152,43 +151,68 @@ export default {
       if (!dir) {
         return
       }
-      
+
       try {
         const { data } = await SystemService.Export()
 
         const itemList = decodeBase64Json(data.data)
-        
+
         const passwordItems = itemList.Passwords || []
         const PasswordEncryptedFields = ['username', 'password', 'notes', 'totp_secret']
         await Promise.all(
-          passwordItems.map(item => decryptFields(item, PasswordEncryptedFields, userKey))
+          passwordItems.map((item) => decryptFields(item, PasswordEncryptedFields, userKey))
         )
-        
-        const ServerEncryptedFields = ['ip','username','password','hosting_username','hosting_password','admin_username','admin_password','extra']
+
+        const ServerEncryptedFields = [
+          'ip',
+          'username',
+          'password',
+          'hosting_username',
+          'hosting_password',
+          'admin_username',
+          'admin_password',
+          'extra'
+        ]
         await Promise.all(
-          itemList.Servers.map(item => decryptFields(item, ServerEncryptedFields, userKey))
+          itemList.Servers.map((item) => decryptFields(item, ServerEncryptedFields, userKey))
         )
-        
+
         const NoteEncryptedFields = ['note']
         await Promise.all(
-          itemList.Notes.map(item => decryptFields(item, NoteEncryptedFields, userKey))
+          itemList.Notes.map((item) => decryptFields(item, NoteEncryptedFields, userKey))
         )
-        
+
         const EmailEncryptedFields = ['email', 'password']
         await Promise.all(
-          itemList.Emails.map(item => decryptFields(item, EmailEncryptedFields, userKey))
+          itemList.Emails.map((item) => decryptFields(item, EmailEncryptedFields, userKey))
         )
-        
-        const CreditCardEncryptedFields = ['type', 'number', 'expiry_date', 'cardholder_name', 'verification_number']
+
+        const CreditCardEncryptedFields = [
+          'type',
+          'number',
+          'expiry_date',
+          'cardholder_name',
+          'verification_number'
+        ]
         await Promise.all(
-          itemList.CreditCards.map(item => decryptFields(item, CreditCardEncryptedFields, userKey))
+          itemList.CreditCards.map((item) =>
+            decryptFields(item, CreditCardEncryptedFields, userKey)
+          )
         )
-        
-        const BankAccountEncryptedFields = ['account_name', 'account_number', 'iban', 'currency', 'password']
+
+        const BankAccountEncryptedFields = [
+          'account_name',
+          'account_number',
+          'iban',
+          'currency',
+          'password'
+        ]
         await Promise.all(
-          itemList.BankAccounts.map(item => decryptFields(item, BankAccountEncryptedFields, userKey))
+          itemList.BankAccounts.map((item) =>
+            decryptFields(item, BankAccountEncryptedFields, userKey)
+          )
         )
-        
+
         const files = [
           { name: 'passwords.csv', content: Papa.unparse(passwordItems) },
           { name: 'servers.csv', content: Papa.unparse(itemList.Servers) },
@@ -201,7 +225,6 @@ export default {
         await window.electronAPI.fs.writeFiles(dir, files)
 
         this.$notifySuccess(this.$t('All records exported successfully.'))
-          
       } catch (error) {
         this.$notifyError(this.$t('Something went wrong.'))
         console.log(error)
@@ -219,7 +242,7 @@ export default {
         return
       }
 
-      window.electronAPI.dialog.selectImportFile().then(async filePath => {
+      window.electronAPI.dialog.selectImportFile().then(async (filePath) => {
         if (!filePath) {
           return
         }
@@ -237,7 +260,7 @@ export default {
           }
 
           const itemList = await Promise.all(
-            parsedCSV.data.map(item =>
+            parsedCSV.data.map((item) =>
               encryptPayload(item, ['username', 'password', 'notes', 'totp_secret'], userKey)
             )
           )
@@ -339,7 +362,8 @@ export default {
     color: $color-gray-300;
   }
 
-  .top-btn:hover, .top-btn.active {
+  .top-btn:hover,
+  .top-btn.active {
     color: $color-secondary;
   }
 

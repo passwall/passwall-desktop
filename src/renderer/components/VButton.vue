@@ -23,7 +23,7 @@ export default {
     theme: {
       type: String,
       default: 'primary',
-      validator: value => ['primary', 'text'].includes(value)
+      validator: (value) => ['primary', 'text'].includes(value)
     },
     loading: {
       type: Boolean,

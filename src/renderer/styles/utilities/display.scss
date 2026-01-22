@@ -1,13 +1,4 @@
-$display-values: (
-  block,
-  flex,
-  inline,
-  inline-block,
-  inline-flex,
-  none,
-  table,
-  table-cell
-);
+$display-values: (block, flex, inline, inline-block, inline-flex, none, table, table-cell);
 
 @each $display in $display-values {
   .d-#{$display} {

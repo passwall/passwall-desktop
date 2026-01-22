@@ -42,12 +42,9 @@ export default {
     ...mapState(['searchQuery']),
 
     filteredList() {
-      return this.ItemList.filter(item =>
-        Object.values(item).some(value =>
-          (value || '')
-            .toString()
-            .toLowerCase()
-            .includes(this.searchQuery.toLowerCase())
+      return this.ItemList.filter((item) =>
+        Object.values(item).some((value) =>
+          (value || '').toString().toLowerCase().includes(this.searchQuery.toLowerCase())
         )
       )
     }
