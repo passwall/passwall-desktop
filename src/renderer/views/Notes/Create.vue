@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { ItemType } from '@/store'
 
 export default {
   data() {
@@ -83,15 +83,15 @@ export default {
   },
 
   methods: {
-    ...mapActions('Notes', ['Create', 'FetchAll']),
-
     onClickSave() {
       this.$validator.validate().then(async (result) => {
         if (!result) return
 
         const onSuccess = async () => {
-          await this.Create({ ...this.form })
-          this.FetchAll()
+          await this.$store.dispatch('CreateItem', {
+            type: ItemType.Note,
+            form: { ...this.form }
+          })
           this.$router.push({ name: 'Notes', params: { refresh: true } })
         }
 

@@ -85,8 +85,8 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
 import DetailMixin from '@/mixins/detail'
+import { ItemType } from '@/store'
 
 export default {
   mixins: [DetailMixin],
@@ -105,15 +105,9 @@ export default {
   },
 
   methods: {
-    ...mapActions('CreditCards', ['Delete', 'Update']),
-
     onClickDelete() {
       const onSuccess = async () => {
-        await this.Delete(this.form.id)
-        const index = this.ItemList.findIndex((item) => item.id == this.form.id)
-        if (index !== -1) {
-          this.ItemList.splice(index, 1)
-        }
+        await this.$store.dispatch('DeleteItem', this.form.id)
         this.$router.push({ name: 'CreditCards', params: { openFirst: true } })
       }
 
@@ -122,7 +116,11 @@ export default {
 
     async onClickUpdate() {
       const onSuccess = async () => {
-        await this.Update({ ...this.form })
+        await this.$store.dispatch('UpdateItem', {
+          id: this.form.id,
+          form: { ...this.form },
+          type: ItemType.Card
+        })
         this.$router.push({ name: 'CreditCards', params: { refresh: true } })
       }
 
@@ -132,7 +130,9 @@ export default {
   },
 
   computed: {
-    ...mapState('CreditCards', ['Detail', 'ItemList']),
+    ItemList() {
+      return this.$store.getters.getItemsByType(ItemType.Card) || []
+    },
 
     loading() {
       return this.$wait.is(this.$waiters.CreditCards.Update)

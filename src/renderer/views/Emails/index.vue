@@ -45,25 +45,25 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
 import ListMixin from '@/mixins/list'
+import { ItemType } from '@/store'
 
 export default {
   mixins: [ListMixin],
 
-  methods: {
-    ...mapActions('Emails', ['FetchAll']),
+  data() {
+    return {
+      itemType: ItemType.Email
+    }
+  },
 
+  methods: {
     onClickItem(detail) {
       this.$router.push({
         name: 'EmailDetail',
         params: { id: detail.id }
       })
     }
-  },
-
-  computed: {
-    ...mapState('Emails', ['ItemList'])
   }
 }
 </script>

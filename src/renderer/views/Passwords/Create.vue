@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { ItemType } from '@/store'
 
 export default {
   data() {
@@ -172,8 +172,6 @@ export default {
   },
 
   methods: {
-    ...mapActions('Passwords', ['Create', 'FetchAll']),
-
     async fetchFolders() {
       if (this.foldersLoading) return
       this.foldersLoading = true
@@ -193,9 +191,11 @@ export default {
 
         const onSuccess = async () => {
           const folderId = this.form.folder_id ? Number(this.form.folder_id) : null
-          const { data } = await this.Create({ ...this.form, folder_id: folderId })
-          this.FetchAll()
-          const createdId = data?.item?.id || data?.id || data?.item_id
+          const created = await this.$store.dispatch('CreateItem', {
+            type: ItemType.Password,
+            form: { ...this.form, folder_id: folderId }
+          })
+          const createdId = created?.id
           if (createdId) {
             this.$router.push({ name: 'PasswordDetail', params: { id: createdId } })
             return

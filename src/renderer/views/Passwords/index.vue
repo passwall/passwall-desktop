@@ -45,15 +45,19 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
 import ListMixin from '@/mixins/list'
+import { ItemType } from '@/store'
 
 export default {
   mixins: [ListMixin],
 
-  methods: {
-    ...mapActions('Passwords', ['FetchAll']),
+  data() {
+    return {
+      itemType: ItemType.Password
+    }
+  },
 
+  methods: {
     onListScroll(event) {
       const el = event?.target
     },
@@ -64,10 +68,6 @@ export default {
         params: { id: detail.id }
       })
     }
-  },
-
-  computed: {
-    ...mapState('Passwords', ['ItemList'])
   }
 }
 </script>

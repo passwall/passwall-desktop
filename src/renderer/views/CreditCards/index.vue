@@ -45,25 +45,25 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
 import ListMixin from '@/mixins/list'
+import { ItemType } from '@/store'
 
 export default {
   mixins: [ListMixin],
 
-  methods: {
-    ...mapActions('CreditCards', ['FetchAll']),
+  data() {
+    return {
+      itemType: ItemType.Card
+    }
+  },
 
+  methods: {
     onClickItem(detail) {
       this.$router.push({
         name: 'CreditCardDetail',
         params: { id: detail.id }
       })
     }
-  },
-
-  computed: {
-    ...mapState('CreditCards', ['ItemList'])
   }
 }
 </script>

@@ -1,4 +1,4 @@
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   data() {
@@ -24,7 +24,7 @@ export default {
   methods: {
     async fetchAll() {
       try {
-        await this.$request(this.FetchAll)
+        await this.$request(() => this.$store.dispatch('FetchItems', { type: this.itemType }))
         this.openFirstItem()
       } catch (error) {
         console.log(error)
@@ -40,6 +40,10 @@ export default {
 
   computed: {
     ...mapState(['searchQuery']),
+
+    ItemList() {
+      return this.$store.getters.getItemsByType(this.itemType) || []
+    },
 
     filteredList() {
       return this.ItemList.filter((item) =>

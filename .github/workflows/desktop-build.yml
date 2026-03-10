@@ -66,7 +66,7 @@ jobs:
             build/*.msi
 
   macos:
-    name: macOS (${{ matrix.arch }}) - .app
+    name: macOS (${{ matrix.arch }}) - DMG
     needs: quality
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
@@ -94,34 +94,69 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build .app (dir target)
+      - name: Import Apple signing certificate
+        if: ${{ env.CSC_LINK != '' }}
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
         run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+
+          # Decode certificate
+          echo "$CSC_LINK" | base64 --decode > $RUNNER_TEMP/certificate.p12
+
+          # Create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          # Import certificate
+          security import $RUNNER_TEMP/certificate.p12 -P "$CSC_KEY_PASSWORD" \
+            -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: \
+            -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+
+      - name: Build DMG
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.CSC_LINK != '' && 'true' || 'false' }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          pnpm run build:renderer && pnpm run build:main
           if [ "${{ matrix.arch }}" = "arm64" ]; then
-            pnpm run ci:build:mac:arm64
+            npx electron-builder --mac dmg --arm64 --publish never
           else
-            pnpm run ci:build:mac:x64
+            npx electron-builder --mac dmg --x64 --publish never
           fi
 
-      - name: Package .app as zip
+      - name: Notarize DMG
+        if: ${{ env.APPLE_ID != '' }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          set -euo pipefail
-          APP_PATH="$(find build -type d -name '*.app' -print -quit)"
-          if [ -z "$APP_PATH" ]; then
-            echo "No .app found under build/"
-            ls -la build || true
-            exit 1
+          DMG_PATH="$(find build -name '*.dmg' -print -quit)"
+          if [ -n "$DMG_PATH" ] && [ -n "$APPLE_ID" ]; then
+            xcrun notarytool submit "$DMG_PATH" \
+              --apple-id "$APPLE_ID" \
+              --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID" \
+              --wait
+            xcrun stapler staple "$DMG_PATH"
           fi
-          ZIP_NAME="Passwall-macos-${{ matrix.arch }}.app.zip"
-          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_NAME"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: passwall-desktop-macos-${{ matrix.arch }}
           path: |
-            Passwall-macos-${{ matrix.arch }}.app.zip
+            build/*.dmg
 
   linux:
     name: Linux (${{ matrix.arch }}) - DEB/RPM

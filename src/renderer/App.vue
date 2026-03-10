@@ -52,8 +52,7 @@
 <script>
 import Papa from 'papaparse'
 import { mapActions, mapMutations, mapState } from 'vuex'
-import { decryptFields, decodeBase64Json, encryptPayload } from '@/utils/crypto'
-import SystemService from '@/api/services/System'
+import { ItemType } from '@/store'
 
 export default {
   data() {
@@ -81,8 +80,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['Import', 'Export', 'Logout']),
-    ...mapActions('Passwords', ['FetchAll']),
+    ...mapActions(['Logout']),
     ...mapMutations(['onInputSearchQuery']),
 
     onClickQuit() {
@@ -140,86 +138,21 @@ export default {
         return
       }
 
-      const userKey = this.$store.state.userKey
-      if (!userKey) {
-        this.$notifyError(this.$t('Something went wrong.'))
-        return
-      }
-
       const dir = await window.electronAPI.dialog.selectExportDirectory()
-
       if (!dir) {
         return
       }
 
       try {
-        const { data } = await SystemService.Export()
-
-        const itemList = decodeBase64Json(data.data)
-
-        const passwordItems = itemList.Passwords || []
-        const PasswordEncryptedFields = ['username', 'password', 'notes', 'totp_secret']
-        await Promise.all(
-          passwordItems.map((item) => decryptFields(item, PasswordEncryptedFields, userKey))
-        )
-
-        const ServerEncryptedFields = [
-          'ip',
-          'username',
-          'password',
-          'hosting_username',
-          'hosting_password',
-          'admin_username',
-          'admin_password',
-          'extra'
-        ]
-        await Promise.all(
-          itemList.Servers.map((item) => decryptFields(item, ServerEncryptedFields, userKey))
-        )
-
-        const NoteEncryptedFields = ['note']
-        await Promise.all(
-          itemList.Notes.map((item) => decryptFields(item, NoteEncryptedFields, userKey))
-        )
-
-        const EmailEncryptedFields = ['email', 'password']
-        await Promise.all(
-          itemList.Emails.map((item) => decryptFields(item, EmailEncryptedFields, userKey))
-        )
-
-        const CreditCardEncryptedFields = [
-          'type',
-          'number',
-          'expiry_date',
-          'cardholder_name',
-          'verification_number'
-        ]
-        await Promise.all(
-          itemList.CreditCards.map((item) =>
-            decryptFields(item, CreditCardEncryptedFields, userKey)
-          )
-        )
-
-        const BankAccountEncryptedFields = [
-          'account_name',
-          'account_number',
-          'iban',
-          'currency',
-          'password'
-        ]
-        await Promise.all(
-          itemList.BankAccounts.map((item) =>
-            decryptFields(item, BankAccountEncryptedFields, userKey)
-          )
-        )
+        const itemList = await this.$store.dispatch('ExportItems')
 
         const files = [
-          { name: 'passwords.csv', content: Papa.unparse(passwordItems) },
-          { name: 'servers.csv', content: Papa.unparse(itemList.Servers) },
-          { name: 'notes.csv', content: Papa.unparse(itemList.Notes) },
-          { name: 'emails.csv', content: Papa.unparse(itemList.Emails) },
-          { name: 'credit_cards.csv', content: Papa.unparse(itemList.CreditCards) },
-          { name: 'bank_accounts.csv', content: Papa.unparse(itemList.BankAccounts) }
+          { name: 'passwords.csv', content: Papa.unparse(itemList.Passwords || []) },
+          { name: 'servers.csv', content: Papa.unparse(itemList.Servers || []) },
+          { name: 'notes.csv', content: Papa.unparse(itemList.Notes || []) },
+          { name: 'emails.csv', content: Papa.unparse(itemList.Emails || []) },
+          { name: 'credit_cards.csv', content: Papa.unparse(itemList.CreditCards || []) },
+          { name: 'bank_accounts.csv', content: Papa.unparse(itemList.BankAccounts || []) }
         ]
 
         await window.electronAPI.fs.writeFiles(dir, files)
@@ -236,12 +169,6 @@ export default {
         return
       }
 
-      const userKey = this.$store.state.userKey
-      if (!userKey) {
-        this.$notifyError(this.$t('Something went wrong.'))
-        return
-      }
-
       window.electronAPI.dialog.selectImportFile().then(async (filePath) => {
         if (!filePath) {
           return
@@ -251,7 +178,7 @@ export default {
           const fileContent = await window.electronAPI.fs.readFile(filePath)
 
           const parsedCSV = Papa.parse(fileContent.trim(), {
-            header: true // creates array of { head: value }
+            header: true
           })
 
           if (parsedCSV.errors.length > 0) {
@@ -259,14 +186,12 @@ export default {
             return
           }
 
-          const itemList = await Promise.all(
-            parsedCSV.data.map((item) =>
-              encryptPayload(item, ['username', 'password', 'notes', 'totp_secret'], userKey)
-            )
-          )
+          await this.$store.dispatch('ImportItems', {
+            items: parsedCSV.data,
+            type: ItemType.Password
+          })
 
-          await this.Import(itemList)
-          this.FetchAll()
+          this.$notifySuccess(this.$t('Import completed successfully.'))
         } catch (error) {
           this.$notifyError(this.$t('Something went wrong.'))
           console.log(error)

@@ -169,7 +169,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { ItemType } from '@/store'
 
 export default {
   data() {
@@ -200,15 +200,15 @@ export default {
   },
 
   methods: {
-    ...mapActions('Servers', ['Create', 'FetchAll']),
-
     onClickSave() {
       this.$validator.validate().then(async (result) => {
         if (!result) return
 
         const onSuccess = async () => {
-          await this.Create({ ...this.form })
-          this.FetchAll()
+          await this.$store.dispatch('CreateItem', {
+            type: ItemType.Server,
+            form: { ...this.form }
+          })
           this.$router.push({ name: 'Servers', params: { refresh: true } })
         }
 
