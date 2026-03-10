@@ -25,6 +25,8 @@
     "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src test",
     "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src test",
     "lint:ci": "eslint . && prettier --check .",
+    "pre-release": "node scripts/pre-release.mjs",
+    "release": "node scripts/release.mjs",
     "test": "pnpm run unit",
     "unit": "karma start test/unit/karma.conf.js"
   },
