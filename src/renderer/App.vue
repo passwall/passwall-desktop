@@ -144,6 +144,8 @@ export default {
       }
 
       try {
+        // Ensure export includes all loaded types, not only currently opened section.
+        await this.$store.dispatch('FetchItems')
         const itemList = await this.$store.dispatch('ExportItems')
 
         const files = [
@@ -186,9 +188,22 @@ export default {
             return
           }
 
+          const selectedFileName = String(filePath).split('/').pop().toLowerCase()
+          const importType = selectedFileName.includes('server')
+            ? ItemType.Server
+            : selectedFileName.includes('note')
+              ? ItemType.Note
+              : selectedFileName.includes('email')
+                ? ItemType.Email
+                : selectedFileName.includes('credit') || selectedFileName.includes('card')
+                  ? ItemType.Card
+                  : selectedFileName.includes('bank')
+                    ? ItemType.Bank
+                    : ItemType.Password
+
           await this.$store.dispatch('ImportItems', {
             items: parsedCSV.data,
-            type: ItemType.Password
+            type: importType
           })
 
           this.$notifySuccess(this.$t('Import completed successfully.'))

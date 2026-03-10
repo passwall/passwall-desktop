@@ -37,13 +37,20 @@ client.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
+    if (!originalRequest) {
+      return Promise.reject(error)
+    }
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const requestUrl = String(originalRequest.url || '')
+    const isRefreshRequest = requestUrl.includes('/auth/refresh')
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isRefreshRequest) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
         })
           .then((token) => {
+            originalRequest.headers = originalRequest.headers || {}
             originalRequest.headers.Authorization = `Bearer ${token}`
             return client(originalRequest)
           })
@@ -74,6 +81,7 @@ client.interceptors.response.use(
         localStorage.refresh_token = newRefreshToken
 
         client.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`
+        originalRequest.headers = originalRequest.headers || {}
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
 
         processQueue(null, newAccessToken)

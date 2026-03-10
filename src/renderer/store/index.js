@@ -501,7 +501,7 @@ export default createStore({
       }
     },
 
-    async CreateItem({ state }, { type, form, orgId }) {
+    async CreateItem({ state, dispatch }, { type, form, orgId }) {
       const targetOrgId = orgId || state.defaultOrgId || state.organizations[0]?.id
       if (!targetOrgId) throw new Error('No organization available')
 
@@ -512,7 +512,7 @@ export default createStore({
       const data = buildItemData(type, form)
       const encryptedData = await encryptWithOrgKey(JSON.stringify(data), orgKey)
 
-      const { data: createdItem } = await OrganizationsService.CreateItem(targetOrgId, {
+      const { data: createdResponse } = await OrganizationsService.CreateItem(targetOrgId, {
         item_type: type,
         data: encryptedData,
         metadata,
@@ -522,6 +522,12 @@ export default createStore({
         auto_login: form.auto_login ?? false,
         reprompt: form.reprompt ?? false
       })
+
+      const createdItem = createdResponse?.item || createdResponse
+      if (!createdItem || !createdItem.id) {
+        await dispatch('FetchItems', { type })
+        return null
+      }
 
       let normalized
       try {
@@ -541,7 +547,7 @@ export default createStore({
       return normalized
     },
 
-    async UpdateItem({ state }, { id, form, type }) {
+    async UpdateItem({ state, dispatch }, { id, form, type }) {
       const existingItem = state.items.find((item) => item.id === id)
       if (!existingItem) throw new Error('Item not found')
 
@@ -554,7 +560,7 @@ export default createStore({
       const data = buildItemData(itemType, form)
       const encryptedData = await encryptWithOrgKey(JSON.stringify(data), orgKey)
 
-      const { data: updatedItem } = await OrganizationsService.UpdateItem(id, {
+      const { data: updatedResponse } = await OrganizationsService.UpdateItem(id, {
         data: encryptedData,
         metadata,
         folder_id: form.folder_id,
@@ -563,6 +569,12 @@ export default createStore({
         auto_login: form.auto_login,
         reprompt: form.reprompt
       })
+
+      const updatedItem = updatedResponse?.item || updatedResponse
+      if (!updatedItem || !updatedItem.id) {
+        await dispatch('FetchItems', { type: itemType })
+        return state.items.find((item) => item.id === id) || null
+      }
 
       let normalized
       try {

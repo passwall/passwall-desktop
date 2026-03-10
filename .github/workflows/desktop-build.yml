@@ -95,7 +95,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Import Apple signing certificate
-        if: ${{ env.CSC_LINK != '' }}
+        if: ${{ secrets.CSC_LINK != '' }}
         env:
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
@@ -104,7 +104,7 @@ jobs:
           KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
 
           # Decode certificate
-          echo "$CSC_LINK" | base64 --decode > $RUNNER_TEMP/certificate.p12
+          echo "$CSC_LINK" | base64 -d > $RUNNER_TEMP/certificate.p12 || echo "$CSC_LINK" | base64 -D > $RUNNER_TEMP/certificate.p12
 
           # Create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
@@ -135,7 +135,7 @@ jobs:
           fi
 
       - name: Notarize DMG
-        if: ${{ env.APPLE_ID != '' }}
+        if: ${{ secrets.APPLE_ID != '' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
