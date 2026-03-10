@@ -16,7 +16,11 @@ function getAuthHeaders() {
   return headers
 }
 
-async function request(method, path, { data, params, headers: extraHeaders, onUploadProgress } = {}) {
+async function request(
+  method,
+  path,
+  { data, params, headers: extraHeaders, onUploadProgress } = {}
+) {
   let url = `${baseURL}${path}`
 
   if (params && Object.keys(params).length) {
@@ -44,7 +48,11 @@ async function request(method, path, { data, params, headers: extraHeaders, onUp
     } catch {
       parsed = null
     }
-    response = { status: res.status, data: parsed, headers: Object.fromEntries(res.headers.entries()) }
+    response = {
+      status: res.status,
+      data: parsed,
+      headers: Object.fromEntries(res.headers.entries())
+    }
   }
 
   // Simulate axios-style error for non-2xx
