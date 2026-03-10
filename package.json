@@ -9,6 +9,7 @@
     "dev": "concurrently -k \"pnpm:dev:renderer\" \"pnpm:dev:main\" \"pnpm:dev:electron\"",
     "dev:renderer": "vite",
     "dev:main": "node scripts/watch-main.js",
+    "predev:electron": "node scripts/ensure-electron.js",
     "dev:electron": "wait-on tcp:5174 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5174 electron .",
     "build": "pnpm run build:renderer && pnpm run build:main && electron-builder",
     "build:renderer": "vite build",

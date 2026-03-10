@@ -13,59 +13,93 @@ If you want to use this client with official Passwall Server, please first sign 
 
 ### Requirements
 
-- [Node.js](https://nodejs.org) (Version 12.14.0)
-- [Electron](https://www.electronjs.org)
+- [Node.js](https://nodejs.org) (LTS, 20+ recommended)
+- [Corepack](https://nodejs.org/api/corepack.html) (bundled with modern Node.js)
+
+### Package Manager (pnpm)
+
+This project is configured with:
+
+```json
+"packageManager": "pnpm@10.28.1"
+```
+
+Use `pnpm` (not `yarn`) for all commands.
+
+```bash
+# one-time: enable corepack
+corepack enable
+
+# activate the project pnpm version
+corepack prepare pnpm@10.28.1 --activate
+```
 
 ### Node Version
 
-Passwall desktop uses Node 12.14.0 version. For an easy Node setup, you can install NVM and change Node version easily.
+For an easy Node setup, install NVM and use an LTS Node version:
 
 ```bash
 # install nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
 # install desired node version
-nvm install 12.14.0
+nvm install 22
 
 # change version
-nvm use 12.14.0
+nvm use 22
 ```
 
 ### Run the app
 
-After installing yarn, you can download dependencies and run the app with the commands below.
+Install dependencies and run development mode:
 
 ```bash
 # install dependencies
-yarn
+pnpm install
 
-# serve with hot reload at localhost:9080
-yarn run dev
+# serve with hot reload
+pnpm dev
 
 # build electron application for production
-yarn run build
+pnpm build
 ```
 
 ### Build From Source Code
 
-After installing yarn, you can download dependencies and run the app with the commands below.
+Platform-specific build examples:
 
 ```bash
 # auto choose platform and architecture
-yarn build
+pnpm build
 
 # MacOS x64 (intel)
-yarn build --mac --x64
+pnpm exec electron-builder --mac --x64
 
 # MacOS arm64 (M1)
-yarn build --mac --arm64
+pnpm exec electron-builder --mac --arm64
 
 # Linux Debian Package
-yarn build --linux --x64
+pnpm exec electron-builder --linux --x64
 
 # Windows x64
-yarn build --win --x64
+pnpm exec electron-builder --win --x64
 
 # All Platforms
-yarn run build -wml --arm64 --x64
+pnpm exec electron-builder -wml --arm64 --x64
+```
+
+### Troubleshooting
+
+If you see this error while running `pnpm dev`:
+
+```text
+Electron failed to install correctly, please delete node_modules/electron and try installing again
+```
+
+the project now auto-checks Electron before `dev:electron` starts. You can also run this recovery flow manually:
+
+```bash
+pnpm install
+pnpm rebuild electron
+pnpm dev
 ```
