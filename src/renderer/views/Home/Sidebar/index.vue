@@ -98,7 +98,6 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import Axios from 'axios'
 import MenuItem from './MenuItem.vue'
 
 export default {
@@ -141,10 +140,11 @@ export default {
 
       const version = await window.electronAPI.app.getVersion()
       try {
-        const { data } = await Axios.get(
-          'https://api.github.com/repos/passwall/passwall-desktop/releases/latest',
-          {}
-        )
+        const { data } = await window.electronAPI.api.request({
+          method: 'GET',
+          url: 'https://api.github.com/repos/passwall/passwall-desktop/releases/latest',
+          headers: { Accept: 'application/json' }
+        })
         this.hasUpdate = data.tag_name != version
         this.updateLink = data.html_url
       } catch (err) {

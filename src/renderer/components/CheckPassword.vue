@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import Axios from 'axios'
 import { sha1 } from '@/utils/crypto'
 
 export default {
@@ -38,7 +37,11 @@ export default {
       var times = ''
 
       try {
-        const response = await Axios.get(`https://api.pwnedpasswords.com/range/${first}`)
+        const response = await window.electronAPI.api.request({
+          method: 'GET',
+          url: `https://api.pwnedpasswords.com/range/${first}`,
+          headers: { Accept: 'text/plain' }
+        })
         var returnedPasswords = response.data.split('\n')
         for (var i = 0; i < returnedPasswords.length; i++) {
           var row = returnedPasswords[i].split(':')

@@ -32,6 +32,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   shell: {
     openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url)
   },
+  api: {
+    request: (opts) => ipcRenderer.invoke('api:request', opts)
+  },
   onMenuExport: (callback) => onMenuEvent('menu:export', callback),
   onMenuImport: (callback) => onMenuEvent('menu:import', callback)
 })

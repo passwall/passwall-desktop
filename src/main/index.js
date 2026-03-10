@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, dialog, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, Menu, dialog, ipcMain, shell, net } from 'electron'
 import fs from 'fs/promises'
 import path from 'path'
 
@@ -199,6 +199,56 @@ ipcMain.handle('fs:readFile', async (_event, filePath) => {
 
 ipcMain.handle('fs:writeFiles', async (_event, dirPath, files) => {
   await Promise.all(files.map((file) => fs.writeFile(path.join(dirPath, file.name), file.content)))
+})
+
+// ─── API Proxy (bypasses CORS — requests go through Node.js, not Chromium) ───
+
+ipcMain.handle('api:request', async (_event, opts) => {
+  const { method, url, data, headers } = opts
+
+  return new Promise((resolve, reject) => {
+    const req = net.request({ method: method || 'GET', url })
+
+    if (headers) {
+      for (const [key, value] of Object.entries(headers)) {
+        req.setHeader(key, value)
+      }
+    }
+
+    let responseBody = ''
+
+    req.on('response', (response) => {
+      response.on('data', (chunk) => {
+        responseBody += chunk.toString()
+      })
+
+      response.on('end', () => {
+        let parsed
+        try {
+          parsed = JSON.parse(responseBody)
+        } catch {
+          parsed = responseBody
+        }
+
+        resolve({
+          status: response.statusCode,
+          headers: response.headers,
+          data: parsed
+        })
+      })
+    })
+
+    req.on('error', (err) => {
+      reject({ message: err.message })
+    })
+
+    if (data !== undefined && data !== null) {
+      const body = typeof data === 'string' ? data : JSON.stringify(data)
+      req.write(body)
+    }
+
+    req.end()
+  })
 })
 
 /**
