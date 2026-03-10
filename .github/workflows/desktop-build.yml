@@ -70,6 +70,12 @@ jobs:
     needs: quality
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
+    env:
+      CSC_LINK: ${{ secrets.CSC_LINK }}
+      CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     strategy:
       fail-fast: false
       matrix:
@@ -95,10 +101,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Import Apple signing certificate
-        if: ${{ secrets.CSC_LINK != '' }}
-        env:
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+        if: ${{ env.CSC_LINK != '' }}
         run: |
           KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain-db
           KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
@@ -120,12 +123,7 @@ jobs:
 
       - name: Build DMG
         env:
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.CSC_LINK != '' && 'true' || 'false' }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ env.CSC_LINK != '' && 'true' || 'false' }}
         run: |
           pnpm run build:renderer && pnpm run build:main
           if [ "${{ matrix.arch }}" = "arm64" ]; then
@@ -135,11 +133,7 @@ jobs:
           fi
 
       - name: Notarize DMG
-        if: ${{ secrets.APPLE_ID != '' }}
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        if: ${{ env.APPLE_ID != '' }}
         run: |
           DMG_PATH="$(find build -name '*.dmg' -print -quit)"
           if [ -n "$DMG_PATH" ] && [ -n "$APPLE_ID" ]; then
