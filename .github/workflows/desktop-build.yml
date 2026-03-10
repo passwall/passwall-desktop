@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '20'
+          package-manager-cache: false
 
       - name: Enable pnpm
         run: corepack enable && corepack prepare pnpm@10.28.1 --activate
@@ -48,6 +49,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '20'
+          package-manager-cache: false
 
       - name: Enable pnpm
         run: corepack enable && corepack prepare pnpm@10.28.1 --activate
@@ -94,6 +96,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '20'
+          package-manager-cache: false
 
       - name: Enable pnpm
         run: corepack enable && corepack prepare pnpm@10.28.1 --activate
@@ -179,6 +182,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '20'
+          package-manager-cache: false
 
       - name: Enable QEMU for arm64 (cross-build)
         if: ${{ matrix.arch == 'arm64' }}
