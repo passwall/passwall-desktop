@@ -96,6 +96,7 @@ jobs:
             --recursive `
             --exclude "*" `
             --include "*.msi" `
+            --acl public-read `
             --endpoint-url "https://$endpoint"
 
   macos:
@@ -232,6 +233,7 @@ jobs:
             --include "*.dmg" \
             --include "*.zip" \
             --include "latest-mac.yml" \
+            --acl public-read \
             --endpoint-url "https://${ENDPOINT}"
 
   linux:
@@ -316,4 +318,5 @@ jobs:
             --exclude "*" \
             --include "*.deb" \
             --include "*.rpm" \
+            --acl public-read \
             --endpoint-url "https://${ENDPOINT}"

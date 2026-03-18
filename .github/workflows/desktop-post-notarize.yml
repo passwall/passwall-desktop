@@ -156,6 +156,7 @@ jobs:
           TARGET="s3://${DO_SPACES_BUCKET}/${PREFIX}/darwin/${{ matrix.arch }}/$(basename "$STAPLED_PATH")"
 
           aws s3 cp "$STAPLED_PATH" "$TARGET" \
+            --acl public-read \
             --endpoint-url "https://${ENDPOINT}"
 
       - name: Upload stapled artifact
