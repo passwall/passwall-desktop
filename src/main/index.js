@@ -314,4 +314,3 @@ ipcMain.handle('api:request', async (_event, opts) => {
     req.end()
   })
 })
-

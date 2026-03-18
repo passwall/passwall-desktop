@@ -20,6 +20,8 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == null) }}
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 150
+    env:
+      HAS_DO_SPACES: ${{ secrets.DO_SPACES_KEY != '' && secrets.DO_SPACES_SECRET != '' && secrets.DO_SPACES_BUCKET != '' && secrets.DO_SPACES_REGION != '' }}
     permissions:
       contents: read
       actions: write
@@ -133,7 +135,7 @@ jobs:
           echo "STAPLED_PATH=$DMG_PATH" >> "$GITHUB_ENV"
 
       - name: Publish stapled DMG to DigitalOcean Spaces
-        if: ${{ secrets.DO_SPACES_KEY != '' && secrets.DO_SPACES_SECRET != '' && secrets.DO_SPACES_BUCKET != '' && secrets.DO_SPACES_REGION != '' }}
+        if: ${{ env.HAS_DO_SPACES == 'true' }}
         shell: bash
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_KEY }}
