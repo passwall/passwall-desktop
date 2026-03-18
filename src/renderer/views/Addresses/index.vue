@@ -8,10 +8,10 @@
           <ListItem
             v-for="item in filteredList"
             :key="item.id"
-            type="Email"
+            :active="$route.params.id == item.id"
             :data="item"
             @click="onClickItem(item)"
-            :active="$route.params.id == item.id"
+            type="Address"
           />
         </template>
         <!-- Empty State -->
@@ -36,7 +36,7 @@
     <!-- Detail -->
     <div
       class="w-100 h-100 flex-center c-gray-700"
-      v-if="ItemList.length > 0 && $route.name == 'Emails'"
+      v-if="ItemList.length > 0 && $route.name == 'Addresses'"
     >
       {{ $t('Select one item to see it’s details...') }}
     </div>
@@ -53,14 +53,14 @@ export default {
 
   data() {
     return {
-      itemType: ItemType.Email
+      itemType: ItemType.Address
     }
   },
 
   methods: {
     onClickItem(detail) {
       this.$router.push({
-        name: 'EmailDetail',
+        name: 'AddressDetail',
         params: { id: detail.id }
       })
     }

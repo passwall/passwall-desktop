@@ -70,6 +70,9 @@ export default {
     width: 100%;
     color: #fff;
     border: 0;
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease;
 
     &::placeholder {
       font-weight: normal;
@@ -77,19 +80,20 @@ export default {
       color: $color-gray-300;
     }
 
-    // themes
     &.--default {
       color: #fff;
-      border: 1px solid #151c27;
+      border: 1px solid $color-gray-400;
       background-color: transparent;
       caret-color: $color-primary;
 
       &.--error {
-        border: 1px solid #ff0000;
+        border-color: $color-danger;
+        box-shadow: 0 0 0 2px rgba($color-danger, 0.15);
       }
 
       &:focus {
-        border: 1px solid $color-primary;
+        border-color: $color-primary;
+        box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
       }
     }
 
@@ -100,11 +104,12 @@ export default {
       caret-color: $color-primary;
 
       &.--error {
-        border: 1px solid #ff0000;
+        border-color: $color-danger;
       }
 
       &:focus {
-        border: 1px solid $color-primary;
+        border-color: $color-primary;
+        box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
       }
     }
 
@@ -117,7 +122,6 @@ export default {
       }
     }
 
-    // sizes
     &.--small {
       height: 32px;
       border-radius: 4px;

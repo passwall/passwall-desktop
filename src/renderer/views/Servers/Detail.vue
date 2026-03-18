@@ -7,12 +7,11 @@
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="getTitle" class="url" />
+        <span v-text="getTitle" class="url" v-tooltip="getTitle" />
         <span v-text="form.ip" class="email" />
       </div>
 
       <EditButton v-if="!isEditMode" @click="isEditMode = $event" />
-      <ClipboardButton :copy="copyContent" />
       <DeleteButton @click="onClickDelete" />
     </div>
     <!-- Content -->

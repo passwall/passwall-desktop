@@ -42,6 +42,14 @@ export const Notes = {
   Get: 'Notes_Get'
 }
 
+export const Addresses = {
+  All: 'Addresses_All',
+  Create: 'Addresses_Create',
+  Update: 'Addresses_Update',
+  Delete: 'Addresses_Delete',
+  Get: 'Addresses_Get'
+}
+
 export const Servers = {
   All: 'Servers_All',
   Create: 'Servers_Create',

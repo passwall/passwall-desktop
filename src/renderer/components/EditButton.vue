@@ -7,6 +7,7 @@
 <script>
 export default {
   name: 'EditButton',
+  emits: ['click'],
   data() {
     return { isEditMode: false }
   },
@@ -24,14 +25,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   background-color: $color-gray-500;
   color: $color-gray-300;
+  transition: all 150ms ease;
 }
 
 .edit-btn:hover {
   color: $color-secondary;
+  background-color: rgba($color-secondary, 0.1);
 }
 </style>

@@ -35,16 +35,6 @@
             theme="no-border"
           />
         </div>
-        <!-- Folder -->
-        <div class="form-row">
-          <label v-text="$t('Folder')" />
-          <select v-model="form.folder_id" class="pw-select" :disabled="foldersLoading">
-            <option value="">{{ $t('No folder') }}</option>
-            <option v-for="folder in folders" :key="folder.id" :value="String(folder.id)">
-              {{ folder.name }}
-            </option>
-          </select>
-        </div>
         <!-- Username -->
         <div class="form-row">
           <label v-text="$t('USERNAME')" />
@@ -75,17 +65,6 @@
           </div>
         </div>
 
-        <!-- Authenticator Key (TOTP) -->
-        <div class="form-row">
-          <label v-text="$t('TOTP Secret')" />
-          <VFormText
-            v-model="form.totp_secret"
-            name="TOTP Secret"
-            :placeholder="$t('ClickToFill')"
-            theme="no-border"
-          />
-        </div>
-
         <!-- Note -->
         <div class="form-row">
           <div class="d-flex flex-items-end flex-content-between">
@@ -96,29 +75,6 @@
           </div>
           <div class="d-flex">
             <VTextArea v-model="form.notes" :placeholder="$t('ClickToFill')" name="Notes" />
-          </div>
-        </div>
-
-        <!-- Password Settings -->
-        <div class="form-row">
-          <label v-text="$t('Password Settings')" />
-          <div class="password-settings">
-            <label class="password-setting">
-              <input type="checkbox" v-model="form.auto_fill" />
-              <span>{{ $t('Auto Fill') }}</span>
-            </label>
-            <label class="password-setting">
-              <input type="checkbox" v-model="form.auto_login" />
-              <span>{{ $t('Auto Login') }}</span>
-            </label>
-            <label class="password-setting">
-              <input type="checkbox" v-model="form.reprompt" />
-              <span>{{ $t('Require Master Password') }}</span>
-            </label>
-            <label class="password-setting">
-              <input type="checkbox" v-model="form.is_favorite" />
-              <span>{{ $t('Favorite') }}</span>
-            </label>
           </div>
         </div>
 
@@ -146,23 +102,11 @@ export default {
       form: {
         name: '',
         url: '',
-        folder_id: '',
         username: '',
         password: '',
-        notes: '',
-        totp_secret: '',
-        auto_fill: true,
-        auto_login: false,
-        reprompt: false,
-        is_favorite: false
-      },
-      folders: [],
-      foldersLoading: false
+        notes: ''
+      }
     }
-  },
-
-  created() {
-    this.fetchFolders()
   },
 
   computed: {
@@ -172,28 +116,14 @@ export default {
   },
 
   methods: {
-    async fetchFolders() {
-      if (this.foldersLoading) return
-      this.foldersLoading = true
-      try {
-        const { data } = await (await import('@/api/services/Folders')).default.FetchAll()
-        this.folders = data?.folders || []
-      } catch (_error) {
-        this.folders = []
-      } finally {
-        this.foldersLoading = false
-      }
-    },
-
     onClickSave() {
       this.$validator.validate().then(async (result) => {
         if (!result) return
 
         const onSuccess = async () => {
-          const folderId = this.form.folder_id ? Number(this.form.folder_id) : null
           const created = await this.$store.dispatch('CreateItem', {
             type: ItemType.Password,
-            form: { ...this.form, folder_id: folderId }
+            form: { ...this.form }
           })
           const createdId = created?.id
           if (createdId) {

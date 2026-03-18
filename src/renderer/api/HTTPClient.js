@@ -1,8 +1,8 @@
 // API requests go through Electron main process via IPC (no CORS).
 // Falls back to fetch() for non-Electron environments (dev without Electron).
 
-const storedServer = typeof localStorage !== 'undefined' ? localStorage.server : ''
-let baseURL = storedServer || 'https://api.passwall.io'
+const DEFAULT_BASE_URL = import.meta.env.DEV ? 'http://localhost:3625' : 'https://api.passwall.io'
+let baseURL = DEFAULT_BASE_URL
 
 function getAuthHeaders() {
   const headers = {

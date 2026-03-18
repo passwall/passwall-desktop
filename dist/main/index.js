@@ -35,10 +35,15 @@ var getRendererUrl = () => {
 };
 function createWindow() {
   mainWindow = new import_electron.BrowserWindow({
-    height: 560,
+    height: 600,
     width: 900,
     minWidth: 900,
     minHeight: 600,
+    maxWidth: 900,
+    maxHeight: 600,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
     useContentSize: true,
     frame: false,
     webPreferences: {
@@ -135,15 +140,7 @@ import_electron.ipcMain.handle("window:minimize", () => {
   }
 });
 import_electron.ipcMain.handle("window:toggleMaximize", () => {
-  if (!mainWindow) {
-    return false;
-  }
-  if (mainWindow.isMaximized()) {
-    mainWindow.unmaximize();
-    return false;
-  }
-  mainWindow.maximize();
-  return true;
+  return false;
 });
 import_electron.ipcMain.handle("window:toggleAlwaysOnTop", () => {
   if (!mainWindow) {
@@ -187,5 +184,43 @@ import_electron.ipcMain.handle("fs:readFile", async (_event, filePath) => {
 });
 import_electron.ipcMain.handle("fs:writeFiles", async (_event, dirPath, files) => {
   await Promise.all(files.map((file) => import_promises.default.writeFile(import_path.default.join(dirPath, file.name), file.content)));
+});
+import_electron.ipcMain.handle("api:request", async (_event, opts) => {
+  const { method, url, data, headers } = opts;
+  return new Promise((resolve, reject) => {
+    const req = import_electron.net.request({ method: method || "GET", url });
+    if (headers) {
+      for (const [key, value] of Object.entries(headers)) {
+        req.setHeader(key, value);
+      }
+    }
+    let responseBody = "";
+    req.on("response", (response) => {
+      response.on("data", (chunk) => {
+        responseBody += chunk.toString();
+      });
+      response.on("end", () => {
+        let parsed;
+        try {
+          parsed = JSON.parse(responseBody);
+        } catch {
+          parsed = responseBody;
+        }
+        resolve({
+          status: response.statusCode,
+          headers: response.headers,
+          data: parsed
+        });
+      });
+    });
+    req.on("error", (err) => {
+      reject({ message: err.message });
+    });
+    if (data !== void 0 && data !== null) {
+      const body = typeof data === "string" ? data : JSON.stringify(data);
+      req.write(body);
+    }
+    req.end();
+  });
 });
 //# sourceMappingURL=index.js.map

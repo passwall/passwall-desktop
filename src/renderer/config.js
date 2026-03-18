@@ -71,18 +71,36 @@ export function setupApp(app) {
     }
   })
 
+  const applyTooltip = (el, value) => {
+    const text = value ? String(value).trim() : ''
+
+    if (!text) {
+      el.classList.remove('pw-tooltip')
+      el.removeAttribute('data-tooltip')
+      el.removeAttribute('aria-label')
+      el.removeAttribute('title')
+      return
+    }
+
+    el.classList.add('pw-tooltip')
+    el.setAttribute('data-tooltip', text)
+    el.setAttribute('aria-label', text)
+    // Remove browser native tooltip to keep visual consistency.
+    el.removeAttribute('title')
+  }
+
   app.directive('tooltip', {
     mounted(el, binding) {
-      if (binding.value) {
-        el.setAttribute('title', binding.value)
-      }
+      applyTooltip(el, binding.value)
     },
     updated(el, binding) {
-      if (binding.value) {
-        el.setAttribute('title', binding.value)
-      } else {
-        el.removeAttribute('title')
-      }
+      applyTooltip(el, binding.value)
+    },
+    unmounted(el) {
+      el.classList.remove('pw-tooltip')
+      el.removeAttribute('data-tooltip')
+      el.removeAttribute('aria-label')
+      el.removeAttribute('title')
     }
   })
 

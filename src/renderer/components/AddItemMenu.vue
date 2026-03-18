@@ -8,72 +8,34 @@
         {{ $t('Password') }}
       </button>
 
-      <!-- Credit Cards -->
-      <button
-        @click="onClickItem('CreditCardCreate')"
-        class="add-item-menu-item"
-        :class="{ '--lock': !hasProPlan }"
-      >
+      <!-- Secure Notes -->
+      <button @click="onClickItem('NoteCreate')" class="add-item-menu-item">
+        <VIcon name="private-note" size="14px" class="icon" />
+        {{ $t('Private Note') }}
+      </button>
+
+      <!-- Addresses -->
+      <button @click="onClickItem('AddressCreate')" class="add-item-menu-item">
+        <VIcon name="location-marker" size="14px" class="icon" />
+        {{ $t('Address') }}
+      </button>
+
+      <!-- Payment Cards -->
+      <button @click="onClickItem('CreditCardCreate')" class="add-item-menu-item">
         <VIcon name="credit-card" size="14px" class="icon" />
         {{ $t('Credit Card') }}
-        <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
 
       <!-- Bank Accounts -->
-      <button
-        @click="onClickItem('BankAccountCreate')"
-        class="add-item-menu-item"
-        :class="{ '--lock': !hasProPlan }"
-      >
+      <button @click="onClickItem('BankAccountCreate')" class="add-item-menu-item">
         <VIcon name="bank-account" size="14px" class="icon" />
         {{ $t('Bank Account') }}
-        <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
-      </button>
-
-      <!-- Emails -->
-      <button
-        @click="onClickItem('EmailCreate')"
-        class="add-item-menu-item"
-        :class="{ '--lock': !hasProPlan }"
-      >
-        <VIcon name="email" size="14px" class="icon" />
-        {{ $t('Email') }}
-        <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
-      </button>
-
-      <!-- Private Notes -->
-      <button
-        @click="onClickItem('NoteCreate')"
-        class="add-item-menu-item"
-        :class="{ '--lock': !hasProPlan }"
-      >
-        <VIcon name="private-note" size="14px" class="icon" />
-        {{ $t('Private Note') }}
-        <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
-      </button>
-
-      <!-- Servers -->
-      <button
-        @click="onClickItem('ServerCreate')"
-        class="add-item-menu-item"
-        :class="{ '--lock': !hasProPlan }"
-      >
-        <VIcon name="server" size="14px" class="icon" />
-        {{ $t('Server') }}
-        <!-- Premium -->
-        <div class="premium-icon"><VIcon name="star" size="11px" class="c-secondary" /></div>
       </button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 export default {
   name: 'AddItemMenu',
 
@@ -82,10 +44,6 @@ export default {
       type: Boolean,
       default: false
     }
-  },
-
-  computed: {
-    ...mapGetters(['hasProPlan'])
   },
 
   methods: {
@@ -102,7 +60,8 @@ export default {
   width: 295px;
   height: 100%;
   position: absolute;
-  background: rgba($color-gray-600, 0.8);
+  background: rgba($color-gray-600, 0.85);
+  backdrop-filter: blur(4px);
   display: none;
 
   &.--active {
@@ -114,23 +73,26 @@ export default {
     bottom: 68px;
     right: 12px;
     z-index: 99;
-    width: 200px;
-    border-radius: 8px;
-    background: black;
+    width: 210px;
+    border-radius: 10px;
+    background: $color-gray-500;
+    border: 1px solid rgba(#fff, 0.06);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
-    padding: $spacer-3 0;
+    padding: 8px 0;
 
     .add-item-menu-item {
       display: flex;
+      align-items: center;
       padding: 10px $spacer-4;
       color: #fff;
       cursor: pointer;
+      font-size: 13px;
+      transition: background-color 150ms ease;
 
-      &.--lock {
-        opacity: 0.6;
-        cursor: not-allowed;
-        pointer-events: none;
+      &:hover {
+        background-color: rgba(#fff, 0.05);
       }
 
       .icon {
@@ -144,14 +106,23 @@ export default {
   position: absolute;
   right: 12px;
   bottom: 14px;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background-color: $color-primary;
-  box-shadow: 10px 20px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba($color-primary, 0.4);
+  transition: all 200ms ease;
+
+  &:hover {
+    background-color: #6e2bff;
+    box-shadow: 0 6px 20px rgba($color-primary, 0.5);
+    transform: scale(1.05);
+  }
 
   &.--active {
     transform: rotate(45deg);
+    background-color: $color-danger;
+    box-shadow: 0 4px 16px rgba($color-danger, 0.4);
   }
 }
 </style>

@@ -140,7 +140,7 @@ jobs:
 
       - name: Notarize DMG
         if: ${{ env.HAS_APPLE_NOTARY == 'true' }}
-        timeout-minutes: 45
+        timeout-minutes: 10
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
@@ -160,41 +160,9 @@ jobs:
               echo "Failed to parse notary submission id"
               exit 1
             fi
-
-            echo "Polling notarization status for submission: $SUBMISSION_ID"
-            DEADLINE=$((SECONDS + 2400))
-
-            while true; do
-              INFO_OUTPUT="$(xcrun notarytool info "$SUBMISSION_ID" \
-                --apple-id "$APPLE_ID" \
-                --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-                --team-id "$APPLE_TEAM_ID")"
-
-              echo "$INFO_OUTPUT"
-
-              STATUS="$(echo "$INFO_OUTPUT" | awk -F': ' '/status:/ { print $2; exit }')"
-
-              if [ "$STATUS" = "Accepted" ]; then
-                break
-              fi
-
-              if [ "$STATUS" = "Invalid" ] || [ "$STATUS" = "Rejected" ]; then
-                xcrun notarytool log "$SUBMISSION_ID" \
-                  --apple-id "$APPLE_ID" \
-                  --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-                  --team-id "$APPLE_TEAM_ID" || true
-                exit 1
-              fi
-
-              if [ "$SECONDS" -ge "$DEADLINE" ]; then
-                echo "Notarization polling timeout reached"
-                exit 124
-              fi
-
-              sleep 30
-            done
-
-            xcrun stapler staple "$DMG_PATH"
+            echo "$SUBMISSION_ID" > "build/notary-submission-${{ matrix.arch }}.txt"
+            echo "Notary submission queued: $SUBMISSION_ID"
+            echo "Notarization will continue asynchronously; pipeline won't wait for completion."
           fi
 
       - name: Upload artifact
@@ -203,6 +171,7 @@ jobs:
           name: passwall-desktop-macos-${{ matrix.arch }}
           path: |
             build/*.dmg
+            build/notary-submission-${{ matrix.arch }}.txt
 
   linux:
     name: Linux (${{ matrix.arch }}) - DEB/RPM

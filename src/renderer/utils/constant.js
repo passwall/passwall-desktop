@@ -1,16 +1,14 @@
 export const Services = {
   Passwords: 'Passwords',
-  BankAccounts: 'BankAccounts',
-  CreditCards: 'CreditCards',
-  Emails: 'Emails',
   Notes: 'Notes',
-  Servers: 'Servers'
+  Addresses: 'Addresses',
+  CreditCards: 'CreditCards',
+  BankAccounts: 'BankAccounts'
 }
 
 export const PremiumServices = [
-  Services.BankAccounts,
-  Services.CreditCards,
-  Services.Emails,
   Services.Notes,
-  Services.Servers
+  Services.Addresses,
+  Services.CreditCards,
+  Services.BankAccounts
 ]

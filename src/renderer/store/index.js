@@ -18,7 +18,8 @@ import {
   normalizePasswordItemData,
   normalizeCardData,
   normalizeBankAccountData,
-  normalizeSecureNoteData
+  normalizeSecureNoteData,
+  normalizeAddressData
 } from '@/utils/schema'
 
 // ============================================================
@@ -104,13 +105,45 @@ function mergeDecryptedItem(item, decryptedData) {
       }
     }
     case ItemType.Note: {
-      normalizedData = normalizeSecureNoteData(decryptedData || {})
+      normalizedData = normalizeSecureNoteData(decryptedData || {}, item.metadata?.name || '')
       const noteFallback = typeof decryptedData?.note === 'string' ? decryptedData.note : ''
       return {
         ...item,
         title: normalizedData.name || item.metadata?.name || '',
         note: normalizedData.notes || noteFallback || '',
         notes: normalizedData.notes || noteFallback || ''
+      }
+    }
+    case ItemType.Address: {
+      normalizedData = normalizeAddressData(decryptedData || {}, item.metadata?.name || '')
+      const addressParts = [
+        normalizedData.address1,
+        normalizedData.address2,
+        normalizedData.city,
+        normalizedData.state,
+        normalizedData.zip,
+        normalizedData.country
+      ].filter(Boolean)
+      const fullAddress = addressParts.join(', ')
+      return {
+        ...item,
+        title: normalizedData.title || item.metadata?.name || '',
+        first_name: normalizedData.first_name || '',
+        middle_name: normalizedData.middle_name || '',
+        last_name: normalizedData.last_name || '',
+        company: normalizedData.company || '',
+        address1: normalizedData.address1 || '',
+        address2: normalizedData.address2 || '',
+        city: normalizedData.city || '',
+        state: normalizedData.state || '',
+        zip: normalizedData.zip || '',
+        country: normalizedData.country || '',
+        phone: normalizedData.phone || '',
+        email: normalizedData.email || '',
+        notes: normalizedData.notes || '',
+        attachments: normalizedData.attachments || [],
+        // Helper field for list preview/search in desktop UI.
+        address: fullAddress
       }
     }
     case ItemType.Email:
@@ -189,6 +222,27 @@ function buildItemData(type, form) {
         },
         form.account_name || form.title || ''
       )
+    case ItemType.Address:
+      return normalizeAddressData(
+        {
+          title: form.title || '',
+          first_name: form.first_name || '',
+          middle_name: form.middle_name || '',
+          last_name: form.last_name || '',
+          company: form.company || '',
+          address1: form.address1 || '',
+          address2: form.address2 || '',
+          city: form.city || '',
+          state: form.state || '',
+          zip: form.zip || '',
+          country: form.country || '',
+          phone: form.phone || '',
+          email: form.email || '',
+          notes: form.notes || '',
+          attachments: Array.isArray(form.attachments) ? form.attachments : []
+        },
+        form.title || ''
+      )
     case ItemType.Email:
       return {
         title: form.title || '',
@@ -210,6 +264,12 @@ function buildItemData(type, form) {
     default:
       return { ...form }
   }
+}
+
+function getOrgPublicId(numericOrgId, organizations) {
+  const org = organizations.find((o) => o.id === numericOrgId)
+  if (!org?.public_id) throw new Error(`No public_id for org ${numericOrgId}`)
+  return org.public_id
 }
 
 function buildMetadata(type, form) {
@@ -261,6 +321,9 @@ export default createStore({
       organizations,
       defaultOrgId: resolveDefaultOrganizationId({ user, organizations }),
       orgKeys: {}, // { [orgId]: SymmetricKey }
+      // Two-factor authentication
+      two_factor_token: null,
+      two_factor_required: false,
       // Unified items list
       items: [],
       itemsLoading: false
@@ -269,7 +332,16 @@ export default createStore({
 
   getters: {
     hasProPlan(state) {
-      return state.pro
+      if (!state.user) return false
+      const org =
+        state.organizations.find((o) => o.id === state.defaultOrgId) ||
+        state.organizations.find((o) => o.is_personal) ||
+        state.organizations[0]
+      if (!org) return state.pro
+      const status = org.subscription_status
+      if (status === 'expired' || status === 'canceled') return false
+      const plan = (org.plan || 'free').split('-')[0].toLowerCase()
+      return plan !== 'free'
     },
 
     isAuthenticated(state) {
@@ -321,12 +393,75 @@ export default createStore({
       const authKey = await cryptoService.hashMasterKey(state.masterKey)
       const authKeyBase64 = cryptoService.arrayToBase64(authKey)
 
-      const { data } = await AuthService.SignIn({
-        email,
-        master_password_hash: authKeyBase64,
-        app: 'desktop'
+      let data
+      try {
+        const response = await AuthService.SignIn({
+          email,
+          master_password_hash: authKeyBase64,
+          app: 'desktop'
+        })
+        data = response.data
+      } catch (error) {
+        if (
+          error?.response?.status === 403 &&
+          error?.response?.data?.error === 'two_factor_setup_required'
+        ) {
+          throw Object.assign(
+            new Error(
+              'Two-factor authentication setup is required by your organization. Please set it up in the Passwall Vault web app.'
+            ),
+            { type: 'REQUIRE_2FA_SETUP', requirement: error.response.data.require_two_factor_setup }
+          )
+        }
+        throw error
+      }
+
+      if (data.two_factor_required) {
+        state.two_factor_required = true
+        state.two_factor_token = data.two_factor_token
+        localStorage.email = email
+        localStorage.server = server
+        return { two_factor_required: true }
+      }
+
+      if (data.require_two_factor_setup?.is_mandatory) {
+        throw Object.assign(
+          new Error(
+            'Two-factor authentication setup is required by your organization. Please set it up in the Passwall Vault web app.'
+          ),
+          { type: 'REQUIRE_2FA_SETUP', requirement: data.require_two_factor_setup }
+        )
+      }
+
+      await dispatch('completeLogin', { data, email, server })
+    },
+
+    async VerifyTwoFactor({ state, dispatch }, code) {
+      const { data } = await AuthService.Verify2FA({
+        two_factor_token: state.two_factor_token,
+        totp_code: code
       })
 
+      if (data.require_two_factor_setup?.is_mandatory) {
+        state.two_factor_required = false
+        state.two_factor_token = null
+        throw Object.assign(
+          new Error(
+            'Two-factor authentication setup is required by your organization. Please set it up in the Passwall Vault web app.'
+          ),
+          { type: 'REQUIRE_2FA_SETUP', requirement: data.require_two_factor_setup }
+        )
+      }
+
+      state.two_factor_required = false
+      state.two_factor_token = null
+
+      const email = localStorage.email || ''
+      const server = localStorage.server || ''
+      await dispatch('completeLogin', { data, email, server })
+    },
+
+    async completeLogin({ state, dispatch }, { data, email, server }) {
       const stretchedMasterKey = await cryptoService.stretchMasterKey(state.masterKey)
       state.userKey = await cryptoService.unwrapUserKey(data.protected_user_key, stretchedMasterKey)
 
@@ -346,7 +481,6 @@ export default createStore({
       localStorage.refresh_token = data.refresh_token
       localStorage.user = JSON.stringify(state.user || {})
 
-      // Fetch organizations after login
       await dispatch('fetchOrganizations')
     },
 
@@ -364,6 +498,8 @@ export default createStore({
       state.pro = false
       state.access_token = ''
       state.refresh_token = ''
+      state.two_factor_token = null
+      state.two_factor_required = false
       state.organizations = []
       state.defaultOrgId = null
       state.orgKeys = {}
@@ -437,7 +573,7 @@ export default createStore({
 
         const orgFetchPromises = organizations.map(async (org) => {
           try {
-            const { data } = await OrganizationsService.ListItems(org.id, params)
+            const { data } = await OrganizationsService.ListItems(org.public_id, params)
             const items = data.items || data || []
 
             let orgKey = state.orgKeys[org.id]
@@ -512,13 +648,14 @@ export default createStore({
       const data = buildItemData(type, form)
       const encryptedData = await encryptWithOrgKey(JSON.stringify(data), orgKey)
 
-      const { data: createdResponse } = await OrganizationsService.CreateItem(targetOrgId, {
+      const targetOrgPublicId = getOrgPublicId(targetOrgId, state.organizations)
+      const { data: createdResponse } = await OrganizationsService.CreateItem(targetOrgPublicId, {
         item_type: type,
         data: encryptedData,
         metadata,
         folder_id: form.folder_id || undefined,
         is_favorite: form.is_favorite || false,
-        auto_fill: form.auto_fill ?? true,
+        auto_fill: form.auto_fill ?? false,
         auto_login: form.auto_login ?? false,
         reprompt: form.reprompt ?? false
       })
@@ -611,10 +748,9 @@ export default createStore({
           {
             [ItemType.Password]: 'Passwords',
             [ItemType.Note]: 'Notes',
+            [ItemType.Address]: 'Addresses',
             [ItemType.Card]: 'CreditCards',
-            [ItemType.Bank]: 'BankAccounts',
-            [ItemType.Email]: 'Emails',
-            [ItemType.Server]: 'Servers'
+            [ItemType.Bank]: 'BankAccounts'
           }[item.item_type] || 'Other'
 
         if (!result[typeName]) result[typeName] = []
@@ -638,16 +774,17 @@ export default createStore({
       const orgKey = state.orgKeys[targetOrgId]
       if (!orgKey) throw new Error('Organization key not available')
 
+      const targetOrgPublicId = getOrgPublicId(targetOrgId, state.organizations)
       for (const item of items) {
         const data = buildItemData(type, item)
         const metadata = buildMetadata(type, item)
         const encryptedData = await encryptWithOrgKey(JSON.stringify(data), orgKey)
 
-        await OrganizationsService.CreateItem(targetOrgId, {
+        await OrganizationsService.CreateItem(targetOrgPublicId, {
           item_type: type,
           data: encryptedData,
           metadata,
-          auto_fill: true,
+          auto_fill: false,
           auto_login: false
         })
       }

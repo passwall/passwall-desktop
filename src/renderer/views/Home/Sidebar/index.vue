@@ -41,40 +41,17 @@
     <!-- Passwords -->
     <MenuItem :service="$C.Services.Passwords" :name="$t('Passwords')" icon="lock-closed" />
 
-    <!-- Credit Cards -->
-    <MenuItem
-      :service="$C.Services.CreditCards"
-      :name="$t('Credit Cards')"
-      icon="credit-card"
-      :lock="!hasProPlan"
-    />
+    <!-- Secure Notes -->
+    <MenuItem :service="$C.Services.Notes" :name="$t('Private Notes')" icon="private-note" />
+
+    <!-- Addresses -->
+    <MenuItem :service="$C.Services.Addresses" :name="$t('Addresses')" icon="location-marker" />
+
+    <!-- Payment Cards -->
+    <MenuItem :service="$C.Services.CreditCards" :name="$t('Credit Cards')" icon="credit-card" />
 
     <!-- Bank Accounts -->
-    <MenuItem
-      :service="$C.Services.BankAccounts"
-      :name="$t('Bank Accounts')"
-      icon="bank-account"
-      :lock="!hasProPlan"
-    />
-
-    <!-- Emails -->
-    <MenuItem :service="$C.Services.Emails" :name="$t('Emails')" icon="email" :lock="!hasProPlan" />
-
-    <!-- Private Notes -->
-    <MenuItem
-      :service="$C.Services.Notes"
-      :name="$t('Private Notes')"
-      icon="private-note"
-      :lock="!hasProPlan"
-    />
-
-    <!-- Servers -->
-    <MenuItem
-      :service="$C.Services.Servers"
-      :name="$t('Servers')"
-      icon="server"
-      :lock="!hasProPlan"
-    />
+    <MenuItem :service="$C.Services.BankAccounts" :name="$t('Bank Accounts')" icon="bank-account" />
 
     <button class="btn-empty-fix"></button>
 
@@ -82,6 +59,8 @@
     <button v-if="hasUpdate" @click="onClickUpdateApp" class="update-box flex-center">
       {{ $t('There is an update available.') }}
     </button>
+
+    <div class="app-version" v-if="appVersion">v{{ appVersion }}</div>
 
     <!-- Feedback -->
     <button class="btn-feedback" @click="onClickFeedback">
@@ -123,6 +102,9 @@ export default {
 
     accountMenuClass() {
       return [this.hasProPlan ? '--pro-plan' : '--free-plan', { '--open': this.showAccountMenu }]
+    },
+    appVersion() {
+      return import.meta.env.VITE_APP_VERSION || ''
     }
   },
 
@@ -181,22 +163,32 @@ export default {
 
 <style lang="scss">
 .sidebar {
+  position: relative;
   width: 200px;
   min-width: 200px;
   height: 100%;
   display: flex;
   flex-direction: column;
   user-select: none;
+  background-color: $color-gray-600;
+  border-right: 1px solid rgba(#fff, 0.04);
 
   .account {
     position: relative;
-    margin: 32px 0px;
+    margin: 24px 0px;
     width: 100%;
     height: 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 $spacer-3;
+
+    & > button {
+      transition: color 150ms ease;
+      &:hover {
+        color: $color-secondary;
+      }
+    }
 
     &-menu {
       position: absolute;
@@ -208,11 +200,12 @@ export default {
       left: 12px;
       right: 12px;
       z-index: 2;
-      transition: all 0.1s ease;
+      transition: all 0.15s ease;
       overflow: hidden;
 
       &.--open {
         border: 1px solid $color-gray-400;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 
         &.--free-plan {
           height: 85px;
@@ -236,6 +229,11 @@ export default {
         margin-bottom: 20px;
         display: flex;
         align-items: center;
+        transition: color 150ms ease;
+
+        &:hover {
+          color: $color-secondary;
+        }
 
         &:last-child {
           margin-bottom: 0px;
@@ -253,12 +251,15 @@ export default {
         font-size: 14px;
         line-height: 22px;
         color: #fff;
+        font-weight: 500;
       }
 
       &-plan {
-        font-size: 12px;
-        line-height: 18px;
+        font-size: 11px;
+        line-height: 16px;
         color: $color-secondary;
+        font-weight: 600;
+        letter-spacing: 0.04em;
       }
     }
   }
@@ -267,11 +268,25 @@ export default {
     margin-top: auto;
   }
 
+  .app-version {
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgba(#fff, 0.72);
+    background: transparent;
+    border: 0;
+  }
+
   .update-box {
     height: 30px;
     color: #fff;
     background-color: $color-primary;
     margin-top: auto;
+    transition: opacity 150ms ease;
 
     &:hover {
       opacity: 0.9;
@@ -284,6 +299,11 @@ export default {
     background-color: $color-gray-500;
     font-size: $font-size-normal;
     color: #fff;
+    transition: background-color 150ms ease;
+
+    &:hover {
+      background-color: #121a24;
+    }
 
     &,
     .icon {
@@ -326,12 +346,16 @@ export default {
     height: 40px;
     color: $color-gray-300;
     font-size: $font-size-normal;
-    border-bottom: 1px solid $color-gray-600;
+    border-bottom: 1px solid rgba(#fff, 0.03);
+    transition:
+      color 150ms ease,
+      background-color 150ms ease,
+      padding-left 150ms ease;
 
-    &.--lock {
-      opacity: 0.6;
-      cursor: not-allowed;
-      pointer-events: none;
+    &:hover:not(.router-link-active) {
+      color: #fff;
+      background-color: rgba(#fff, 0.03);
+      padding-left: 20px;
     }
 
     &:nth-last-child(3) {
@@ -346,10 +370,17 @@ export default {
     svg {
       color: $color-gray-300;
       margin-right: $spacer-2;
+      transition: color 150ms ease;
+    }
+
+    &:hover:not(.router-link-active) svg {
+      color: rgba($color-secondary, 0.6);
     }
 
     &.router-link-active {
       color: #fff;
+      background-color: rgba($color-primary, 0.08);
+      border-left: 2px solid $color-secondary;
 
       svg {
         color: $color-secondary;

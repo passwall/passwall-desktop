@@ -15,7 +15,7 @@
     <PerfectScrollbar class="detail-page-content">
       <form class="form" @submit.stop.prevent="onClickSave">
         <!-- Title -->
-        <div class="form-row">
+        <div class="form-row secure-note-row">
           <label v-text="$t('TITLE')" />
           <VFormText
             v-model="form.title"
@@ -101,3 +101,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.secure-note-row {
+  .text-area-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .text-area-wrapper textarea {
+    width: 100%;
+    max-width: 100%;
+    resize: vertical !important;
+  }
+}
+</style>

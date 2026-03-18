@@ -13,6 +13,14 @@ const router = createRouter({
       }
     },
     {
+      path: '/two-factor',
+      name: 'TwoFactor',
+      component: () => import('@/views/Auth/TwoFactor.vue'),
+      meta: {
+        auth: true
+      }
+    },
+    {
       path: '/',
       name: 'Home',
       redirect: '/passwords',
@@ -32,6 +40,40 @@ const router = createRouter({
               path: ':id',
               name: 'PasswordDetail',
               component: () => import('@/views/Passwords/Detail.vue')
+            }
+          ]
+        },
+        {
+          path: '/notes',
+          name: 'Notes',
+          component: () => import('@/views/Notes/index.vue'),
+          children: [
+            {
+              path: 'create',
+              name: 'NoteCreate',
+              component: () => import('@/views/Notes/Create.vue')
+            },
+            {
+              path: ':id',
+              name: 'NoteDetail',
+              component: () => import('@/views/Notes/Detail.vue')
+            }
+          ]
+        },
+        {
+          path: '/addresses',
+          name: 'Addresses',
+          component: () => import('@/views/Addresses/index.vue'),
+          children: [
+            {
+              path: 'create',
+              name: 'AddressCreate',
+              component: () => import('@/views/Addresses/Create.vue')
+            },
+            {
+              path: ':id',
+              name: 'AddressDetail',
+              component: () => import('@/views/Addresses/Detail.vue')
             }
           ]
         },
@@ -66,57 +108,6 @@ const router = createRouter({
               path: ':id',
               name: 'BankAccountDetail',
               component: () => import('@/views/BankAccounts/Detail.vue')
-            }
-          ]
-        },
-        {
-          path: '/emails',
-          name: 'Emails',
-          component: () => import('@/views/Emails/index.vue'),
-          children: [
-            {
-              path: 'create',
-              name: 'EmailCreate',
-              component: () => import('@/views/Emails/Create.vue')
-            },
-            {
-              path: ':id',
-              name: 'EmailDetail',
-              component: () => import('@/views/Emails/Detail.vue')
-            }
-          ]
-        },
-        {
-          path: '/notes',
-          name: 'Notes',
-          component: () => import('@/views/Notes/index.vue'),
-          children: [
-            {
-              path: 'create',
-              name: 'NoteCreate',
-              component: () => import('@/views/Notes/Create.vue')
-            },
-            {
-              path: ':id',
-              name: 'NoteDetail',
-              component: () => import('@/views/Notes/Detail.vue')
-            }
-          ]
-        },
-        {
-          path: '/servers',
-          name: 'Servers',
-          component: () => import('@/views/Servers/index.vue'),
-          children: [
-            {
-              path: 'create',
-              name: 'ServerCreate',
-              component: () => import('@/views/Servers/Create.vue')
-            },
-            {
-              path: ':id',
-              name: 'ServerDetail',
-              component: () => import('@/views/Servers/Detail.vue')
             }
           ]
         }

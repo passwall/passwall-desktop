@@ -55,11 +55,16 @@ export default {
     width: 100%;
     resize: none;
     color: white;
-    border-radius: 5px;
-    padding: $spacer-2;
+    border-radius: 8px;
+    padding: $spacer-2 12px;
     min-height: 100px;
     background-color: $color-gray-500;
-    border: solid 1px $color-gray-700;
+    border: solid 1px rgba(#fff, 0.06);
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+    font-size: $font-size-small;
+    line-height: 1.5;
 
     &::placeholder {
       font-weight: normal;
@@ -67,8 +72,13 @@ export default {
       color: $color-gray-300;
     }
 
+    &:focus {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+    }
+
     &:disabled {
-      border: 0;
+      border-color: transparent;
     }
 
     &:not(:placeholder-shown) {

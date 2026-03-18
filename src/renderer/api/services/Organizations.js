@@ -15,10 +15,16 @@ export default class OrganizationsService {
     return HTTPClient.get('/api/organizations')
   }
 
+  /**
+   * @param {string} id - Organization public_id
+   */
   static async GetById(id) {
     return HTTPClient.get(`/api/organizations/${id}`)
   }
 
+  /**
+   * @param {string} id - Organization public_id
+   */
   static async GetActivePolicies(id) {
     return HTTPClient.get(`/api/organizations/${id}/policies/active`)
   }
@@ -31,6 +37,9 @@ export default class OrganizationsService {
   // Organization Items
   // ============================================================
 
+  /**
+   * @param {string} orgId - Organization public_id
+   */
   static async ListItems(orgId, params = {}) {
     const query = new URLSearchParams()
     if (params.type) query.append('type', params.type.toString())
@@ -51,6 +60,9 @@ export default class OrganizationsService {
     return HTTPClient.get(`/api/organizations/${orgId}/items${qs ? '?' + qs : ''}`)
   }
 
+  /**
+   * @param {string} orgId - Organization public_id
+   */
   static async CreateItem(orgId, payload) {
     return HTTPClient.post(`/api/organizations/${orgId}/items`, payload)
   }
@@ -71,10 +83,16 @@ export default class OrganizationsService {
   // Organization Folders
   // ============================================================
 
+  /**
+   * @param {string} orgId - Organization public_id
+   */
   static async ListFolders(orgId) {
     return HTTPClient.get(`/api/organizations/${orgId}/folders`)
   }
 
+  /**
+   * @param {string} orgId - Organization public_id
+   */
   static async CreateFolder(orgId, payload) {
     return HTTPClient.post(`/api/organizations/${orgId}/folders`, payload)
   }
@@ -83,6 +101,9 @@ export default class OrganizationsService {
   // Collections
   // ============================================================
 
+  /**
+   * @param {string} orgId - Organization public_id
+   */
   static async ListCollections(orgId) {
     return HTTPClient.get(`/api/organizations/${orgId}/collections`)
   }

@@ -1,12 +1,14 @@
 const path = require('path')
 const { defineConfig } = require('vite')
 const vue = require('@vitejs/plugin-vue')
+const pkg = require('./package.json')
 
 module.exports = defineConfig({
   plugins: [vue()],
   define: {
     __VUE_OPTIONS_API__: true,
-    __VUE_PROD_DEVTOOLS__: false
+    __VUE_PROD_DEVTOOLS__: false,
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version)
   },
   base: './',
   publicDir: 'static',

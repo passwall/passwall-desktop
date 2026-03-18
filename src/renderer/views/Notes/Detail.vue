@@ -7,12 +7,11 @@
       </div>
       <!-- Summary -->
       <div class="detail-page-header-summary">
-        <span v-text="form.title" class="url" />
+        <span v-text="form.title" class="url" v-tooltip="form.title" />
         <!-- <span v-text="form.username" class="email" /> -->
       </div>
 
       <EditButton v-if="!isEditMode" @click="isEditMode = $event" />
-      <ClipboardButton :copy="copyContent" />
       <DeleteButton @click="onClickDelete" />
     </div>
     <!-- Content -->
@@ -22,7 +21,7 @@
         <FormRowText v-model="form.title" :title="$t('TITLE')" :edit-mode="isEditMode" />
 
         <!-- Note -->
-        <div class="form-row">
+        <div class="form-row secure-note-row">
           <div class="d-flex flex-items-end flex-content-between">
             <label v-text="$t('PRIVATE NOTE')" />
             <div class="d-flex flex-items-center">
@@ -116,3 +115,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.secure-note-row {
+  .text-area-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .text-area-wrapper textarea {
+    width: 100%;
+    max-width: 100%;
+    resize: vertical !important;
+  }
+}
+</style>

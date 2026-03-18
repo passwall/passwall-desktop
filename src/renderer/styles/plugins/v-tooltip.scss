@@ -117,3 +117,56 @@
   box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
   padding: 0px;
 }
+
+/* Custom app tooltip (used by v-tooltip directive) */
+.pw-tooltip {
+  position: relative;
+}
+
+.pw-tooltip::before,
+.pw-tooltip::after {
+  position: absolute;
+  left: 50%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(4px);
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease,
+    visibility 120ms ease;
+  z-index: 10001;
+}
+
+.pw-tooltip::before {
+  content: attr(data-tooltip);
+  bottom: calc(100% + 10px);
+  max-width: 360px;
+  min-width: 24px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: $color-gray-400;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.35;
+  white-space: normal;
+  text-align: left;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.pw-tooltip::after {
+  content: '';
+  bottom: calc(100% + 4px);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: $color-gray-400 transparent transparent transparent;
+}
+
+.pw-tooltip:hover::before,
+.pw-tooltip:hover::after,
+.pw-tooltip:focus-visible::before,
+.pw-tooltip:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}

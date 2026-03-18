@@ -14,8 +14,14 @@
 @use 'utilities/display';
 @use 'utilities/visibility';
 
-html {
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: black;
   color: $color-primary;
+  overscroll-behavior: none;
 }
 
 * {
@@ -26,8 +32,11 @@ html {
 }
 
 #app {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background-color: black;
   color: $color-gray-300;
 }
@@ -76,35 +85,50 @@ html {
 
 .search-action-btn {
   position: absolute;
-  right: 12px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   color: $color-gray-300;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.search-action-btn .v-icon {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
 }
 
 .search-action-btn:enabled:hover {
   color: $color-secondary;
+  background-color: rgba(#fff, 0.04);
 }
 
 .vault-link {
-  color: #fff;
+  color: $color-gray-600;
   background-color: $color-secondary;
   border: 1px solid $color-secondary;
   border-radius: 6px;
   padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 180ms ease;
 }
 
 .vault-link:hover {
-  background-color: rgba($color-secondary, 0.8);
+  background-color: #33ffe0;
+  box-shadow: 0 2px 10px rgba($color-secondary, 0.3);
 }
 
 .vault-link__icon {
-  color: $color-secondary;
+  color: $color-gray-600;
 }
 
 .detail-page-content::-webkit-scrollbar,
@@ -162,6 +186,7 @@ html {
 
 .form {
   padding: $spacer-3;
+  padding-bottom: $spacer-6;
   height: auto;
 
   &,
@@ -171,19 +196,27 @@ html {
   }
 
   &-row {
-    border-bottom: 1px solid $color-gray-500;
+    border-bottom: 1px solid rgba(#fff, 0.04);
 
     label {
       font-weight: $font-weight-medium;
       font-size: $font-size-small;
       line-height: 16px;
       margin: 12px $spacer-3 0 $spacer-3;
+      color: $color-gray-300;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     &:last-of-type {
       border: 0;
     }
   }
+}
+
+.detail-page-content .form > .d-flex.m-3:last-child {
+  margin-bottom: 0 !important;
+  padding-bottom: $spacer-3;
 }
 
 .pw-select {
@@ -194,43 +227,63 @@ html {
   color: #fff;
   border-radius: 8px;
   padding: 0 12px;
-  border: 0;
+  border: 1px solid transparent;
   font-size: 12px;
+  transition: border-color 180ms ease;
+  cursor: pointer;
+
+  &:focus {
+    border-color: $color-primary;
+  }
 }
 
 .pw-select:disabled {
   color: $color-gray-300;
-  opacity: 0.7;
+  opacity: 0.6;
+  cursor: default;
 }
 
 .password-settings {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  padding: 8px 16px 12px;
 }
 
 .password-setting {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
-  border: 1px solid $color-gray-500;
+  padding: 8px 12px;
+  border: 1px solid rgba(#fff, 0.06);
   border-radius: 8px;
-  background-color: $color-gray-600;
+  background-color: rgba(#fff, 0.02);
   font-size: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+
+  &:hover {
+    border-color: rgba(#fff, 0.12);
+    background-color: rgba(#fff, 0.04);
+  }
 }
 
 .password-setting input[type='checkbox'] {
   accent-color: $color-secondary;
+  cursor: pointer;
 }
 
 .vue-notification-group {
   top: 10px !important;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .vue-notification {
-  border-radius: 2px;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes spin {
@@ -297,17 +350,20 @@ hr {
 
 /** Detail Page **/
 .detail-page {
-  width: 100%;
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
   height: 100%;
-  border-left: 1px solid black;
+  border-left: 1px solid rgba(#fff, 0.04);
   background-color: $color-gray-600;
+  overflow: hidden;
 
   &-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 64px;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid rgba(#fff, 0.04);
     padding: 0 $spacer-5;
 
     &-avatar {
@@ -317,24 +373,36 @@ hr {
       background-color: $color-gray-400;
       display: flex;
       align-items: center;
+      flex-shrink: 0;
     }
 
     &-summary {
       color: #fff;
-      margin: 0 auto 0 $spacer-3;
+      margin: 0 $spacer-2 0 $spacer-3;
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
 
       .url {
-        font-weight: bold;
-        font-size: 12px;
-        line-height: 16px;
+        font-weight: 600;
+        font-size: 13px;
+        line-height: 18px;
+        display: block;
+        width: 100%;
+        min-width: 0;
+        max-width: 260px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .email {
         font-weight: normal;
-        font-size: 10px;
+        font-size: 11px;
         line-height: 16px;
+        color: $color-gray-300;
       }
     }
 
@@ -347,6 +415,14 @@ hr {
       background-color: $color-gray-500;
       margin-left: $spacer-1;
       color: $color-gray-300;
+      transition:
+        color 150ms ease,
+        background-color 150ms ease;
+
+      &:hover {
+        background-color: $color-gray-400;
+        color: $color-secondary;
+      }
     }
   }
 
@@ -372,7 +448,10 @@ hr {
 }
 
 .content-container {
-  width: 100%;
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
   display: flex;
 }
 
@@ -380,13 +459,21 @@ hr {
   position: relative;
   display: flex;
   flex-direction: column;
+  flex: 0 0 295px;
   min-width: 295px;
   max-width: 295px;
   height: 100%;
+  border-right: 1px solid rgba(#fff, 0.04);
 
   & > .ps {
     height: 100%;
   }
+}
+
+.content-container > .w-100 {
+  width: auto !important;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .search-wrapper {
@@ -396,5 +483,5 @@ hr {
   padding: 0 $spacer-3;
   min-height: 64px;
   height: 64px;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid rgba(#fff, 0.04);
 }

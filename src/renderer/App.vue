@@ -23,7 +23,7 @@
             @click="onSearchAction"
           >
             <VIcon v-if="searchQuery" name="x" size="14px" />
-            <VIcon v-else name="search" size="16px" />
+            <VIcon v-else name="search" size="14px" />
           </button>
         </div>
       </div>
@@ -42,10 +42,12 @@
       </div>
     </header>
     <!-- Content -->
-    <RouterView />
+    <main class="app-content">
+      <RouterView />
+    </main>
     <!-- Hidden -->
     <TheIcons />
-    <notifications width="345" position="top center" />
+    <notifications :width="345" position="top center" />
   </div>
 </template>
 
@@ -150,9 +152,8 @@ export default {
 
         const files = [
           { name: 'passwords.csv', content: Papa.unparse(itemList.Passwords || []) },
-          { name: 'servers.csv', content: Papa.unparse(itemList.Servers || []) },
           { name: 'notes.csv', content: Papa.unparse(itemList.Notes || []) },
-          { name: 'emails.csv', content: Papa.unparse(itemList.Emails || []) },
+          { name: 'addresses.csv', content: Papa.unparse(itemList.Addresses || []) },
           { name: 'credit_cards.csv', content: Papa.unparse(itemList.CreditCards || []) },
           { name: 'bank_accounts.csv', content: Papa.unparse(itemList.BankAccounts || []) }
         ]
@@ -189,17 +190,15 @@ export default {
           }
 
           const selectedFileName = String(filePath).split('/').pop().toLowerCase()
-          const importType = selectedFileName.includes('server')
-            ? ItemType.Server
-            : selectedFileName.includes('note')
-              ? ItemType.Note
-              : selectedFileName.includes('email')
-                ? ItemType.Email
-                : selectedFileName.includes('credit') || selectedFileName.includes('card')
-                  ? ItemType.Card
-                  : selectedFileName.includes('bank')
-                    ? ItemType.Bank
-                    : ItemType.Password
+          const importType = selectedFileName.includes('note')
+            ? ItemType.Note
+            : selectedFileName.includes('address')
+              ? ItemType.Address
+              : selectedFileName.includes('credit') || selectedFileName.includes('card')
+                ? ItemType.Card
+                : selectedFileName.includes('bank')
+                  ? ItemType.Bank
+                  : ItemType.Password
 
           await this.$store.dispatch('ImportItems', {
             items: parsedCSV.data,
@@ -219,11 +218,12 @@ export default {
 
 <style lang="scss">
 .app-header {
-  width: 100vw;
+  width: 100%;
   height: 56px;
   margin: 0px;
   padding: 0px 16px;
   background: $color-gray-500;
+  border-bottom: 1px solid rgba(#fff, 0.04);
   -webkit-user-select: none;
   -webkit-app-region: drag;
 
@@ -240,8 +240,8 @@ export default {
   &-search {
     width: 295px;
     text-align: center;
-    border-right: 1px solid black;
-    border-left: 1px solid black;
+    border-right: 1px solid rgba(#fff, 0.04);
+    border-left: 1px solid rgba(#fff, 0.04);
 
     &-wrapper {
       position: relative;
@@ -254,21 +254,22 @@ export default {
         border-radius: 8px;
         padding: 0 46px 0 24px;
         color: white;
-        border: 0;
+        border: 1px solid transparent;
         font-size: 12px;
+        transition:
+          border-color 180ms ease,
+          box-shadow 180ms ease;
+
+        &:focus {
+          border-color: $color-primary;
+          box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+        }
 
         &::placeholder {
           font-size: 12px;
           color: $color-gray-300;
         }
       }
-    }
-
-    .v-icon {
-      top: 12px;
-      right: 20px;
-      position: absolute;
-      color: $color-gray-300;
     }
   }
 
@@ -283,6 +284,14 @@ export default {
       border-radius: 50%;
       margin-right: 6px;
       -webkit-app-region: no-drag;
+      transition:
+        opacity 150ms ease,
+        transform 150ms ease;
+
+      &:hover {
+        opacity: 0.85;
+        transform: scale(1.15);
+      }
     }
 
     .btn-quit {
@@ -300,6 +309,7 @@ export default {
 
   .top-btn {
     color: $color-gray-300;
+    transition: color 150ms ease;
   }
 
   .top-btn:hover,
@@ -309,7 +319,34 @@ export default {
 
   &-right-section {
     display: flex;
+    align-items: center;
     margin-left: auto;
+    gap: 4px;
+
+    button {
+      transition:
+        color 150ms ease,
+        background-color 150ms ease;
+    }
+
+    .c-danger {
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 13px;
+
+      &:hover {
+        background-color: rgba($color-danger, 0.1);
+        color: $color-danger;
+      }
+    }
   }
+}
+
+.app-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 </style>

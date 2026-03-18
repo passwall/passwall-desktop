@@ -19,10 +19,15 @@ function createWindow() {
    */
 
   mainWindow = new BrowserWindow({
-    height: 560,
+    height: 600,
     width: 900,
     minWidth: 900,
     minHeight: 600,
+    maxWidth: 900,
+    maxHeight: 600,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
     useContentSize: true,
     frame: false,
     webPreferences: {
@@ -132,17 +137,8 @@ ipcMain.handle('window:minimize', () => {
 })
 
 ipcMain.handle('window:toggleMaximize', () => {
-  if (!mainWindow) {
-    return false
-  }
-
-  if (mainWindow.isMaximized()) {
-    mainWindow.unmaximize()
-    return false
-  }
-
-  mainWindow.maximize()
-  return true
+  // App window is fixed-size by design.
+  return false
 })
 
 ipcMain.handle('window:toggleAlwaysOnTop', () => {

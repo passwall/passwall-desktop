@@ -21,6 +21,10 @@ export default class AuthService {
     return HTTPClient.post(`/api/signout`, payload)
   }
 
+  static async Verify2FA(data) {
+    return HTTPClient.post('/auth/2fa/verify', data)
+  }
+
   static async Check(payload) {
     return HTTPClient.post('/auth/check', payload)
   }

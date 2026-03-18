@@ -49,7 +49,7 @@ export default {
     },
     getUsername: function () {
       if (this.type === 'Login' || this.type === 'Password') return this.data.username
-      else if (this.type === 'Email') return this.data.email
+      else if (this.type === 'Address') return this.data.address
       else if (this.type === 'BankAccount') return this.data.iban
       else if (this.type === 'CreditCard') return this.data.number
       else if (this.type === 'Server') return this.data.ip
@@ -67,10 +67,16 @@ export default {
   align-items: center;
   justify-content: space-between;
   background-color: black;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid rgba(#fff, 0.04);
+  transition: background-color 150ms ease;
+
+  &:hover:not(.--active) {
+    background-color: rgba(#fff, 0.03);
+  }
 
   &.--active {
     background: $color-gray-600;
+    border-left: 2px solid $color-primary;
   }
 
   &-avatar {
@@ -79,6 +85,7 @@ export default {
     border-radius: 8px;
     background-color: $color-gray-400;
     margin-left: $spacer-3;
+    flex-shrink: 0;
   }
 
   &-summary {
@@ -86,23 +93,40 @@ export default {
     margin: 0 auto 0 $spacer-3;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 
     .url {
       font-weight: 600;
       font-size: $font-size-normal;
-      line-height: 16px;
+      line-height: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .username {
       font-weight: normal;
       font-size: $font-size-mini;
       line-height: 16px;
+      color: $color-gray-300;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
   &-detail {
     margin: 0 $spacer-3 0 auto;
     color: $color-gray-300;
+    transition:
+      color 150ms ease,
+      transform 150ms ease;
+    flex-shrink: 0;
+  }
+
+  &:hover &-detail {
+    color: $color-secondary;
+    transform: translateX(2px);
   }
 }
 </style>

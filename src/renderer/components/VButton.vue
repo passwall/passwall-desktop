@@ -46,23 +46,40 @@ export default {
   color: #fff;
   font-weight: 600;
   cursor: pointer;
+  transition: all 180ms ease;
 
   &.--loading {
     opacity: 0.6;
     cursor: no-drop;
   }
 
-  /* themes */
   &.--theme-primary {
     background-color: $color-primary;
+
+    &:hover:not(:disabled) {
+      background-color: #6e2bff;
+      box-shadow: 0 2px 12px rgba($color-primary, 0.35);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+      background-color: #4a00e0;
+    }
   }
 
   &.--theme-text {
     border-color: transparent;
     background-color: transparent;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(#fff, 0.06);
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(#fff, 0.1);
+    }
   }
 
-  /* size */
   &.--mini {
     height: 24px;
     border-radius: 4px;
