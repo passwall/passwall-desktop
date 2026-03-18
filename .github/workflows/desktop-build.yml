@@ -38,6 +38,8 @@ jobs:
     needs: quality
     runs-on: windows-latest
     timeout-minutes: 45
+    env:
+      HAS_DO_SPACES: ${{ secrets.DO_SPACES_KEY != '' && secrets.DO_SPACES_SECRET != '' && secrets.DO_SPACES_BUCKET != '' && secrets.DO_SPACES_REGION != '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -71,6 +73,30 @@ jobs:
           name: passwall-desktop-windows-${{ matrix.arch }}
           path: |
             build/*.msi
+
+      - name: Publish Windows artifacts to DigitalOcean Spaces
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && env.HAS_DO_SPACES == 'true' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SPACES_SECRET }}
+          DO_SPACES_BUCKET: ${{ secrets.DO_SPACES_BUCKET }}
+          DO_SPACES_REGION: ${{ secrets.DO_SPACES_REGION }}
+          DO_SPACES_ENDPOINT: ${{ secrets.DO_SPACES_ENDPOINT }}
+          DO_SPACES_PREFIX: ${{ secrets.DO_SPACES_PREFIX }}
+        run: |
+          if (-not (Get-Command aws -ErrorAction SilentlyContinue)) {
+            choco install awscli -y
+          }
+
+          $prefix = if ($env:DO_SPACES_PREFIX) { $env:DO_SPACES_PREFIX } else { "desktop/stable" }
+          $endpoint = if ($env:DO_SPACES_ENDPOINT) { $env:DO_SPACES_ENDPOINT } else { "$($env:DO_SPACES_REGION).digitaloceanspaces.com" }
+          $target = "s3://$($env:DO_SPACES_BUCKET)/$prefix/windows/${{ matrix.arch }}"
+
+          aws s3 cp build $target `
+            --recursive `
+            --exclude "*" `
+            --include "*.msi" `
+            --endpoint-url "https://$endpoint"
 
   macos:
     name: macOS (${{ matrix.arch }}) - DMG
@@ -213,6 +239,8 @@ jobs:
     needs: quality
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
+    env:
+      HAS_DO_SPACES: ${{ secrets.DO_SPACES_KEY != '' && secrets.DO_SPACES_SECRET != '' && secrets.DO_SPACES_BUCKET != '' && secrets.DO_SPACES_REGION != '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -261,3 +289,31 @@ jobs:
           path: |
             build/*.deb
             build/*.rpm
+
+      - name: Publish Linux artifacts to DigitalOcean Spaces
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && env.HAS_DO_SPACES == 'true' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SPACES_SECRET }}
+          DO_SPACES_BUCKET: ${{ secrets.DO_SPACES_BUCKET }}
+          DO_SPACES_REGION: ${{ secrets.DO_SPACES_REGION }}
+          DO_SPACES_ENDPOINT: ${{ secrets.DO_SPACES_ENDPOINT }}
+          DO_SPACES_PREFIX: ${{ secrets.DO_SPACES_PREFIX }}
+        run: |
+          set -euo pipefail
+
+          if ! command -v aws >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y awscli
+          fi
+
+          PREFIX="${DO_SPACES_PREFIX:-desktop/stable}"
+          ENDPOINT="${DO_SPACES_ENDPOINT:-${DO_SPACES_REGION}.digitaloceanspaces.com}"
+          TARGET="s3://${DO_SPACES_BUCKET}/${PREFIX}/linux/${{ matrix.arch }}"
+
+          aws s3 cp build "$TARGET" \
+            --recursive \
+            --exclude "*" \
+            --include "*.deb" \
+            --include "*.rpm" \
+            --endpoint-url "https://${ENDPOINT}"
