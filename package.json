@@ -65,7 +65,11 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "icon": "build/icons/icon.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ]
     },
     "win": {
       "icon": "build/icons/icon.ico"
@@ -82,6 +86,7 @@
     "@otplib/preset-browser": "^12.0.1",
     "axios": "^1.7.9",
     "buffer": "^6.0.3",
+    "electron-updater": "^6.8.3",
     "papaparse": "^5.4.1",
     "vue": "^3.4.27",
     "vue-i18n": "^9.10.2",

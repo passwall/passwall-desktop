@@ -17,7 +17,8 @@ esbuild
     sourcemap: true,
     external: ['electron'],
     define: {
-      'process.env.NODE_ENV': '"production"'
+      'process.env.NODE_ENV': '"production"',
+      'process.env.PASSWALL_UPDATES_URL': JSON.stringify(process.env.PASSWALL_UPDATES_URL || '')
     }
   })
   .catch((error) => {

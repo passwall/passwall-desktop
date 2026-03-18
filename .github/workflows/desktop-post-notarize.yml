@@ -129,12 +129,32 @@ jobs:
           DMG_PATH="${{ steps.locate.outputs.dmg_path }}"
           xcrun stapler staple "$DMG_PATH"
           xcrun stapler validate "$DMG_PATH"
+          echo "Stapled DMG ready at $DMG_PATH"
+          echo "STAPLED_PATH=$DMG_PATH" >> "$GITHUB_ENV"
 
-          BASE_NAME="$(basename "$DMG_PATH" .dmg)"
-          STAPLED_PATH="$(dirname "$DMG_PATH")/${BASE_NAME}-stapled.dmg"
-          mv "$DMG_PATH" "$STAPLED_PATH"
-          echo "Stapled DMG ready at $STAPLED_PATH"
-          echo "STAPLED_PATH=$STAPLED_PATH" >> "$GITHUB_ENV"
+      - name: Publish stapled DMG to DigitalOcean Spaces
+        if: ${{ secrets.DO_SPACES_KEY != '' && secrets.DO_SPACES_SECRET != '' && secrets.DO_SPACES_BUCKET != '' && secrets.DO_SPACES_REGION != '' }}
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.DO_SPACES_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SPACES_SECRET }}
+          DO_SPACES_BUCKET: ${{ secrets.DO_SPACES_BUCKET }}
+          DO_SPACES_REGION: ${{ secrets.DO_SPACES_REGION }}
+          DO_SPACES_ENDPOINT: ${{ secrets.DO_SPACES_ENDPOINT }}
+          DO_SPACES_PREFIX: ${{ secrets.DO_SPACES_PREFIX }}
+        run: |
+          set -euo pipefail
+
+          if ! command -v aws >/dev/null 2>&1; then
+            brew install awscli
+          fi
+
+          PREFIX="${DO_SPACES_PREFIX:-desktop/stable}"
+          ENDPOINT="${DO_SPACES_ENDPOINT:-${DO_SPACES_REGION}.digitaloceanspaces.com}"
+          TARGET="s3://${DO_SPACES_BUCKET}/${PREFIX}/darwin/${{ matrix.arch }}/$(basename "$STAPLED_PATH")"
+
+          aws s3 cp "$STAPLED_PATH" "$TARGET" \
+            --endpoint-url "https://${ENDPOINT}"
 
       - name: Upload stapled artifact
         uses: actions/upload-artifact@v5

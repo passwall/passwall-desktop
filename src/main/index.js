@@ -1,9 +1,11 @@
 import { app, BrowserWindow, Menu, dialog, ipcMain, shell, net } from 'electron'
+import { autoUpdater } from 'electron-updater'
 import fs from 'fs/promises'
 import path from 'path'
 
 let mainWindow
 const isDev = !app.isPackaged
+let updateCheckTimer = null
 
 const getRendererUrl = () => {
   if (isDev && process.env.VITE_DEV_SERVER_URL) {
@@ -50,9 +52,75 @@ function createWindow() {
   createMenu()
 }
 
-app.on('ready', createWindow)
+const getUpdateFeedUrl = () => {
+  const explicitUrl = (process.env.PASSWALL_UPDATES_URL || '').trim()
+  return explicitUrl || null
+}
+
+const setupAutoUpdates = () => {
+  if (isDev || process.platform !== 'darwin') {
+    return
+  }
+
+  autoUpdater.autoDownload = true
+  autoUpdater.autoInstallOnAppQuit = true
+
+  const feedUrl = getUpdateFeedUrl()
+  if (!feedUrl) {
+    console.log('[auto-updater] PASSWALL_UPDATES_URL is missing. Auto-update is disabled.')
+    return
+  }
+
+  autoUpdater.setFeedURL({
+    provider: 'generic',
+    url: feedUrl
+  })
+
+  autoUpdater.on('error', (error) => {
+    console.log('[auto-updater] error:', error?.message || error)
+  })
+
+  autoUpdater.on('update-available', (info) => {
+    console.log(`[auto-updater] update available: ${info?.version || 'unknown'}`)
+  })
+
+  autoUpdater.on('update-not-available', () => {
+    console.log('[auto-updater] update not available')
+  })
+
+  autoUpdater.on('download-progress', (progress) => {
+    const percent = Number(progress?.percent || 0).toFixed(1)
+    console.log(`[auto-updater] download progress: ${percent}%`)
+  })
+
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log(`[auto-updater] update downloaded: ${info?.version || 'unknown'}`)
+    // Install on next app quit to avoid interrupting active user sessions.
+  })
+
+  const check = async () => {
+    try {
+      await autoUpdater.checkForUpdates()
+    } catch (error) {
+      console.log('[auto-updater] check failed:', error?.message || error)
+    }
+  }
+
+  setTimeout(check, 15000)
+  updateCheckTimer = setInterval(check, 6 * 60 * 60 * 1000)
+}
+
+app.on('ready', () => {
+  createWindow()
+  setupAutoUpdates()
+})
 
 app.on('window-all-closed', () => {
+  if (updateCheckTimer) {
+    clearInterval(updateCheckTimer)
+    updateCheckTimer = null
+  }
+
   if (process.platform !== 'darwin') {
     app.quit()
   }
@@ -247,22 +315,3 @@ ipcMain.handle('api:request', async (_event, opts) => {
   })
 })
 
-/**
- * Auto Updater
- *
- * Uncomment the following code below and install `electron-updater` to
- * support auto updating. Code Signing with a valid certificate is required.
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
- */
-
-/*
-import { autoUpdater } from 'electron-updater'
-
-autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall()
-})
-
-app.on('ready', () => {
-  if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
-})
- */
