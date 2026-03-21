@@ -3,7 +3,5 @@
   "description": "Passwall Desktop — secure key storage for the Passwall browser extension",
   "path": "__PASSWALL_BINARY_PATH__",
   "type": "stdio",
-  "allowed_extensions": [
-    "__FIREFOX_EXTENSION_ID__"
-  ]
+  "allowed_extensions": ["__FIREFOX_EXTENSION_ID__"]
 }
