@@ -8,28 +8,19 @@
     <!-- 2FA Form -->
     <form class="login-form" @submit.stop.prevent="onVerify">
       <div class="two-factor-header">
-        <h2>{{ $t('TwoFactorAuth') || 'Two-Factor Authentication' }}</h2>
+        <h2>{{ $t('TwoFactorAuth') }}</h2>
         <p class="two-factor-subtitle">
-          {{
-            recoveryMode
-              ? $t('TwoFactorRecoverySubtitle') ||
-                'Enter one of the recovery codes you saved when setting up 2FA.'
-              : $t('TwoFactorSubtitle') || 'Enter the 6-digit code from your authenticator app'
-          }}
+          {{ recoveryMode ? $t('TwoFactorRecoverySubtitle') : $t('TwoFactorSubtitle') }}
         </p>
       </div>
       <!-- TOTP Code / Recovery Code -->
       <div class="mt-4">
-        <label>{{
-          recoveryMode
-            ? $t('RecoveryCode') || 'Recovery Code'
-            : $t('VerificationCode') || 'Verification Code'
-        }}</label>
+        <label>{{ recoveryMode ? $t('RecoveryCode') : $t('VerificationCode') }}</label>
         <VFormText
           v-model="totpCode"
           size="medium"
-          :name="recoveryMode ? 'Recovery Code' : 'TOTP Code'"
-          :placeholder="recoveryMode ? 'Enter your recovery code' : '000 000'"
+          :name="recoveryMode ? $t('RecoveryCode') : $t('VerificationCode')"
+          :placeholder="recoveryMode ? $t('Enter your recovery code') : '000 000'"
           :maxlength="recoveryMode ? 20 : 6"
           v-validate="recoveryMode ? 'required|min:1' : 'required|min:6|max:6'"
         />
@@ -39,20 +30,16 @@
       <!-- Verify Btn -->
       <div class="mt-5">
         <VButton type="submit" :loading="loading" size="medium">
-          {{ $t('Verify') || 'Verify' }}
+          {{ $t('Verify') }}
         </VButton>
       </div>
       <!-- Recovery toggle -->
       <button type="button" class="two-factor-toggle-link" @click="toggleRecoveryMode">
-        {{
-          recoveryMode
-            ? $t('UseAuthenticatorCode') || 'Use authenticator code'
-            : $t('UseRecoveryCode') || 'Use a recovery code'
-        }}
+        {{ recoveryMode ? $t('UseAuthenticatorCode') : $t('UseRecoveryCode') }}
       </button>
       <!-- Back to Login -->
       <button type="button" class="two-factor-back-link" @click="goBack">
-        &larr; {{ $t('BackToLogin') || 'Back to Login' }}
+        &larr; {{ $t('BackToLogin') }}
       </button>
     </form>
   </div>
@@ -91,7 +78,7 @@ export default {
 
       if (this.recoveryMode) {
         if (!trimmed) {
-          this.errorMessage = 'Please enter your recovery code'
+          this.errorMessage = this.$t('Please enter your recovery code')
           return
         }
       } else {
@@ -109,8 +96,7 @@ export default {
         if (error?.type === 'REQUIRE_2FA_SETUP') {
           this.errorMessage = error.message
         } else if (error?.response && error.response.status === 401) {
-          this.errorMessage =
-            this.$t('InvalidVerificationCode') || 'Invalid verification code. Please try again.'
+          this.errorMessage = this.$t('InvalidVerificationCode')
         } else {
           this.errorMessage = this.$t('Ooops! Something went wrong!')
         }

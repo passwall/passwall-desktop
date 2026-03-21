@@ -173,7 +173,7 @@ export function setupApp(app) {
           notify({ type: 'error', text: error.response.data.Message })
         }
       } else {
-        notify({ type: 'error', text: 'Network Error !' })
+        notify({ type: 'error', text: i18n.t('Network Error !') })
       }
     } finally {
       wait.end(waitKey)

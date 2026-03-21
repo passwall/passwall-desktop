@@ -15,7 +15,7 @@
           size="medium"
           v-validate="'required|email'"
           name="E-Mail"
-          placeholder="E-Mail"
+          :placeholder="$t('EMailAddress')"
         />
       </div>
       <!-- Master Password -->
@@ -29,7 +29,7 @@
             size="medium"
             :type="showMasterPassword ? 'text' : 'password'"
             name="Master Password"
-            placeholder="Master Password"
+            :placeholder="$t('MasterPassword')"
             v-validate="'required|min:6|max:100'"
           />
           <button
@@ -55,7 +55,7 @@
         class="login-signup-btn"
         @click="onClickSignUp"
       >
-        Sign Up
+        {{ $t('Sign Up') }}
       </VButton>
     </form>
   </div>

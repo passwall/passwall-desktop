@@ -1,6 +1,6 @@
 {
   "name": "passwall",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": "Passwall <hello@passwall.io>",
   "description": "Passwall Desktop",
   "license": "MIT",
@@ -11,7 +11,7 @@
     "dev:main": "node scripts/watch-main.js",
     "predev:electron": "node scripts/ensure-electron.js",
     "dev:electron": "wait-on tcp:5174 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5174 electron .",
-    "build": "pnpm run build:renderer && pnpm run build:main && electron-builder",
+    "build": "pnpm run build:renderer && pnpm run build:main && electron-builder --publish never",
     "build:renderer": "vite build",
     "build:main": "node scripts/build-main.js",
     "ci:build:win:ia32": "pnpm run build:renderer && pnpm run build:main && electron-builder --win msi --ia32 --publish never",
@@ -42,6 +42,7 @@
   "build": {
     "productName": "Passwall",
     "appId": "io.passwalll.desktop",
+    "afterPack": "scripts/after-install.js",
     "directories": {
       "output": "build"
     },

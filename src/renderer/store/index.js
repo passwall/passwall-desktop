@@ -291,13 +291,14 @@ function buildMetadata(type, form) {
 export default createStore({
   state() {
     const userKeyBase64 = sessionStorage.getItem('userKey')
-    const masterKeyBase64 = sessionStorage.getItem('masterKey')
     const userKey = userKeyBase64
       ? SymmetricKey.fromBytes(cryptoService.base64ToArray(userKeyBase64))
       : null
-    const masterKey = masterKeyBase64 ? cryptoService.base64ToArray(masterKeyBase64) : null
     const accessToken = localStorage.access_token || ''
     const user = localStorage.user ? JSON.parse(localStorage.user) : null
+
+    // Clean up legacy masterKey from sessionStorage (never persist masterKey)
+    sessionStorage.removeItem('masterKey')
 
     // Restore organizations from localStorage
     let organizations = []
@@ -316,7 +317,6 @@ export default createStore({
       access_token: accessToken,
       refresh_token: localStorage.refresh_token || '',
       userKey,
-      masterKey,
       // Organization support
       organizations,
       defaultOrgId: resolveDefaultOrganizationId({ user, organizations }),
@@ -384,13 +384,13 @@ export default createStore({
         )
       }
 
-      state.masterKey = await cryptoService.makeMasterKey(
+      const masterKey = await cryptoService.makeMasterKey(
         master_password,
         kdfConfig.kdf_salt,
         kdfConfig
       )
 
-      const authKey = await cryptoService.hashMasterKey(state.masterKey)
+      const authKey = await cryptoService.hashMasterKey(masterKey)
       const authKeyBase64 = cryptoService.arrayToBase64(authKey)
 
       let data
@@ -419,6 +419,7 @@ export default createStore({
       if (data.two_factor_required) {
         state.two_factor_required = true
         state.two_factor_token = data.two_factor_token
+        state._pendingMasterKey = masterKey
         localStorage.email = email
         localStorage.server = server
         return { two_factor_required: true }
@@ -433,7 +434,7 @@ export default createStore({
         )
       }
 
-      await dispatch('completeLogin', { data, email, server })
+      await dispatch('completeLogin', { data, email, server, masterKey })
     },
 
     async VerifyTwoFactor({ state, dispatch }, code) {
@@ -445,6 +446,7 @@ export default createStore({
       if (data.require_two_factor_setup?.is_mandatory) {
         state.two_factor_required = false
         state.two_factor_token = null
+        state._pendingMasterKey = null
         throw Object.assign(
           new Error(
             'Two-factor authentication setup is required by your organization. Please set it up in the Passwall Vault web app.'
@@ -453,17 +455,20 @@ export default createStore({
         )
       }
 
+      const masterKey = state._pendingMasterKey
       state.two_factor_required = false
       state.two_factor_token = null
+      state._pendingMasterKey = null
 
       const email = localStorage.email || ''
       const server = localStorage.server || ''
-      await dispatch('completeLogin', { data, email, server })
+      await dispatch('completeLogin', { data, email, server, masterKey })
     },
 
-    async completeLogin({ state, dispatch }, { data, email, server }) {
-      const stretchedMasterKey = await cryptoService.stretchMasterKey(state.masterKey)
+    async completeLogin({ state, dispatch }, { data, email, server, masterKey }) {
+      const stretchedMasterKey = await cryptoService.stretchMasterKey(masterKey)
       state.userKey = await cryptoService.unwrapUserKey(data.protected_user_key, stretchedMasterKey)
+      // masterKey is not persisted — only held for the duration of key unwrap
 
       state.access_token = data.access_token
       state.refresh_token = data.refresh_token
@@ -473,7 +478,10 @@ export default createStore({
 
       HTTPClient.setHeader('Authorization', `Bearer ${state.access_token}`)
 
-      await dispatch('persistSessionKeys', { userKey: state.userKey, masterKey: state.masterKey })
+      await dispatch('persistSessionKeys', { userKey: state.userKey })
+
+      // Store userKey in OS keychain via safeStorage (survives app restarts)
+      await dispatch('storeUserKeyInKeychain', { email })
 
       localStorage.email = email
       localStorage.server = server
@@ -484,15 +492,18 @@ export default createStore({
       await dispatch('fetchOrganizations')
     },
 
-    async Logout({ state }) {
+    async Logout({ state, dispatch }) {
       try {
         await AuthService.Logout()
       } catch (_error) {
         // Ignore server-side logout errors
       }
 
+      // Clear userKey from OS keychain
+      const email = localStorage.email || ''
+      await dispatch('removeUserKeyFromKeychain', { email })
+
       state.userKey = null
-      state.masterKey = null
       state.user = null
       state.authenticated = false
       state.pro = false
@@ -500,6 +511,7 @@ export default createStore({
       state.refresh_token = ''
       state.two_factor_token = null
       state.two_factor_required = false
+      state._pendingMasterKey = null
       state.organizations = []
       state.defaultOrgId = null
       state.orgKeys = {}
@@ -508,7 +520,6 @@ export default createStore({
       HTTPClient.setHeader('Authorization', '')
 
       sessionStorage.removeItem('userKey')
-      sessionStorage.removeItem('masterKey')
 
       const lsKeys = Object.keys(localStorage).filter(
         (key) => ['email', 'server'].includes(key) === false
@@ -797,15 +808,58 @@ export default createStore({
     // Session Management
     // ============================================================
 
-    async persistSessionKeys(_, { userKey, masterKey }) {
+    async persistSessionKeys(_, { userKey }) {
       const userKeyB64 = userKey ? cryptoService.arrayToBase64(userKey.toBytes()) : null
-      const masterKeyB64 = masterKey ? cryptoService.arrayToBase64(masterKey) : null
-
       if (userKeyB64) {
         sessionStorage.setItem('userKey', userKeyB64)
       }
-      if (masterKeyB64) {
-        sessionStorage.setItem('masterKey', masterKeyB64)
+    },
+
+    /**
+     * Store userKey in OS keychain via Electron safeStorage.
+     * Survives app restarts — enables extension unlock without re-entering master password.
+     */
+    async storeUserKeyInKeychain(_, { email }) {
+      if (!window.electronAPI?.keyStore) return
+      try {
+        const userKeyB64 = sessionStorage.getItem('userKey')
+        if (!userKeyB64 || !email) return
+        await window.electronAPI.keyStore.store(email, userKeyB64)
+      } catch {
+        // safeStorage may not be available (Linux without secret store)
+      }
+    },
+
+    /**
+     * Restore userKey from OS keychain.
+     * Called on app startup when sessionStorage is empty but keychain has persisted key.
+     */
+    async restoreUserKeyFromKeychain({ state }) {
+      if (!window.electronAPI?.keyStore) return false
+      try {
+        const email = localStorage.email || ''
+        if (!email) return false
+        const available = await window.electronAPI.keyStore.isAvailable()
+        if (!available) return false
+        const userKeyB64 = await window.electronAPI.keyStore.retrieve(email)
+        if (!userKeyB64) return false
+        const userKeyBytes = cryptoService.base64ToArray(userKeyB64)
+        state.userKey = SymmetricKey.fromBytes(userKeyBytes)
+        sessionStorage.setItem('userKey', userKeyB64)
+        state.authenticated = !!state.access_token && !!state.userKey
+        return true
+      } catch {
+        return false
+      }
+    },
+
+    async removeUserKeyFromKeychain(_, { email }) {
+      if (!window.electronAPI?.keyStore) return
+      try {
+        if (!email) return
+        await window.electronAPI.keyStore.remove(email)
+      } catch {
+        // ignore
       }
     }
   },

@@ -1,0 +1,9 @@
+{
+  "name": "com.passwall.desktop",
+  "description": "Passwall Desktop — secure key storage for the Passwall browser extension",
+  "path": "__PASSWALL_BINARY_PATH__",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://blaiihhmnjllkfnkmkidahhegbmlghmo/"
+  ]
+}

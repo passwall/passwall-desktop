@@ -110,6 +110,21 @@ const router = createRouter({
               component: () => import('@/views/BankAccounts/Detail.vue')
             }
           ]
+        },
+        {
+          path: '/connected-browsers',
+          name: 'ConnectedBrowsers',
+          component: () => import('@/views/Settings/ConnectedBrowsers.vue')
+        },
+        {
+          path: '/settings',
+          name: 'DesktopSettings',
+          component: () => import('@/views/Settings/DesktopSettings.vue')
+        },
+        {
+          path: '/password-generator',
+          name: 'PasswordGenerator',
+          component: () => import('@/views/Settings/PasswordGenerator.vue')
         }
       ]
     },

@@ -35,6 +35,34 @@ contextBridge.exposeInMainWorld('electronAPI', {
   api: {
     request: (opts) => ipcRenderer.invoke('api:request', opts)
   },
+  keyStore: {
+    isAvailable: () => ipcRenderer.invoke('keyStore:isAvailable'),
+    store: (email, userKeyBase64) => ipcRenderer.invoke('keyStore:store', email, userKeyBase64),
+    retrieve: (email) => ipcRenderer.invoke('keyStore:retrieve', email),
+    remove: (email) => ipcRenderer.invoke('keyStore:remove', email),
+    has: (email) => ipcRenderer.invoke('keyStore:has', email)
+  },
+  desktop: {
+    isLocked: () => ipcRenderer.invoke('desktop:isLocked'),
+    onLocked: (callback) => onMenuEvent('desktop:locked', callback),
+    onUnlocked: (callback) => onMenuEvent('desktop:unlocked', callback)
+  },
+  settings: {
+    getAutoLaunch: () => ipcRenderer.invoke('settings:getAutoLaunch'),
+    setAutoLaunch: (enabled) => ipcRenderer.invoke('settings:setAutoLaunch', enabled),
+    getUpdateSettings: () => ipcRenderer.invoke('settings:getUpdateSettings'),
+    setAutoUpdateEnabled: (enabled) => ipcRenderer.invoke('settings:setAutoUpdateEnabled', enabled),
+    setAutoDownloadEnabled: (enabled) =>
+      ipcRenderer.invoke('settings:setAutoDownloadEnabled', enabled),
+    setAutoInstallOnQuitEnabled: (enabled) =>
+      ipcRenderer.invoke('settings:setAutoInstallOnQuitEnabled', enabled),
+    checkForUpdatesNow: () => ipcRenderer.invoke('settings:checkForUpdatesNow'),
+    installUpdateNow: () => ipcRenderer.invoke('settings:installUpdateNow')
+  },
+  pairing: {
+    getConnectedBrowsers: () => ipcRenderer.invoke('pairing:getConnectedBrowsers'),
+    removeBrowser: (origin) => ipcRenderer.invoke('pairing:removeBrowser', origin)
+  },
   onMenuExport: (callback) => onMenuEvent('menu:export', callback),
   onMenuImport: (callback) => onMenuEvent('menu:import', callback)
 })

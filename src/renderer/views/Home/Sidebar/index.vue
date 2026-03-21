@@ -16,24 +16,18 @@
       <!-- Menu -->
       <div class="account-menu" :class="accountMenuClass">
         <div class="d-flex flex-column flex-items-start p-3">
-          <span v-text="$t('Subscription Settings')" class="c-gray-300 mb-3" />
-          <!-- Upgrade -->
-          <button @click="onClickUpgrade" v-if="!hasProPlan">
-            <VIcon name="arrow-up" size="14px" class="mr-2 c-secondary" />
-            {{ $t('Upgrade') }}
+          <button @click="navigateTo('PasswordGenerator')">
+            <VIcon name="refresh" size="14px" class="mr-2" />
+            {{ $t('Password Generator') }}
           </button>
-          <template v-else>
-            <!-- Update -->
-            <button @click="onClickUpdate">
-              <VIcon name="refresh" size="15px" class="mr-2" />
-              {{ $t('Update') }}
-            </button>
-            <!-- Cancel -->
-            <button @click="onClickCancel">
-              <VIcon name="x" size="10px" class="mr-2" />
-              {{ $t('Cancel') }}
-            </button>
-          </template>
+          <button @click="navigateTo('ConnectedBrowsers')">
+            <VIcon name="monitor" size="14px" class="mr-2" />
+            {{ $t('Connected Browsers') }}
+          </button>
+          <button @click="navigateTo('DesktopSettings')">
+            <VIcon name="cog" size="14px" class="mr-2" />
+            {{ $t('Settings') }}
+          </button>
         </div>
       </div>
     </div>
@@ -57,7 +51,7 @@
 
     <!-- Update -->
     <button v-if="hasUpdate" @click="onClickUpdateApp" class="update-box flex-center">
-      {{ $t('There is an update available.') }}
+      {{ updateLabel }}
     </button>
 
     <div class="app-version" v-if="appVersion">v{{ appVersion }}</div>
@@ -88,12 +82,26 @@ export default {
     return {
       hasUpdate: false,
       updateLink: null,
+      latestVersion: null,
+      updateLastResult: 'idle',
+      updateDownloadPercent: 0,
+      updateAutoDownloadEnabled: true,
+      updateInstallReady: false,
+      updatePollTimer: null,
       showAccountMenu: false
     }
   },
 
   async created() {
     await this.checkUpdate()
+    this.startUpdatePolling()
+  },
+
+  beforeUnmount() {
+    if (this.updatePollTimer) {
+      clearInterval(this.updatePollTimer)
+      this.updatePollTimer = null
+    }
   },
 
   computed: {
@@ -101,7 +109,24 @@ export default {
     ...mapGetters(['hasProPlan']),
 
     accountMenuClass() {
-      return [this.hasProPlan ? '--pro-plan' : '--free-plan', { '--open': this.showAccountMenu }]
+      return [{ '--open': this.showAccountMenu }]
+    },
+    updateLabel() {
+      if (this.updateLastResult === 'downloading') {
+        return `Downloading update: ${Math.floor(this.updateDownloadPercent)}%`
+      }
+      if (this.updateLastResult === 'downloaded') {
+        if (this.updateInstallReady) {
+          return 'Update ready. Click to restart and install.'
+        }
+        return 'Update ready. Click to download.'
+      }
+      if (!this.latestVersion) {
+        return this.$t('There is an update available.')
+      }
+      return this.$t('There is an update available: {version}', {
+        version: `v${this.latestVersion}`
+      })
     },
     appVersion() {
       return import.meta.env.VITE_APP_VERSION || ''
@@ -109,29 +134,77 @@ export default {
   },
 
   methods: {
-    onClickUpdateApp() {
-      if (window.electronAPI) {
-        window.electronAPI.shell.openExternal(this.updateLink || 'https://passwall.io')
+    async onClickUpdateApp() {
+      if (window.electronAPI?.settings) {
+        const status = await window.electronAPI.settings.checkForUpdatesNow()
+        this.applyUpdateStatus(status)
+        if (!status?.active) {
+          this.$notifyError('Automatic updates are not active.')
+          return
+        }
+        if (status?.lastResult === 'downloaded') {
+          const installResult = await window.electronAPI.settings.installUpdateNow()
+          if (installResult?.ok && installResult?.method === 'native') {
+            this.$notifySuccess('Installing update, app will restart...')
+            return
+          }
+          if (installResult?.ok && installResult?.method === 'manual') {
+            this.$notifySuccess('Opening download page. Please install the new version manually.')
+            return
+          }
+          this.$notifyError('Could not start update installation.')
+          return
+        }
+        if (!status?.autoDownloadEnabled) {
+          this.$notifyWarn('Auto download is disabled in settings.')
+          return
+        }
+        this.$notifySuccess('Update check started.')
+        return
+      }
+      if (window.electronAPI?.shell) {
+        window.electronAPI.shell.openExternal('https://passwall.io')
       }
     },
 
     async checkUpdate() {
-      if (!window.electronAPI) {
+      if (!window.electronAPI?.settings) {
         return
       }
 
-      const version = await window.electronAPI.app.getVersion()
       try {
-        const { data } = await window.electronAPI.api.request({
-          method: 'GET',
-          url: 'https://api.github.com/repos/passwall/passwall-desktop/releases/latest',
-          headers: { Accept: 'application/json' }
-        })
-        this.hasUpdate = data.tag_name != version
-        this.updateLink = data.html_url
+        let status = await window.electronAPI.settings.getUpdateSettings()
+        if (status?.active && !status?.lastCheckedAt) {
+          status = await window.electronAPI.settings.checkForUpdatesNow()
+        }
+        this.applyUpdateStatus(status)
       } catch (err) {
         console.log(err)
+        this.hasUpdate = false
+        this.updateLink = null
+        this.latestVersion = null
+        this.updateLastResult = 'error'
+        this.updateDownloadPercent = 0
       }
+    },
+
+    applyUpdateStatus(status) {
+      this.hasUpdate = Boolean(status?.hasUpdate)
+      this.updateLink = status?.feedUrl || null
+      this.latestVersion = status?.latestVersion || null
+      this.updateLastResult = status?.lastResult || 'idle'
+      this.updateDownloadPercent = Number(status?.downloadPercent || 0)
+      this.updateAutoDownloadEnabled = Boolean(status?.autoDownloadEnabled)
+      this.updateInstallReady = Boolean(status?.installReady)
+    },
+
+    startUpdatePolling() {
+      if (!window.electronAPI?.settings || this.updatePollTimer) {
+        return
+      }
+      this.updatePollTimer = setInterval(() => {
+        this.checkUpdate()
+      }, 3000)
     },
 
     onClickFeedback() {
@@ -140,22 +213,9 @@ export default {
       }
     },
 
-    onClickUpgrade() {
-      if (window.electronAPI) {
-        window.electronAPI.shell.openExternal('https://signup.passwall.io/upgrade')
-      }
-    },
-
-    onClickUpdate() {
-      if (window.electronAPI) {
-        window.electronAPI.shell.openExternal(this.user.update_url)
-      }
-    },
-
-    onClickCancel() {
-      if (window.electronAPI) {
-        window.electronAPI.shell.openExternal(this.user.cancel_url)
-      }
+    navigateTo(routeName) {
+      this.showAccountMenu = false
+      this.$router.push({ name: routeName })
     }
   }
 }
@@ -206,14 +266,7 @@ export default {
       &.--open {
         border: 1px solid $color-gray-400;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-
-        &.--free-plan {
-          height: 85px;
-        }
-
-        &.--pro-plan {
-          height: 120px;
-        }
+        height: 142px;
       }
 
       hr {
@@ -225,10 +278,12 @@ export default {
 
       button {
         color: white;
-        font-size: $font-size-medium;
-        margin-bottom: 20px;
+        font-size: $font-size-normal;
+        margin-bottom: 14px;
         display: flex;
         align-items: center;
+        justify-content: flex-start;
+        width: 100%;
         transition: color 150ms ease;
 
         &:hover {

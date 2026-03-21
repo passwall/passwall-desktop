@@ -206,6 +206,7 @@ jobs:
           path: |
             build/*.dmg
             build/*.zip
+            build/*.blockmap
             build/latest-mac.yml
             build/notary-submission-${{ matrix.arch }}.txt
 
@@ -232,6 +233,7 @@ jobs:
             --exclude "*" \
             --include "*.dmg" \
             --include "*.zip" \
+            --include "*.blockmap" \
             --include "latest-mac.yml" \
             --acl public-read \
             --endpoint-url "https://${ENDPOINT}"
