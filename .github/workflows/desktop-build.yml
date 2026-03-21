@@ -172,9 +172,9 @@ jobs:
             npx electron-builder --mac dmg zip --x64 --publish never
           fi
 
-      - name: Notarize DMG
+      - name: Notarize and staple DMG
         if: ${{ env.HAS_APPLE_NOTARY == 'true' }}
-        timeout-minutes: 10
+        timeout-minutes: 15
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
@@ -182,21 +182,17 @@ jobs:
         run: |
           DMG_PATH="$(find build -name '*.dmg' -print -quit)"
           if [ -n "$DMG_PATH" ] && [ -n "$APPLE_ID" ]; then
-            SUBMIT_OUTPUT="$(xcrun notarytool submit "$DMG_PATH" \
+            echo "Submitting $DMG_PATH for notarization (waiting for completion)..."
+            xcrun notarytool submit "$DMG_PATH" \
               --apple-id "$APPLE_ID" \
               --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-              --team-id "$APPLE_TEAM_ID")"
+              --team-id "$APPLE_TEAM_ID" \
+              --wait --timeout 10m
 
-            echo "$SUBMIT_OUTPUT"
-
-            SUBMISSION_ID="$(echo "$SUBMIT_OUTPUT" | awk '/id:/ { print $2; exit }')"
-            if [ -z "$SUBMISSION_ID" ]; then
-              echo "Failed to parse notary submission id"
-              exit 1
-            fi
-            echo "$SUBMISSION_ID" > "build/notary-submission-${{ matrix.arch }}.txt"
-            echo "Notary submission queued: $SUBMISSION_ID"
-            echo "Notarization will continue asynchronously; pipeline won't wait for completion."
+            echo "Stapling notarization ticket..."
+            xcrun stapler staple "$DMG_PATH"
+            xcrun stapler validate "$DMG_PATH"
+            echo "DMG is signed, notarized, and stapled."
           fi
 
       - name: Upload artifact
@@ -208,7 +204,6 @@ jobs:
             build/*.zip
             build/*.blockmap
             build/latest-mac.yml
-            build/notary-submission-${{ matrix.arch }}.txt
 
       - name: Publish macOS artifacts to DigitalOcean Spaces
         if: ${{ startsWith(github.ref, 'refs/tags/v') && env.HAS_DO_SPACES == 'true' }}
