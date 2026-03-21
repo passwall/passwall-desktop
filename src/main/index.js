@@ -30,8 +30,12 @@ let updateState = {
 
 const NATIVE_HOST_NAME = 'com.passwall.desktop'
 const CHROME_EXTENSION_ID = 'blaiihhmnjllkfnkmkidahhegbmlghmo'
-const KNOWN_DEV_EXTENSION_IDS = ['cnohkljjjnoajldmkfeipegcaogcgknc']
 const APP_SETTINGS_FILE_NAME = 'app-settings.json'
+const MAX_PAIRED_BROWSERS = 20
+
+function isValidChromeOrigin(origin) {
+  return /^chrome-extension:\/\/[a-p]{32}\/$/.test(String(origin || ''))
+}
 
 // If launched as a native messaging host (by browser), start in host mode
 const isNativeMessagingMode = process.argv.includes('--native-messaging')
@@ -61,9 +65,9 @@ async function ensureNativeHostRegistration() {
     .split(',')
     .map((v) => v.trim())
     .filter(Boolean)
-  const allowedOrigins = Array.from(
-    new Set([CHROME_EXTENSION_ID, ...KNOWN_DEV_EXTENSION_IDS, ...envIds])
-  ).map((id) => `chrome-extension://${id}/`)
+  const allowedOrigins = Array.from(new Set([CHROME_EXTENSION_ID, ...envIds]))
+    .map((id) => `chrome-extension://${id}/`)
+    .filter((origin) => isValidChromeOrigin(origin))
 
   let hostPath
   let hostArgs = ['--native-messaging']
@@ -739,6 +743,9 @@ ipcMain.handle('pairing:getConnectedBrowsers', () => {
 })
 
 ipcMain.handle('pairing:removeBrowser', (_event, origin) => {
+  if (!isValidChromeOrigin(origin)) {
+    return false
+  }
   if (nativeMessagingHost) {
     nativeMessagingHost.removeSession(origin)
   }
@@ -753,7 +760,17 @@ function getPairingFilePath() {
 function getPersistentPairings() {
   try {
     const raw = require('fs').readFileSync(getPairingFilePath(), 'utf8')
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) {
+      return []
+    }
+    return parsed
+      .filter((p) => isValidChromeOrigin(p?.origin) && Number.isFinite(Number(p?.connectedAt || 0)))
+      .map((p) => ({
+        origin: String(p.origin),
+        connectedAt: Number(p.connectedAt)
+      }))
+      .slice(-MAX_PAIRED_BROWSERS)
   } catch {
     return []
   }
@@ -761,7 +778,18 @@ function getPersistentPairings() {
 
 function savePersistentPairings(pairings) {
   const filePath = getPairingFilePath()
-  require('fs').writeFileSync(filePath, JSON.stringify(pairings, null, 2), { mode: 0o600 })
+  const safeList = Array.isArray(pairings)
+    ? pairings
+        .filter(
+          (p) => isValidChromeOrigin(p?.origin) && Number.isFinite(Number(p?.connectedAt || 0))
+        )
+        .map((p) => ({
+          origin: String(p.origin),
+          connectedAt: Number(p.connectedAt)
+        }))
+        .slice(-MAX_PAIRED_BROWSERS)
+    : []
+  require('fs').writeFileSync(filePath, JSON.stringify(safeList, null, 2), { mode: 0o600 })
 }
 
 function addPersistentPairing(pairing) {

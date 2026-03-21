@@ -15846,12 +15846,15 @@ var require_native_messaging_host = __commonJS({
     var nodePath = require("path");
     var nodeFs = require("fs");
     var MAX_MESSAGE_SIZE = 1024 * 1024;
+    var MAX_PAIRED_BROWSERS2 = 20;
     var PROD_EXTENSION_ID = "blaiihhmnjllkfnkmkidahhegbmlghmo";
-    var KNOWN_DEV_EXTENSION_IDS2 = ["cnohkljjjnoajldmkfeipegcaogcgknc"];
     function getAllowedOrigins() {
       const envIds = String(process.env.PASSWALL_CHROME_EXTENSION_IDS || "").split(",").map((v) => v.trim()).filter(Boolean);
-      const ids = /* @__PURE__ */ new Set([PROD_EXTENSION_ID, ...KNOWN_DEV_EXTENSION_IDS2, ...envIds]);
+      const ids = /* @__PURE__ */ new Set([PROD_EXTENSION_ID, ...envIds]);
       return Array.from(ids).map((id) => `chrome-extension://${id}/`);
+    }
+    function isValidChromeOrigin2(origin) {
+      return /^chrome-extension:\/\/[a-p]{32}\/$/.test(String(origin || ""));
     }
     var NativeMessagingHost2 = class {
       constructor() {
@@ -15948,7 +15951,15 @@ var require_native_messaging_host = __commonJS({
         });
       }
       async _handleMessage(message) {
+        if (!message || typeof message !== "object" || Array.isArray(message)) {
+          this._sendError("INVALID_MESSAGE", "Message must be an object");
+          return;
+        }
         const { id, type, payload } = message || {};
+        if (message.v !== 1) {
+          this._sendError("UNSUPPORTED_VERSION", "Unsupported protocol version", id || null);
+          return;
+        }
         if (!type || !id) {
           this._sendError("INVALID_MESSAGE", "Missing type or id");
           return;
@@ -16023,6 +16034,12 @@ var require_native_messaging_host = __commonJS({
           this._sendError("MISSING_EMAIL", "email is required", id);
           return;
         }
+        const origin = this.callerOrigin;
+        const session = origin ? this.sessions.get(origin) : null;
+        if (!session || !session.hasSession()) {
+          this._sendError("HANDSHAKE_REQUIRED", "Secure session is required before key checks", id);
+          return;
+        }
         const exists = await safeKeyStore2.has(email);
         this._sendResponse(id, "HAS_USER_KEY_RESULT", { exists });
       }
@@ -16068,34 +16085,44 @@ var require_native_messaging_host = __commonJS({
         }
       }
       _persistConnection(origin) {
-        if (!origin)
+        if (!isValidChromeOrigin2(origin))
           return;
         try {
           const filePath = nodePath.join(app2.getPath("userData"), "paired-browsers.json");
-          let list = [];
-          try {
-            list = JSON.parse(nodeFs.readFileSync(filePath, "utf8"));
-          } catch {
-          }
+          let list = this._readPairedBrowsers(filePath);
           list = list.filter((p) => p.origin !== origin);
           list.push({ origin, connectedAt: Date.now() });
+          if (list.length > MAX_PAIRED_BROWSERS2) {
+            list = list.slice(-MAX_PAIRED_BROWSERS2);
+          }
           nodeFs.writeFileSync(filePath, JSON.stringify(list, null, 2), { mode: 384 });
         } catch {
         }
       }
       _removeConnection(origin) {
-        if (!origin)
+        if (!isValidChromeOrigin2(origin))
           return;
         try {
           const filePath = nodePath.join(app2.getPath("userData"), "paired-browsers.json");
-          let list = [];
-          try {
-            list = JSON.parse(nodeFs.readFileSync(filePath, "utf8"));
-          } catch {
-          }
+          const list = this._readPairedBrowsers(filePath);
           const filtered = list.filter((p) => p.origin !== origin);
           nodeFs.writeFileSync(filePath, JSON.stringify(filtered, null, 2), { mode: 384 });
         } catch {
+        }
+      }
+      _readPairedBrowsers(filePath) {
+        try {
+          const raw = JSON.parse(nodeFs.readFileSync(filePath, "utf8"));
+          if (!Array.isArray(raw))
+            return [];
+          return raw.filter(
+            (p) => isValidChromeOrigin2(p?.origin) && Number.isFinite(Number(p?.connectedAt || 0))
+          ).map((p) => ({
+            origin: String(p.origin),
+            connectedAt: Number(p.connectedAt)
+          })).slice(-MAX_PAIRED_BROWSERS2);
+        } catch {
+          return [];
         }
       }
       _onEnd(reason = "unknown") {
@@ -16159,8 +16186,11 @@ var updateState = {
 };
 var NATIVE_HOST_NAME = "com.passwall.desktop";
 var CHROME_EXTENSION_ID = "blaiihhmnjllkfnkmkidahhegbmlghmo";
-var KNOWN_DEV_EXTENSION_IDS = ["cnohkljjjnoajldmkfeipegcaogcgknc"];
 var APP_SETTINGS_FILE_NAME = "app-settings.json";
+var MAX_PAIRED_BROWSERS = 20;
+function isValidChromeOrigin(origin) {
+  return /^chrome-extension:\/\/[a-p]{32}\/$/.test(String(origin || ""));
+}
 var isNativeMessagingMode = process.argv.includes("--native-messaging");
 if (isNativeMessagingMode) {
   if (process.platform === "darwin" && import_electron.app.dock) {
@@ -16180,9 +16210,7 @@ async function ensureNativeHostRegistration() {
     return;
   }
   const envIds = String(process.env.PASSWALL_CHROME_EXTENSION_IDS || "").split(",").map((v) => v.trim()).filter(Boolean);
-  const allowedOrigins = Array.from(
-    /* @__PURE__ */ new Set([CHROME_EXTENSION_ID, ...KNOWN_DEV_EXTENSION_IDS, ...envIds])
-  ).map((id) => `chrome-extension://${id}/`);
+  const allowedOrigins = Array.from(/* @__PURE__ */ new Set([CHROME_EXTENSION_ID, ...envIds])).map((id) => `chrome-extension://${id}/`).filter((origin) => isValidChromeOrigin(origin));
   let hostPath;
   let hostArgs = ["--native-messaging"];
   if (import_electron.app.isPackaged) {
@@ -16739,6 +16767,9 @@ import_electron.ipcMain.handle("pairing:getConnectedBrowsers", () => {
   }));
 });
 import_electron.ipcMain.handle("pairing:removeBrowser", (_event, origin) => {
+  if (!isValidChromeOrigin(origin)) {
+    return false;
+  }
   if (nativeMessagingHost) {
     nativeMessagingHost.removeSession(origin);
   }
@@ -16751,14 +16782,29 @@ function getPairingFilePath() {
 function getPersistentPairings() {
   try {
     const raw = require("fs").readFileSync(getPairingFilePath(), "utf8");
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    return parsed.filter(
+      (p) => isValidChromeOrigin(p?.origin) && Number.isFinite(Number(p?.connectedAt || 0))
+    ).map((p) => ({
+      origin: String(p.origin),
+      connectedAt: Number(p.connectedAt)
+    })).slice(-MAX_PAIRED_BROWSERS);
   } catch {
     return [];
   }
 }
 function savePersistentPairings(pairings) {
   const filePath = getPairingFilePath();
-  require("fs").writeFileSync(filePath, JSON.stringify(pairings, null, 2), { mode: 384 });
+  const safeList = Array.isArray(pairings) ? pairings.filter(
+    (p) => isValidChromeOrigin(p?.origin) && Number.isFinite(Number(p?.connectedAt || 0))
+  ).map((p) => ({
+    origin: String(p.origin),
+    connectedAt: Number(p.connectedAt)
+  })).slice(-MAX_PAIRED_BROWSERS) : [];
+  require("fs").writeFileSync(filePath, JSON.stringify(safeList, null, 2), { mode: 384 });
 }
 function removePersistentPairing(origin) {
   const list = getPersistentPairings().filter((p) => p.origin !== origin);

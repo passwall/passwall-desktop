@@ -25,11 +25,11 @@ const nodePath = require('path')
 const nodeFs = require('fs')
 
 const MAX_MESSAGE_SIZE = 1024 * 1024 // 1 MB
+const MAX_PAIRED_BROWSERS = 20
 
 // Allowed extension origins (Chrome format). Updated at build time.
 // Firefox uses allowed_extensions in the manifest instead.
 const PROD_EXTENSION_ID = 'blaiihhmnjllkfnkmkidahhegbmlghmo'
-const KNOWN_DEV_EXTENSION_IDS = ['cnohkljjjnoajldmkfeipegcaogcgknc']
 
 // Must mirror the IDs used in ensureNativeHostRegistration() (index.js)
 // so the host never rejects an origin that the manifest allowed Chrome to send.
@@ -38,9 +38,12 @@ function getAllowedOrigins() {
     .split(',')
     .map((v) => v.trim())
     .filter(Boolean)
-
-  const ids = new Set([PROD_EXTENSION_ID, ...KNOWN_DEV_EXTENSION_IDS, ...envIds])
+  const ids = new Set([PROD_EXTENSION_ID, ...envIds])
   return Array.from(ids).map((id) => `chrome-extension://${id}/`)
+}
+
+function isValidChromeOrigin(origin) {
+  return /^chrome-extension:\/\/[a-p]{32}\/$/.test(String(origin || ''))
 }
 
 class NativeMessagingHost {
@@ -161,7 +164,17 @@ class NativeMessagingHost {
   }
 
   async _handleMessage(message) {
+    if (!message || typeof message !== 'object' || Array.isArray(message)) {
+      this._sendError('INVALID_MESSAGE', 'Message must be an object')
+      return
+    }
+
     const { id, type, payload } = message || {}
+
+    if (message.v !== 1) {
+      this._sendError('UNSUPPORTED_VERSION', 'Unsupported protocol version', id || null)
+      return
+    }
 
     if (!type || !id) {
       this._sendError('INVALID_MESSAGE', 'Missing type or id')
@@ -255,6 +268,13 @@ class NativeMessagingHost {
       return
     }
 
+    const origin = this.callerOrigin
+    const session = origin ? this.sessions.get(origin) : null
+    if (!session || !session.hasSession()) {
+      this._sendError('HANDSHAKE_REQUIRED', 'Secure session is required before key checks', id)
+      return
+    }
+
     const exists = await safeKeyStore.has(email)
     this._sendResponse(id, 'HAS_USER_KEY_RESULT', { exists })
   }
@@ -307,17 +327,15 @@ class NativeMessagingHost {
   }
 
   _persistConnection(origin) {
-    if (!origin) return
+    if (!isValidChromeOrigin(origin)) return
     try {
       const filePath = nodePath.join(app.getPath('userData'), 'paired-browsers.json')
-      let list = []
-      try {
-        list = JSON.parse(nodeFs.readFileSync(filePath, 'utf8'))
-      } catch {
-        /* no file yet */
-      }
+      let list = this._readPairedBrowsers(filePath)
       list = list.filter((p) => p.origin !== origin)
       list.push({ origin, connectedAt: Date.now() })
+      if (list.length > MAX_PAIRED_BROWSERS) {
+        list = list.slice(-MAX_PAIRED_BROWSERS)
+      }
       nodeFs.writeFileSync(filePath, JSON.stringify(list, null, 2), { mode: 0o600 })
     } catch {
       /* non-fatal */
@@ -325,19 +343,32 @@ class NativeMessagingHost {
   }
 
   _removeConnection(origin) {
-    if (!origin) return
+    if (!isValidChromeOrigin(origin)) return
     try {
       const filePath = nodePath.join(app.getPath('userData'), 'paired-browsers.json')
-      let list = []
-      try {
-        list = JSON.parse(nodeFs.readFileSync(filePath, 'utf8'))
-      } catch {
-        /* no file */
-      }
+      const list = this._readPairedBrowsers(filePath)
       const filtered = list.filter((p) => p.origin !== origin)
       nodeFs.writeFileSync(filePath, JSON.stringify(filtered, null, 2), { mode: 0o600 })
     } catch {
       /* non-fatal */
+    }
+  }
+
+  _readPairedBrowsers(filePath) {
+    try {
+      const raw = JSON.parse(nodeFs.readFileSync(filePath, 'utf8'))
+      if (!Array.isArray(raw)) return []
+      return raw
+        .filter(
+          (p) => isValidChromeOrigin(p?.origin) && Number.isFinite(Number(p?.connectedAt || 0))
+        )
+        .map((p) => ({
+          origin: String(p.origin),
+          connectedAt: Number(p.connectedAt)
+        }))
+        .slice(-MAX_PAIRED_BROWSERS)
+    } catch {
+      return []
     }
   }
 
