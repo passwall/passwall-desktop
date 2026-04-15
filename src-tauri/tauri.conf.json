@@ -34,7 +34,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "createUpdaterArtifacts": true
+    "createUpdaterArtifacts": true,
+    "macOS": {
+      "signingIdentity": null,
+      "notarization": {
+        "teamId": null
+      }
+    }
   },
   "plugins": {
     "updater": {

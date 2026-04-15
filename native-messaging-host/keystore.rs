@@ -31,7 +31,10 @@ impl KeyStore {
         if key_b64.len() > MAX_KEY_LEN {
             return Err("Key data too large".into());
         }
-        if !key_b64.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'+' || b == b'/' || b == b'=') {
+        if !key_b64
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b == b'+' || b == b'/' || b == b'=')
+        {
             return Err("Key contains invalid characters".into());
         }
         Ok(())

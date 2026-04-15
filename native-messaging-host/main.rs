@@ -5,9 +5,9 @@
 
 use std::io::{self, Read, Write};
 mod keystore;
+use base64::{engine::general_purpose, Engine as _};
 use keystore::KeyStore;
 use serde::{Deserialize, Serialize};
-use base64::{engine::general_purpose, Engine as _};
 
 #[derive(Deserialize)]
 struct Request {
@@ -58,7 +58,11 @@ fn handle_request(req: Request) -> Response {
             payload: Some(serde_json::json!({"status": "ok"})),
         },
         "GET_USER_KEY" => {
-            let email = req.payload.as_ref().and_then(|p| p.get("email")).and_then(|v| v.as_str());
+            let email = req
+                .payload
+                .as_ref()
+                .and_then(|p| p.get("email"))
+                .and_then(|v| v.as_str());
             let ks = KeyStore::new();
             match email {
                 Some(email) => match ks.retrieve(email) {
@@ -88,9 +92,13 @@ fn handle_request(req: Request) -> Response {
                     payload: Some(serde_json::json!({"message": "Missing email"})),
                 },
             }
-        },
+        }
         "HAS_USER_KEY" => {
-            let email = req.payload.as_ref().and_then(|p| p.get("email")).and_then(|v| v.as_str());
+            let email = req
+                .payload
+                .as_ref()
+                .and_then(|p| p.get("email"))
+                .and_then(|v| v.as_str());
             let ks = KeyStore::new();
             match email {
                 Some(email) => match ks.retrieve(email) {
@@ -120,11 +128,17 @@ fn handle_request(req: Request) -> Response {
                     payload: Some(serde_json::json!({"message": "Missing email"})),
                 },
             }
-        },
+        }
         "STORE_USER_KEY" => {
             let (email, key_b64) = (
-                req.payload.as_ref().and_then(|p| p.get("email")).and_then(|v| v.as_str()),
-                req.payload.as_ref().and_then(|p| p.get("userKey")).and_then(|v| v.as_str()),
+                req.payload
+                    .as_ref()
+                    .and_then(|p| p.get("email"))
+                    .and_then(|v| v.as_str()),
+                req.payload
+                    .as_ref()
+                    .and_then(|p| p.get("userKey"))
+                    .and_then(|v| v.as_str()),
             );
             let ks = KeyStore::new();
             match (email, key_b64) {
@@ -149,9 +163,13 @@ fn handle_request(req: Request) -> Response {
                     payload: Some(serde_json::json!({"message": "Missing email or userKey"})),
                 },
             }
-        },
+        }
         "REMOVE_USER_KEY" => {
-            let email = req.payload.as_ref().and_then(|p| p.get("email")).and_then(|v| v.as_str());
+            let email = req
+                .payload
+                .as_ref()
+                .and_then(|p| p.get("email"))
+                .and_then(|v| v.as_str());
             let ks = KeyStore::new();
             match email {
                 Some(email) => match ks.remove(email) {
@@ -175,7 +193,7 @@ fn handle_request(req: Request) -> Response {
                     payload: Some(serde_json::json!({"message": "Missing email"})),
                 },
             }
-        },
+        }
         _ => Response {
             v: 1,
             resp_type: "error".to_string(),
