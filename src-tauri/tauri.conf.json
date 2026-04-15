@@ -38,7 +38,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "YOUR_MINISIGN_PUBKEY_HERE",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDNFRDQ3MzE1QThGNzBGMzkKUldRNUQvZW9GWFBVUG11alM5NGxWRE1aUm85M3Y2OGFPVWlJc3hneDk4dmFLODV5V0Q3aWZ1MXAK",
       "endpoints": [
         "https://DO_SPACES_CDN_URL/desktop/latest.json"
       ]
