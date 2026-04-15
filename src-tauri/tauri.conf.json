@@ -36,10 +36,7 @@
     ],
     "createUpdaterArtifacts": true,
     "macOS": {
-      "signingIdentity": null,
-      "notarization": {
-        "teamId": null
-      }
+      "signingIdentity": null
     }
   },
   "plugins": {
