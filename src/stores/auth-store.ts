@@ -1,0 +1,401 @@
+import { create } from "zustand";
+import { invoke } from "@tauri-apps/api/core";
+import {
+  cryptoService,
+  SymmetricKey,
+  PBKDF2_MIN_ITERATIONS,
+} from "@/lib/crypto";
+import AuthService from "@/api/auth";
+import HTTPClient from "@/lib/http-client";
+import type { User, Organization, LoginPayload, SignInResponse } from "@/types";
+import { useVaultStore } from "./vault-store";
+
+interface AuthState {
+  authenticated: boolean;
+  user: User | null;
+  userKey: SymmetricKey | null;
+  organizations: Organization[];
+  defaultOrgId: number | null;
+  orgKeys: Record<number, SymmetricKey>;
+  twoFactorRequired: boolean;
+  twoFactorToken: string | null;
+  _pendingMasterKey: Uint8Array | null;
+
+  isAuthenticated: () => boolean;
+  hasProPlan: () => boolean;
+  login: (payload: LoginPayload) => Promise<{ two_factor_required?: boolean }>;
+  verifyTwoFactor: (code: string, isRecovery?: boolean) => Promise<void>;
+  completeLogin: (
+    data: SignInResponse,
+    email: string,
+    server: string,
+    masterKey: Uint8Array
+  ) => Promise<void>;
+  logout: () => Promise<void>;
+  fetchOrganizations: () => Promise<void>;
+  restoreSession: () => Promise<boolean>;
+  persistSessionKeys: (userKey: SymmetricKey) => void;
+  storeUserKeyInKeychain: (email: string) => Promise<void>;
+  restoreUserKeyFromKeychain: () => Promise<boolean>;
+  removeUserKeyFromKeychain: (email: string) => Promise<void>;
+}
+
+function resolveDefaultOrgId(orgs: Organization[]): number | null {
+  const personal = orgs.find((o) => o.is_personal);
+  if (personal) return personal.id;
+  return orgs[0]?.id ?? null;
+}
+
+export const useAuthStore = create<AuthState>((set, get) => {
+  const userKeyBase64 = sessionStorage.getItem("userKey");
+  const userKey = userKeyBase64
+    ? SymmetricKey.fromBytes(cryptoService.base64ToArray(userKeyBase64))
+    : null;
+  const accessToken = localStorage.getItem("access_token") || "";
+  const userStr = localStorage.getItem("user");
+  const user = userStr ? (JSON.parse(userStr) as User) : null;
+
+  let organizations: Organization[] = [];
+  try {
+    const orgsJson = localStorage.getItem("organizations");
+    if (orgsJson) organizations = JSON.parse(orgsJson);
+  } catch {
+    organizations = [];
+  }
+
+  sessionStorage.removeItem("masterKey");
+
+  return {
+    authenticated: !!accessToken && !!userKey,
+    user,
+    userKey,
+    organizations,
+    defaultOrgId: resolveDefaultOrgId(organizations),
+    orgKeys: {},
+    twoFactorRequired: false,
+    twoFactorToken: null,
+    _pendingMasterKey: null,
+
+    isAuthenticated: () => {
+      const s = get();
+      return s.authenticated && !!s.userKey && !!localStorage.getItem("access_token");
+    },
+
+    hasProPlan: () => {
+      const s = get();
+      if (!s.user) return false;
+      const org =
+        s.organizations.find((o) => o.id === s.defaultOrgId) ||
+        s.organizations.find((o) => o.is_personal) ||
+        s.organizations[0];
+      if (!org) return false;
+      const status = org.subscription_status;
+      if (status === "expired" || status === "canceled") return false;
+      const plan = (org.plan || "free").split("-")[0].toLowerCase();
+      return plan !== "free";
+    },
+
+    async login(payload: LoginPayload) {
+      const { email, master_password, server } = payload;
+      HTTPClient.setBaseURL(server);
+
+      const { data: kdfConfig } = await AuthService.preLogin(email);
+
+      if (
+        kdfConfig.kdf_type === 0 &&
+        kdfConfig.kdf_iterations < PBKDF2_MIN_ITERATIONS
+      ) {
+        throw new Error(
+          `KDF iterations too low (${kdfConfig.kdf_iterations}). Minimum required: ${PBKDF2_MIN_ITERATIONS}.`
+        );
+      }
+
+      const masterKey = await cryptoService.makeMasterKey(
+        master_password,
+        kdfConfig.kdf_salt,
+        kdfConfig
+      );
+
+      const authKey = await cryptoService.hashMasterKey(masterKey);
+      const authKeyBase64 = cryptoService.arrayToBase64(authKey);
+
+      let data: SignInResponse;
+      try {
+        const response = await AuthService.signIn({
+          email,
+          master_password_hash: authKeyBase64,
+          app: "desktop",
+        });
+        data = response.data;
+      } catch (error: unknown) {
+        const err = error as { response?: { status: number; data?: { error?: string } } };
+        if (
+          err.response?.status === 403 &&
+          err.response?.data?.error === "two_factor_setup_required"
+        ) {
+          throw Object.assign(
+            new Error(
+              "Two-factor authentication setup is required by your organization. Please set it up in the Passwall Vault web app."
+            ),
+            { type: "REQUIRE_2FA_SETUP" }
+          );
+        }
+        throw error;
+      }
+
+      if (data.two_factor_required) {
+        set({
+          twoFactorRequired: true,
+          twoFactorToken: data.two_factor_token || null,
+          _pendingMasterKey: masterKey,
+        });
+        localStorage.setItem("email", email);
+        localStorage.setItem("server", server);
+        return { two_factor_required: true };
+      }
+
+      if (data.require_two_factor_setup?.is_mandatory) {
+        throw Object.assign(
+          new Error(
+            "Two-factor authentication setup is required by your organization. Please set it up in the Passwall Vault web app."
+          ),
+          { type: "REQUIRE_2FA_SETUP" }
+        );
+      }
+
+      await get().completeLogin(data, email, server, masterKey);
+      return {};
+    },
+
+    async verifyTwoFactor(code: string, isRecovery = false) {
+      const { twoFactorToken, _pendingMasterKey } = get();
+      if (!twoFactorToken || !_pendingMasterKey) {
+        throw new Error("No pending 2FA session");
+      }
+
+      const { data } = await AuthService.verify2FA({
+        two_factor_token: twoFactorToken,
+        ...(isRecovery ? { recovery_code: code } : { totp_code: code }),
+      });
+
+      if (data.require_two_factor_setup?.is_mandatory) {
+        set({
+          twoFactorRequired: false,
+          twoFactorToken: null,
+          _pendingMasterKey: null,
+        });
+        throw Object.assign(
+          new Error(
+            "Two-factor authentication setup is required. Please set it up in the Passwall Vault web app."
+          ),
+          { type: "REQUIRE_2FA_SETUP" }
+        );
+      }
+
+      const masterKey = _pendingMasterKey;
+      set({
+        twoFactorRequired: false,
+        twoFactorToken: null,
+        _pendingMasterKey: null,
+      });
+
+      const email = localStorage.getItem("email") || "";
+      const server = localStorage.getItem("server") || "";
+      await get().completeLogin(data, email, server, masterKey);
+    },
+
+    async completeLogin(
+      data: SignInResponse,
+      email: string,
+      server: string,
+      masterKey: Uint8Array
+    ) {
+      const stretchedMasterKey =
+        await cryptoService.stretchMasterKey(masterKey);
+      const userKey = await cryptoService.unwrapUserKey(
+        data.protected_user_key,
+        stretchedMasterKey
+      );
+
+      set({
+        userKey,
+        authenticated: true,
+        user: data.user,
+      });
+
+      localStorage.setItem("email", email);
+      localStorage.setItem("server", server);
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+      localStorage.setItem("user", JSON.stringify(data.user || {}));
+
+      get().persistSessionKeys(userKey);
+      await get().storeUserKeyInKeychain(email);
+      await get().fetchOrganizations();
+    },
+
+    async logout() {
+      try {
+        await AuthService.logout();
+      } catch {
+        // Ignore server-side logout errors
+      }
+
+      const email = localStorage.getItem("email") || "";
+      await get().removeUserKeyFromKeychain(email);
+
+      useVaultStore.getState().clearItems();
+
+      set({
+        userKey: null,
+        user: null,
+        authenticated: false,
+        twoFactorToken: null,
+        twoFactorRequired: false,
+        _pendingMasterKey: null,
+        organizations: [],
+        defaultOrgId: null,
+        orgKeys: {},
+      });
+
+      sessionStorage.removeItem("userKey");
+
+      const keysToKeep = ["email", "server"];
+      const allKeys = Object.keys(localStorage);
+      allKeys.forEach((key) => {
+        if (!keysToKeep.includes(key)) {
+          localStorage.removeItem(key);
+        }
+      });
+    },
+
+    async fetchOrganizations() {
+      try {
+        const { data } = await OrganizationsService.getAll();
+        const orgs = Array.isArray(data) ? data : [];
+
+        const orgKeys = { ...get().orgKeys };
+        const userKey = get().userKey;
+
+        if (userKey) {
+          for (const org of orgs) {
+            if (org.encrypted_org_key && !orgKeys[org.id]) {
+              try {
+                const { unwrapOrgKeyWithUserKey } = await import(
+                  "@/lib/crypto"
+                );
+                const orgKey = await unwrapOrgKeyWithUserKey(
+                  org.encrypted_org_key,
+                  userKey
+                );
+                orgKeys[org.id] = orgKey;
+              } catch (error) {
+                console.error(
+                  `Failed to unwrap org key for org ${org.id}:`,
+                  (error as Error).message
+                );
+              }
+            }
+          }
+        }
+
+        set({
+          organizations: orgs,
+          defaultOrgId: resolveDefaultOrgId(orgs),
+          orgKeys,
+        });
+
+        localStorage.setItem("organizations", JSON.stringify(orgs));
+      } catch (error) {
+        console.error(
+          "Failed to fetch organizations:",
+          (error as Error).message
+        );
+      }
+    },
+
+    async restoreSession(): Promise<boolean> {
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) return false;
+
+      // Restore user from localStorage if not in state
+      if (!get().user) {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          try {
+            set({ user: JSON.parse(userStr) as User });
+          } catch {
+            // corrupted user data
+          }
+        }
+      }
+
+      // Restore server base URL
+      const savedServer = localStorage.getItem("server");
+      if (savedServer) {
+        HTTPClient.setBaseURL(savedServer);
+      }
+
+      const restored = await get().restoreUserKeyFromKeychain();
+      if (restored) {
+        await get().fetchOrganizations();
+      }
+      return restored;
+    },
+
+    persistSessionKeys(userKey: SymmetricKey) {
+      const userKeyB64 = cryptoService.arrayToBase64(userKey.toBytes());
+      sessionStorage.setItem("userKey", userKeyB64);
+    },
+
+    async storeUserKeyInKeychain(email: string) {
+      try {
+        const userKeyB64 = sessionStorage.getItem("userKey");
+        if (!userKeyB64 || !email) return;
+        await invoke("store_key", { email, keyB64: userKeyB64 });
+      } catch {
+        // Keychain may not be available on some platforms
+      }
+    },
+
+    async restoreUserKeyFromKeychain(): Promise<boolean> {
+      try {
+        const email = localStorage.getItem("email") || "";
+        if (!email) return false;
+
+        const available = await invoke<boolean>("is_keystore_available");
+        if (!available) return false;
+
+        const userKeyB64 = await invoke<string | null>("retrieve_key", {
+          email,
+        });
+        if (!userKeyB64) return false;
+
+        const userKeyBytes = cryptoService.base64ToArray(userKeyB64);
+        const userKey = SymmetricKey.fromBytes(userKeyBytes);
+
+        sessionStorage.setItem("userKey", userKeyB64);
+        set({
+          userKey,
+          authenticated: true,
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    },
+
+    async removeUserKeyFromKeychain(email: string) {
+      try {
+        if (!email) return;
+        await invoke("remove_key", { email });
+      } catch {
+        // ignore
+      }
+    },
+  };
+});
+
+// Imported at module level — Zustand's lazy getState() pattern prevents
+// circular initialization issues at runtime.
+import OrganizationsService from "@/api/organizations";
