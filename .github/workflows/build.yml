@@ -13,7 +13,7 @@ env:
   DO_SPACES_BUCKET: ${{ secrets.DO_SPACES_BUCKET }}
   DO_SPACES_REGION: ${{ secrets.DO_SPACES_REGION }}
   DO_SPACES_ENDPOINT: ${{ secrets.DO_SPACES_ENDPOINT }}
-  DO_SPACES_CDN_URL: ${{ secrets.DO_SPACES_CDN_URL }}
+  DO_SPACES_CDN_URL: https://passwall-releases.nyc3.cdn.digitaloceanspaces.com
 
 jobs:
   build:
@@ -147,11 +147,12 @@ jobs:
         run: |
           cat > ~/.s3cfg << 'HEREDOC'
           [default]
-          access_key = ${{ secrets.DO_SPACES_ACCESS_KEY }}
-          secret_key = ${{ secrets.DO_SPACES_SECRET_KEY }}
+          access_key = ${{ secrets.DO_SPACES_KEY }}
+          secret_key = ${{ secrets.DO_SPACES_SECRET }}
           host_base = ${{ secrets.DO_SPACES_ENDPOINT }}
           host_bucket = %(bucket)s.${{ secrets.DO_SPACES_ENDPOINT }}
           use_https = True
+          signature_v2 = True
           HEREDOC
 
       - name: Get version from tag
@@ -175,7 +176,6 @@ jobs:
               s3cmd put "$file" \
                 "s3://${BUCKET}/desktop/${VERSION}/${FILENAME}" \
                 --acl-public \
-                --no-mime-magic \
                 --guess-mime-type
             done
           done
@@ -183,7 +183,7 @@ jobs:
       - name: Generate latest.json
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          CDN_URL="${{ secrets.DO_SPACES_CDN_URL }}"
+          CDN_URL="${DO_SPACES_CDN_URL}"
           PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
           # Helper: find the updater bundle + signature for a platform
@@ -273,7 +273,7 @@ jobs:
             "s3://${BUCKET}/desktop/latest.json" \
             --acl-public \
             --mime-type="application/json" \
-            --add-header="Cache-Control:no-cache, max-age=0"
+            --add-header="Cache-Control: no-cache, max-age=0"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -283,7 +283,7 @@ jobs:
           body: |
             ## Passwall Desktop ${{ steps.version.outputs.tag }}
 
-            Download the installer for your platform from the assets below or from the [CDN](${{ secrets.DO_SPACES_CDN_URL }}/desktop/${{ steps.version.outputs.version }}/).
+            Download the installer for your platform from the assets below or from the [CDN](https://passwall-releases.nyc3.cdn.digitaloceanspaces.com/desktop/${{ steps.version.outputs.version }}/).
           files: all-artifacts/**/*
           draft: false
           prerelease: false
