@@ -1,0 +1,9 @@
+{
+  "name": "com.passwall.desktop",
+  "description": "Passwall Desktop — secure key storage for the Passwall browser extension (dev)",
+  "path": "__NATIVE_MESSAGING_HOST_PATH__",
+  "type": "stdio",
+  "allowed_origins": [
+    "__CHROME_EXTENSION_ORIGIN__"
+  ]
+}

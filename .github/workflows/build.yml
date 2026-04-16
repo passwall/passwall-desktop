@@ -81,6 +81,9 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
+      - name: Verify native messaging manifest origin pin
+        run: pnpm verify:native-manifest
+
       - name: Build Tauri app
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}

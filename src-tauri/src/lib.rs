@@ -1,4 +1,5 @@
 mod keystore;
+mod paired_browsers;
 
 use keystore::KeyStore;
 
@@ -25,9 +26,20 @@ fn is_keystore_available() -> bool {
     KeyStore::is_available()
 }
 
+#[tauri::command]
+fn get_connected_browsers() -> Vec<paired_browsers::PairedBrowser> {
+    paired_browsers::read_pairings()
+}
+
+#[tauri::command]
+fn remove_browser(origin: &str) {
+    paired_browsers::remove_pairing(origin);
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
@@ -36,6 +48,8 @@ pub fn run() {
             retrieve_key,
             remove_key,
             is_keystore_available,
+            get_connected_browsers,
+            remove_browser,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

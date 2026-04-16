@@ -1,8 +1,32 @@
+import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
+
+function isTauriRuntime(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    ("__TAURI_INTERNALS__" in window || "__TAURI__" in window)
+  );
+}
+
+const isBrowserDevMode = import.meta.env.DEV && !isTauriRuntime();
+
+// In Tauri runtime always prefer Rust-backed fetch (no CORS/origin issues).
+// In pure browser dev mode keep native fetch so Vite proxy can handle /auth,/api.
+const httpFetch: typeof fetch = (input, init) =>
+  isTauriRuntime()
+    ? (tauriFetch(input as string, init) as unknown as Promise<Response>)
+    : fetch(input, init);
+
 const DEFAULT_BASE_URL = import.meta.env.DEV
   ? "" // dev: use Vite proxy to avoid CORS
   : "https://api.passwall.io";
 
 let baseURL = DEFAULT_BASE_URL;
+export const AUTH_EXPIRED_EVENT = "passwall:auth-expired";
+
+function emitAuthExpired() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(AUTH_EXPIRED_EVENT));
+}
 
 function getAuthHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
@@ -49,7 +73,12 @@ async function request<T = unknown>(
       typeof opts.data === "string" ? opts.data : JSON.stringify(opts.data);
   }
 
-  const res = await fetch(url, fetchOpts);
+  let res: globalThis.Response;
+  try {
+    res = await httpFetch(url, fetchOpts);
+  } catch (fetchErr: unknown) {
+    throw fetchErr;
+  }
   let parsed: T;
   try {
     parsed = await res.json();
@@ -130,6 +159,7 @@ async function requestWithRefresh<T = unknown>(
 
     const refreshToken = localStorage.getItem("refresh_token");
     if (!refreshToken) {
+      emitAuthExpired();
       isRefreshing = false;
       throw error;
     }
@@ -161,6 +191,7 @@ async function requestWithRefresh<T = unknown>(
       processQueue(refreshError, null);
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
+      emitAuthExpired();
       throw refreshError;
     } finally {
       isRefreshing = false;
@@ -202,7 +233,25 @@ export default class HTTPClient {
   }
 
   static setBaseURL(url: string) {
-    baseURL = url;
+    const trimmed = (url || "").trim();
+    if (!trimmed) {
+      baseURL = DEFAULT_BASE_URL;
+      return;
+    }
+
+    if (isBrowserDevMode) {
+      try {
+        const parsed = new URL(trimmed);
+        if (parsed.hostname === "api.passwall.io") {
+          baseURL = "";
+          return;
+        }
+      } catch {
+        // fall through and keep provided value
+      }
+    }
+
+    baseURL = trimmed.replace(/\/+$/, "");
   }
 
   static getBaseURL(): string {

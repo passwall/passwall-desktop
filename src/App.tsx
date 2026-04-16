@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router";
+import { Routes, Route, Navigate, useNavigate } from "react-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTheme } from "@/hooks/useTheme";
+import { AUTH_EXPIRED_EVENT } from "@/lib/http-client";
 import Login from "@/pages/Login";
 import TwoFactor from "@/pages/TwoFactor";
 import Home from "@/pages/Home";
@@ -16,6 +17,7 @@ import ConnectedBrowsers from "@/pages/ConnectedBrowsers";
 import UpdateNotifier from "@/components/common/UpdateNotifier";
 
 let _keychainRestoreAttempted = false;
+const IDLE_LOCK_TIMEOUT_MS = 15 * 60 * 1000;
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const authenticated = useAuthStore((s) => s.authenticated);
@@ -73,6 +75,65 @@ function TwoFactorGuard() {
 
 export default function App() {
   useTheme();
+  const navigate = useNavigate();
+  const authenticated = useAuthStore((s) => s.authenticated);
+  const userKey = useAuthStore((s) => s.userKey);
+  const logout = useAuthStore((s) => s.logout);
+
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      void logout().finally(() => {
+        navigate("/login", { replace: true });
+      });
+    };
+
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+    return () => {
+      window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+    };
+  }, [logout, navigate]);
+
+  useEffect(() => {
+    if (!authenticated || !userKey || !localStorage.getItem("access_token")) {
+      return;
+    }
+
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    const lockSession = () => {
+      void logout().finally(() => {
+        navigate("/login", { replace: true });
+      });
+    };
+
+    const resetIdleTimer = () => {
+      if (idleTimer) {
+        clearTimeout(idleTimer);
+      }
+      idleTimer = setTimeout(lockSession, IDLE_LOCK_TIMEOUT_MS);
+    };
+
+    const activityEvents: Array<keyof WindowEventMap> = [
+      "mousemove",
+      "mousedown",
+      "keydown",
+      "scroll",
+      "touchstart",
+    ];
+
+    activityEvents.forEach((eventName) => {
+      window.addEventListener(eventName, resetIdleTimer, { passive: true });
+    });
+    resetIdleTimer();
+
+    return () => {
+      activityEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, resetIdleTimer);
+      });
+      if (idleTimer) {
+        clearTimeout(idleTimer);
+      }
+    };
+  }, [authenticated, userKey, logout, navigate]);
 
   return (
     <>

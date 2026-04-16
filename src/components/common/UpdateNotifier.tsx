@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Download, X, RefreshCw, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  checkForAvailableUpdate,
+  installUpdate,
+  isAutoUpdateChecksEnabled,
+} from "@/lib/updater";
 
 type UpdateState = "idle" | "available" | "downloading" | "ready" | "error";
 
@@ -9,12 +14,13 @@ export default function UpdateNotifier() {
   const [state, setState] = useState<UpdateState>("idle");
   const [progress, setProgress] = useState(0);
   const [dismissed, setDismissed] = useState(false);
+  const [updateVersion, setUpdateVersion] = useState<string>("");
 
   const checkForUpdate = useCallback(async () => {
     try {
-      const { check } = await import("@tauri-apps/plugin-updater");
-      const update = await check();
+      const update = await checkForAvailableUpdate();
       if (update) {
+        setUpdateVersion(update.version ?? "");
         setState("available");
       }
     } catch {
@@ -23,9 +29,7 @@ export default function UpdateNotifier() {
   }, []);
 
   useEffect(() => {
-    const autoUpdateDisabled =
-      localStorage.getItem("passwall_auto_update") === "false";
-    if (autoUpdateDisabled) return;
+    if (!isAutoUpdateChecksEnabled()) return;
 
     const timer = setTimeout(checkForUpdate, 3000);
     return () => clearTimeout(timer);
@@ -36,17 +40,17 @@ export default function UpdateNotifier() {
     setProgress(0);
 
     try {
-      const { check } = await import("@tauri-apps/plugin-updater");
-      const update = await check();
+      const update = await checkForAvailableUpdate();
       if (!update) {
         setState("idle");
         return;
       }
+      setUpdateVersion(update.version ?? "");
 
       let totalBytes = 0;
       let receivedBytes = 0;
 
-      await update.downloadAndInstall((event) => {
+      await installUpdate(update, (event) => {
         if (event.event === "Started" && event.data.contentLength) {
           totalBytes = event.data.contentLength;
         } else if (event.event === "Progress") {
@@ -60,15 +64,6 @@ export default function UpdateNotifier() {
       });
 
       setState("ready");
-
-      setTimeout(async () => {
-        try {
-          const { relaunch } = await import("@tauri-apps/plugin-process");
-          await relaunch();
-        } catch {
-          // Relaunch may fail silently
-        }
-      }, 1500);
     } catch {
       setState("error");
     }
@@ -89,12 +84,17 @@ export default function UpdateNotifier() {
           <Download size={18} className="text-primary-light shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium">{t("UpdateAvailable")}</p>
+            {updateVersion && (
+              <p className="text-xs text-white/60">
+                {t("UpdateToVersion")} {updateVersion}
+              </p>
+            )}
           </div>
           <button
             onClick={handleDownloadAndInstall}
             className="text-xs bg-primary hover:bg-primary-hover px-3 py-1.5 rounded-lg transition-colors font-medium shrink-0"
           >
-            {t("Updates")}
+            {t("InstallUpdate")}
           </button>
           <button
             onClick={() => setDismissed(true)}
@@ -125,19 +125,19 @@ export default function UpdateNotifier() {
       {state === "ready" && (
         <div className="flex items-center gap-3">
           <CheckCircle size={18} className="text-green-400 shrink-0" />
-          <span className="text-sm">Restarting...</span>
+          <span className="text-sm">{t("Restarting")}</span>
         </div>
       )}
 
       {state === "error" && (
         <div className="flex items-center gap-3">
           <AlertCircle size={18} className="text-red-400 shrink-0" />
-          <span className="text-sm flex-1">Update failed</span>
+          <span className="text-sm flex-1">{t("UpdateFailed")}</span>
           <button
             onClick={handleRetry}
             className="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors"
           >
-            Retry
+            {t("Retry")}
           </button>
           <button
             onClick={() => setDismissed(true)}

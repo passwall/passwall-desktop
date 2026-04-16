@@ -5,9 +5,14 @@
 
 use std::io::{self, Read, Write};
 mod keystore;
-use base64::{engine::general_purpose, Engine as _};
+#[path = "../src-tauri/src/native_ipc.rs"]
+mod native_ipc;
+#[path = "../src-tauri/src/paired_browsers.rs"]
+mod paired_browsers;
 use keystore::KeyStore;
 use serde::{Deserialize, Serialize};
+
+const MAX_MESSAGE_SIZE: usize = 1024 * 1024;
 
 #[derive(Deserialize)]
 struct Request {
@@ -33,6 +38,9 @@ fn read_message() -> Option<Request> {
         return None;
     }
     let len = u32::from_le_bytes(len_buf) as usize;
+    if len == 0 || len > MAX_MESSAGE_SIZE {
+        return None;
+    }
     let mut buf = vec![0u8; len];
     if io::stdin().read_exact(&mut buf).is_err() {
         return None;
@@ -49,8 +57,29 @@ fn write_message<T: Serialize>(msg: &T) {
     }
 }
 
-fn handle_request(req: Request) -> Response {
+fn handle_request(req: Request, caller_origin: Option<&str>) -> Response {
     match req.req_type.as_str() {
+        "HANDSHAKE" => {
+            let (ok, payload) = native_ipc::handshake(req.id.clone(), &req.payload);
+            if ok {
+                if let Some(origin) = caller_origin {
+                    paired_browsers::add_pairing(origin);
+                }
+                Response {
+                    v: 1,
+                    resp_type: "response".to_string(),
+                    id: req.id,
+                    payload: Some(payload),
+                }
+            } else {
+                Response {
+                    v: 1,
+                    resp_type: "error".to_string(),
+                    id: req.id,
+                    payload: Some(payload),
+                }
+            }
+        }
         "PING" => Response {
             v: 1,
             resp_type: "response".to_string(),
@@ -66,12 +95,16 @@ fn handle_request(req: Request) -> Response {
             let ks = KeyStore::new();
             match email {
                 Some(email) => match ks.retrieve(email) {
-                    Ok(Some(key)) => Response {
-                        v: 1,
-                        resp_type: "response".to_string(),
-                        id: req.id,
-                        payload: Some(serde_json::json!({"userKey": key})),
-                    },
+                    Ok(Some(key)) => {
+                        let payload = native_ipc::encrypt_user_key_payload_if_session(&key)
+                            .unwrap_or_else(|| serde_json::json!({ "userKey": key }));
+                        Response {
+                            v: 1,
+                            resp_type: "response".to_string(),
+                            id: req.id,
+                            payload: Some(payload),
+                        }
+                    }
                     Ok(None) => Response {
                         v: 1,
                         resp_type: "response".to_string(),
@@ -203,10 +236,17 @@ fn handle_request(req: Request) -> Response {
     }
 }
 
+fn caller_origin_from_argv() -> Option<String> {
+    std::env::args().find(|a| {
+        a.starts_with("chrome-extension://") && a.ends_with('/') && a.len() > 40
+    })
+}
+
 fn main() {
+    let caller_origin = caller_origin_from_argv();
     loop {
         if let Some(req) = read_message() {
-            let resp = handle_request(req);
+            let resp = handle_request(req, caller_origin.as_deref());
             write_message(&resp);
         } else {
             break;

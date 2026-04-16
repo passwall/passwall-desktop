@@ -1,7 +1,7 @@
 {
   "name": "com.passwall.desktop",
   "description": "Passwall Desktop — secure key storage for the Passwall browser extension",
-  "path": "/Users/yakuter/projects/passwall/passwall-desktop/native-messaging-host/target/release/passwall-native-messaging-host",
+  "path": "__NATIVE_MESSAGING_HOST_PATH__",
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://blaiihhmnjllkfnkmkidahhegbmlghmo/"

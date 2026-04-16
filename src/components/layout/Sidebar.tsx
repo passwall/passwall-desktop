@@ -12,7 +12,6 @@ import {
   Settings as SettingsIcon,
   LogOut,
   MessageSquare,
-  Download,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -38,7 +37,6 @@ export default function Sidebar() {
   const user = useAuthStore((s) => s.user);
   const hasProPlan = useAuthStore((s) => s.hasProPlan());
   const [version, setVersion] = useState("");
-  const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
     import("@tauri-apps/api/app")
@@ -46,37 +44,6 @@ export default function Sidebar() {
       .then(setVersion)
       .catch(() => {});
   }, []);
-
-  useEffect(() => {
-    const autoUpdateDisabled =
-      localStorage.getItem("passwall_auto_update") === "false";
-    if (autoUpdateDisabled) return;
-
-    const timer = setTimeout(async () => {
-      try {
-        const { check } = await import("@tauri-apps/plugin-updater");
-        const update = await check();
-        if (update) setUpdateAvailable(true);
-      } catch {
-        // Updater not available in dev
-      }
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const handleUpdate = async () => {
-    try {
-      const { check } = await import("@tauri-apps/plugin-updater");
-      const { relaunch } = await import("@tauri-apps/plugin-process");
-      const update = await check();
-      if (update) {
-        await update.downloadAndInstall();
-        await relaunch();
-      }
-    } catch {
-      // ignore
-    }
-  };
 
   const handleLogout = async () => {
     await logout();
@@ -145,19 +112,6 @@ export default function Sidebar() {
           ))}
         </div>
       </nav>
-
-      {/* Update banner */}
-      {updateAvailable && (
-        <div className="px-3 mb-2">
-          <button
-            onClick={handleUpdate}
-            className="w-full flex items-center gap-2 bg-gradient-to-r from-primary/20 to-primary-light/10 hover:from-primary/30 hover:to-primary-light/20 text-primary-light px-3 py-2.5 rounded-lg text-xs font-medium transition-all border border-primary/20"
-          >
-            <Download size={14} />
-            <span>{t("UpdateAvailable")}</span>
-          </button>
-        </div>
-      )}
 
       {/* Bottom nav */}
       <div className="border-t border-white/[0.06] py-2 px-2">

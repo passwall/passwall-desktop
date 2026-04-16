@@ -14,6 +14,39 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function normalizeServerUrl(server: string): string | null {
+  const trimmed = server.trim();
+  if (!trimmed) return "";
+
+  try {
+    const withProtocol = /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(trimmed)
+      ? trimmed
+      : `https://${trimmed}`;
+    const url = new URL(withProtocol);
+    const isBrowserDevMode =
+      import.meta.env.DEV &&
+      typeof window !== "undefined" &&
+      !("__TAURI_INTERNALS__" in window) &&
+      !("__TAURI__" in window);
+
+    const isLocalhost =
+      url.hostname === "localhost" ||
+      url.hostname === "127.0.0.1" ||
+      url.hostname === "::1";
+    const allowHttpLocalhost = url.protocol === "http:" && isLocalhost;
+
+    if (!isBrowserDevMode && url.protocol !== "https:" && !allowHttpLocalhost) {
+      return null;
+    }
+    url.pathname = "";
+    url.search = "";
+    url.hash = "";
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return null;
+  }
+}
+
 export default function LoginForm() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -25,7 +58,7 @@ export default function LoginForm() {
   const [server, setServer] = useState(
     localStorage.getItem("server") || HTTPClient.getBaseURL()
   );
-  const [showServer, setShowServer] = useState(false);
+  const [showServer, setShowServer] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -49,6 +82,12 @@ export default function LoginForm() {
       return;
     }
 
+    const normalizedServer = normalizeServerUrl(server);
+    if (normalizedServer === null) {
+      setError("Please provide a valid server URL.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -56,7 +95,7 @@ export default function LoginForm() {
       const result = await login({
         email: trimmedEmail,
         master_password: masterPassword,
-        server,
+        server: normalizedServer,
       });
 
       if (result.two_factor_required) {

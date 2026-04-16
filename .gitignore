@@ -12,6 +12,28 @@ dist
 dist-ssr
 *.local
 
+# Tauri / Rust build outputs
+src-tauri/target/
+native-messaging-host/target/
+src-tauri/binaries/
+
+# Tauri bundler artifacts
+src-tauri/gen/
+src-tauri/.tauri/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+
+# Local assistant/editor state
+.cursor/
+.cursorignore
+.cursorrules
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

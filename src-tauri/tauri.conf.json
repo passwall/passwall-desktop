@@ -21,7 +21,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://icons.duckduckgo.com data:; connect-src 'self' https://api.passwall.io https://passwall-releases.nyc3.cdn.digitaloceanspaces.com"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://icons.duckduckgo.com data:; connect-src 'self' https: http://localhost:* http://127.0.0.1:* http://[::1]:*"
     }
   },
   "bundle": {

@@ -8,10 +8,14 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify:native-manifest": "node scripts/verify-native-manifest.mjs",
+    "native-host:install:prod": "node scripts/install-native-host-manifest.mjs --mode=prod",
+    "native-host:install:dev": "node scripts/install-native-host-manifest.mjs --mode=dev"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-http": "^2.5.8",
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-process": "^2",
     "@tauri-apps/plugin-updater": "^2",

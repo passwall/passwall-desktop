@@ -3,15 +3,23 @@ import { useEffect, useState, useRef } from "react";
 import { useVaultStore } from "@/stores/vault-store";
 import { useUiStore, type ThemeMode } from "@/stores/ui-store";
 import { exportItemsToCSV, parseCSV, detectTypeFromFilename } from "@/lib/import-export";
+import {
+  checkForAvailableUpdate,
+  installUpdate,
+  isAutoUpdateChecksEnabled,
+  setAutoUpdateChecksEnabled,
+} from "@/lib/updater";
 import { Download, Upload, Sun, Moon, Monitor } from "lucide-react";
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
   const [version, setVersion] = useState("");
-  const [autoUpdate, setAutoUpdate] = useState(
-    localStorage.getItem("passwall_auto_update") !== "false"
-  );
+  const [autoUpdate, setAutoUpdate] = useState(isAutoUpdateChecksEnabled());
   const [checking, setChecking] = useState(false);
+  const [installingUpdate, setInstallingUpdate] = useState(false);
+  const [pendingUpdateVersion, setPendingUpdateVersion] = useState<string | null>(
+    null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportItems = useVaultStore((s) => s.exportItems);
   const addNotification = useUiStore((s) => s.addNotification);
@@ -39,26 +47,41 @@ export default function Settings() {
   const toggleAutoUpdate = () => {
     const newVal = !autoUpdate;
     setAutoUpdate(newVal);
-    localStorage.setItem("passwall_auto_update", String(newVal));
+    setAutoUpdateChecksEnabled(newVal);
   };
 
   const checkForUpdates = async () => {
     setChecking(true);
     try {
-      const { check } = await import("@tauri-apps/plugin-updater");
-      const { relaunch } = await import("@tauri-apps/plugin-process");
-      const update = await check();
+      const update = await checkForAvailableUpdate();
       if (update) {
+        setPendingUpdateVersion(update.version ?? null);
         addNotification("info", t("UpdateAvailable"));
-        await update.downloadAndInstall();
-        await relaunch();
       } else {
-        addNotification("success", "Already up to date");
+        setPendingUpdateVersion(null);
+        addNotification("success", t("AlreadyUpToDate"));
       }
     } catch {
-      addNotification("warning", "Update check not available in dev mode");
+      addNotification("warning", t("UpdateCheckUnavailable"));
     } finally {
       setChecking(false);
+    }
+  };
+
+  const installPendingUpdate = async () => {
+    setInstallingUpdate(true);
+    try {
+      const update = await checkForAvailableUpdate();
+      if (!update) {
+        setPendingUpdateVersion(null);
+        addNotification("success", t("AlreadyUpToDate"));
+        return;
+      }
+      await installUpdate(update);
+    } catch {
+      addNotification("error", t("UpdateFailed"));
+    } finally {
+      setInstallingUpdate(false);
     }
   };
 
@@ -200,11 +223,25 @@ export default function Settings() {
             <div className="p-4">
               <button
                 onClick={checkForUpdates}
-                disabled={checking}
+                disabled={checking || installingUpdate}
                 className="text-sm text-primary hover:text-primary-hover disabled:opacity-50"
               >
                 {checking ? t("Checking") : t("CheckForUpdates")}
               </button>
+              {pendingUpdateVersion && (
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <p className="text-xs text-text-muted">
+                    {t("UpdateToVersion")} {pendingUpdateVersion}
+                  </p>
+                  <button
+                    onClick={installPendingUpdate}
+                    disabled={installingUpdate || checking}
+                    className="text-xs bg-primary hover:bg-primary-hover disabled:opacity-50 text-white px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    {installingUpdate ? t("Checking") : t("InstallUpdate")}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </section>
