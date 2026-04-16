@@ -1,4 +1,5 @@
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
+import { normalizeHttpClientBaseURL } from "@/lib/http-base-url";
 
 function isTauriRuntime(): boolean {
   return (
@@ -233,25 +234,10 @@ export default class HTTPClient {
   }
 
   static setBaseURL(url: string) {
-    const trimmed = (url || "").trim();
-    if (!trimmed) {
-      baseURL = DEFAULT_BASE_URL;
-      return;
-    }
-
-    if (isBrowserDevMode) {
-      try {
-        const parsed = new URL(trimmed);
-        if (parsed.hostname === "api.passwall.io") {
-          baseURL = "";
-          return;
-        }
-      } catch {
-        // fall through and keep provided value
-      }
-    }
-
-    baseURL = trimmed.replace(/\/+$/, "");
+    baseURL = normalizeHttpClientBaseURL(url, {
+      isBrowserDevMode,
+      defaultWhenEmpty: DEFAULT_BASE_URL,
+    });
   }
 
   static getBaseURL(): string {

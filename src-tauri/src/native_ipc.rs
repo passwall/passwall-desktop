@@ -100,3 +100,96 @@ pub fn encrypt_user_key_payload_if_session(user_key_b64: &str) -> Option<serde_j
         "nonce": n,
     }))
 }
+
+#[cfg(test)]
+fn reset_nm_crypto_session_for_test() {
+    if let Ok(mut g) = session_cell().lock() {
+        *g = None;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use p256::ecdh::EphemeralSecret;
+    use p256::PublicKey;
+    use rand_core::OsRng;
+
+    fn assert_message_contains(resp: &serde_json::Value, needle: &str) {
+        let msg = resp
+            .get("message")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        assert!(
+            msg.contains(needle),
+            "expected message containing {needle:?}, got {msg:?} full={resp:?}"
+        );
+    }
+
+    #[test]
+    fn handshake_rejects_missing_payload() {
+        reset_nm_crypto_session_for_test();
+        let (ok, resp) = handshake(None, &None);
+        assert!(!ok);
+        assert_message_contains(&resp, "extensionPublicKey");
+    }
+
+    #[test]
+    fn handshake_rejects_empty_extension_public_key() {
+        reset_nm_crypto_session_for_test();
+        let (ok, resp) = handshake(
+            None,
+            &Some(json!({ "extensionPublicKey": "" })),
+        );
+        assert!(!ok);
+        assert_message_contains(&resp, "extensionPublicKey");
+    }
+
+    #[test]
+    fn handshake_rejects_invalid_base64() {
+        reset_nm_crypto_session_for_test();
+        let (ok, resp) = handshake(
+            None,
+            &Some(json!({ "extensionPublicKey": "not!!!valid!!!base64" })),
+        );
+        assert!(!ok);
+        assert_message_contains(&resp, "base64");
+    }
+
+    #[test]
+    fn handshake_rejects_invalid_sec1_public_key() {
+        reset_nm_crypto_session_for_test();
+        let (ok, resp) = handshake(
+            None,
+            &Some(json!({ "extensionPublicKey": "AAAA" })),
+        );
+        assert!(!ok);
+        assert_message_contains(&resp, "SEC1");
+    }
+
+    #[test]
+    fn encrypt_returns_none_without_session() {
+        reset_nm_crypto_session_for_test();
+        assert!(encrypt_user_key_payload_if_session("dGVzdA==").is_none());
+    }
+
+    #[test]
+    fn handshake_then_encrypt_round_trip() {
+        reset_nm_crypto_session_for_test();
+        let ext_ephemeral = EphemeralSecret::random(&mut OsRng);
+        let ext_pk = PublicKey::from(&ext_ephemeral);
+        let ext_b64 = B64.encode(ext_pk.to_encoded_point(false).as_bytes());
+        let (ok, resp) = handshake(
+            None,
+            &Some(json!({ "extensionPublicKey": ext_b64 })),
+        );
+        assert!(ok, "handshake failed: {resp:?}");
+        assert!(resp.get("desktopPublicKey").and_then(|v| v.as_str()).is_some());
+
+        let wrapped = encrypt_user_key_payload_if_session("dGVzdA==");
+        assert!(wrapped.is_some(), "encrypt after handshake");
+        let w = wrapped.unwrap();
+        assert!(w.get("ciphertext").and_then(|v| v.as_str()).is_some());
+        assert!(w.get("nonce").and_then(|v| v.as_u64()).is_some());
+    }
+}

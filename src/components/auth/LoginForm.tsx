@@ -7,44 +7,12 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useUiStore } from "@/stores/ui-store";
 import HTTPClient from "@/lib/http-client";
 import type { ApiError } from "@/lib/http-client";
+import { normalizeServerUrl } from "@/lib/server-url";
 
 const VAULT_SIGNUP_URL = "https://vault.passwall.io/sign-up";
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function normalizeServerUrl(server: string): string | null {
-  const trimmed = server.trim();
-  if (!trimmed) return "";
-
-  try {
-    const withProtocol = /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(trimmed)
-      ? trimmed
-      : `https://${trimmed}`;
-    const url = new URL(withProtocol);
-    const isBrowserDevMode =
-      import.meta.env.DEV &&
-      typeof window !== "undefined" &&
-      !("__TAURI_INTERNALS__" in window) &&
-      !("__TAURI__" in window);
-
-    const isLocalhost =
-      url.hostname === "localhost" ||
-      url.hostname === "127.0.0.1" ||
-      url.hostname === "::1";
-    const allowHttpLocalhost = url.protocol === "http:" && isLocalhost;
-
-    if (!isBrowserDevMode && url.protocol !== "https:" && !allowHttpLocalhost) {
-      return null;
-    }
-    url.pathname = "";
-    url.search = "";
-    url.hash = "";
-    return url.toString().replace(/\/$/, "");
-  } catch {
-    return null;
-  }
 }
 
 export default function LoginForm() {

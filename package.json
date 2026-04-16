@@ -9,6 +9,10 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "test:all": "pnpm test && pnpm run test:rust",
     "verify:native-manifest": "node scripts/verify-native-manifest.mjs",
     "native-host:install:prod": "node scripts/install-native-host-manifest.mjs --mode=prod",
     "native-host:install:dev": "node scripts/install-native-host-manifest.mjs --mode=dev"
@@ -34,8 +38,10 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
+    "jsdom": "^26.1.0",
     "tailwindcss": "^4.2.2",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vitest": "^3.2.4"
   }
 }

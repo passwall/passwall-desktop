@@ -74,3 +74,56 @@ impl KeyStore {
         Entry::new(SERVICE_NAME, "__passwall_availability_check__").is_ok()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{KeyStore, MAX_KEY_LEN};
+
+    #[test]
+    fn validate_email_rejects_empty() {
+        assert_eq!(
+            KeyStore::validate_email("").unwrap_err(),
+            "Email cannot be empty"
+        );
+    }
+
+    #[test]
+    fn validate_email_rejects_without_at() {
+        assert!(KeyStore::validate_email("not-an-email").is_err());
+    }
+
+    #[test]
+    fn validate_email_accepts_simple() {
+        assert!(KeyStore::validate_email("a@b.co").is_ok());
+    }
+
+    #[test]
+    fn validate_email_rejects_too_long() {
+        let long = format!("{}@x.io", "a".repeat(300));
+        assert!(KeyStore::validate_email(&long).is_err());
+    }
+
+    #[test]
+    fn validate_key_rejects_empty() {
+        assert_eq!(
+            KeyStore::validate_key("").unwrap_err(),
+            "Key cannot be empty"
+        );
+    }
+
+    #[test]
+    fn validate_key_rejects_invalid_chars() {
+        assert!(KeyStore::validate_key("abc+def spaces").is_err());
+    }
+
+    #[test]
+    fn validate_key_accepts_standard_base64() {
+        assert!(KeyStore::validate_key("YWJj+/==").is_ok());
+    }
+
+    #[test]
+    fn validate_key_rejects_too_large() {
+        let huge = "a".repeat(MAX_KEY_LEN + 1);
+        assert!(KeyStore::validate_key(&huge).is_err());
+    }
+}

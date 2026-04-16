@@ -106,3 +106,50 @@ pub fn remove_pairing(origin: &str) {
         .collect();
     save_pairings(&list);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn accepts_valid_web_store_extension_origin() {
+        assert!(is_valid_chrome_origin(
+            "chrome-extension://blaiihhmnjllkfnkmkidahhegbmlghmo/"
+        ));
+    }
+
+    #[test]
+    fn rejects_non_chrome_scheme() {
+        assert!(!is_valid_chrome_origin(
+            "https://blaiihhmnjllkfnkmkidahhegbmlghmo/"
+        ));
+    }
+
+    #[test]
+    fn rejects_missing_trailing_slash() {
+        assert!(!is_valid_chrome_origin(
+            "chrome-extension://blaiihhmnjllkfnkmkidahhegbmlghmo"
+        ));
+    }
+
+    #[test]
+    fn rejects_wrong_id_length() {
+        assert!(!is_valid_chrome_origin(
+            "chrome-extension://blaiihhmnjllkfnkmkidahhegbmlghmo0/"
+        ));
+    }
+
+    #[test]
+    fn rejects_extension_id_char_outside_allowed_range() {
+        assert!(!is_valid_chrome_origin(
+            "chrome-extension://blaiihhmnjllkfnkmkidahhegbmlghmq/"
+        ));
+    }
+
+    #[test]
+    fn rejects_uppercase_extension_id() {
+        assert!(!is_valid_chrome_origin(
+            "chrome-extension://BLAIIHHMNJLLKFNKMKIDAHHEGBMLGHMO/"
+        ));
+    }
+}

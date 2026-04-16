@@ -3,32 +3,14 @@
 
 mod keystore;
 mod native_ipc;
+mod nm_host_args;
 mod paired_browsers;
 use std::env;
-
-fn should_infer_native_messaging_host(args: &[String]) -> bool {
-    // 1) argv0 file name matches the standalone NM host binary or a symlink
-    if let Some(argv0) = args.first() {
-        if let Some(name) = std::path::Path::new(argv0).file_name().and_then(|n| n.to_str()) {
-            let lower = name.to_ascii_lowercase();
-            if lower == "com.passwall.desktop"
-                || lower == "com.passwall.desktop.exe"
-                || lower.starts_with("passwall-native-messaging-host")
-            {
-                return true;
-            }
-        }
-    }
-    // 2) Chrome appends `chrome-extension://<32-char-id>/` as an argv argument
-    args.iter().any(|a| {
-        a.starts_with("chrome-extension://") && a.ends_with('/') && a.len() > 40
-    })
-}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     let run_native = args.iter().any(|a| a == "--native-messaging-host")
-        || should_infer_native_messaging_host(&args);
+        || nm_host_args::should_infer_native_messaging_host(&args);
 
     if run_native {
         native_messaging_host();
@@ -84,12 +66,6 @@ fn write_message<T: Serialize>(msg: &T) {
         let _ = io::stdout().write_all(&json);
         let _ = io::stdout().flush();
     }
-}
-
-fn caller_origin_from_argv() -> Option<String> {
-    std::env::args().find(|a| {
-        a.starts_with("chrome-extension://") && a.ends_with('/') && a.len() > 40
-    })
 }
 
 fn handle_request(req: Request, caller_origin: Option<&str>) -> Response {
@@ -272,7 +248,8 @@ fn handle_request(req: Request, caller_origin: Option<&str>) -> Response {
 }
 
 fn native_messaging_host() {
-    let caller_origin = caller_origin_from_argv();
+    let args: Vec<String> = env::args().collect();
+    let caller_origin = nm_host_args::caller_origin_from_args(&args);
     loop {
         if let Some(req) = read_message() {
             let resp = handle_request(req, caller_origin.as_deref());
