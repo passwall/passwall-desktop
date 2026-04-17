@@ -88,6 +88,19 @@ jobs:
       - name: Verify native messaging manifest origin pin
         run: pnpm verify:native-manifest
 
+      # REQUIRED secrets for a working updater:
+      #   TAURI_SIGNING_PRIVATE_KEY        – minisign private key (pnpm tauri signer generate)
+      #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD – password for that key (empty string if unencrypted)
+      # Without these the build will fail because createUpdaterArtifacts=true requires signing.
+      - name: Verify signing secret is present
+        run: |
+          if [ -z "$TAURI_SIGNING_PRIVATE_KEY" ]; then
+            echo "::error::TAURI_SIGNING_PRIVATE_KEY secret is not set. Updater artifacts cannot be signed."
+            exit 1
+          fi
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+
       - name: Build Tauri app
         env:
           NODE_ENV: production
@@ -110,6 +123,25 @@ jobs:
           cp src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz artifacts/ 2>/dev/null || true
           cp src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz.sig artifacts/ 2>/dev/null || true
           cp src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg artifacts/ 2>/dev/null || true
+          # Fail fast if no .sig file was produced – the updater cannot work without it.
+          ls artifacts/*.sig 2>/dev/null || { echo "::error::No .sig file found. Check TAURI_SIGNING_PRIVATE_KEY secret."; exit 1; }
+
+      # Tauri names DMGs with Rust triple (aarch64); Apple users expect arm64 in the filename.
+      - name: Rename DMG aarch64 → arm64 (Apple Silicon only)
+        if: matrix.platform == 'macos-latest' && matrix.target == 'aarch64-apple-darwin'
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          cd artifacts
+          for f in *.dmg; do
+            case "$f" in
+              *aarch64*)
+                new="${f//aarch64/arm64}"
+                echo "Renaming $f -> $new"
+                mv "$f" "$new"
+                ;;
+            esac
+          done
 
       - name: Collect updater artifacts (Linux)
         if: matrix.platform == 'ubuntu-22.04'

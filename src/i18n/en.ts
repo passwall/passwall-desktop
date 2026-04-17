@@ -132,7 +132,7 @@ export default {
   CheckForUpdates: "Check for updates now",
   Checking: "Checking...",
   AlreadyUpToDate: "Already up to date",
-  UpdateCheckUnavailable: "Update check not available in dev mode",
+  UpdateCheckUnavailable: "Update check failed. Please try again later.",
   InstallUpdate: "Install update",
   UpdateToVersion: "New version",
   Restarting: "Restarting...",

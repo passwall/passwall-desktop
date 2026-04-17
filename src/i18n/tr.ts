@@ -132,7 +132,7 @@ export default {
   CheckForUpdates: "Güncellemeleri şimdi kontrol et",
   Checking: "Kontrol ediliyor...",
   AlreadyUpToDate: "Zaten güncel",
-  UpdateCheckUnavailable: "Geliştirme modunda güncelleme kontrolü kullanılamıyor",
+  UpdateCheckUnavailable: "Güncelleme kontrolü başarısız. Lütfen daha sonra tekrar deneyin.",
   InstallUpdate: "Güncellemeyi yükle",
   UpdateToVersion: "Yeni sürüm",
   Restarting: "Yeniden başlatılıyor...",
