@@ -314,6 +314,35 @@ jobs:
           echo "Generated latest.json:"
           cat latest.json
 
+      - name: Validate latest.json updater targets and signatures
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          with open("latest.json", "r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          required = ["darwin-aarch64", "darwin-x86_64", "linux-x86_64", "windows-x86_64"]
+          platforms = data.get("platforms", {})
+
+          missing = [k for k in required if k not in platforms]
+          bad = [
+              k for k in required
+              if k in platforms and (
+                  not str(platforms[k].get("url", "")).strip() or
+                  not str(platforms[k].get("signature", "")).strip()
+              )
+          ]
+
+          if missing or bad:
+              if missing:
+                  print(f"::error::latest.json missing platform entries: {missing}")
+              if bad:
+                  print(f"::error::latest.json has empty url/signature for: {bad}")
+              sys.exit(1)
+
+          print("latest.json platform/signature validation passed.")
+          PY
+
       - name: Upload latest.json to DO Spaces
         run: |
           BUCKET="${{ secrets.DO_SPACES_BUCKET }}"

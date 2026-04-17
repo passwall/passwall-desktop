@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Passwall",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "identifier": "io.passwall.desktop",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -41,7 +41,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDNFRDQ3MzE1QThGNzBGMzkKUldRNUQvZW9GWFBVUG11alM5NGxWRE1aUm85M3Y2OGFPVWlJc3hneDk4dmFLODV5V0Q3aWZ1MXAK",
+      "pubkey": "ZFc1MGNuVnpkR1ZrSUdOdmJXMWxiblE2SUcxcGJtbHphV2R1SUhCMVlteHBZeUJyWlhrNklEUXdNekZDTVVORE1qZzRRamMzTWtJS1VsZFJjbVEwYzI5NlRFVjRVVU56UzBFeFVEbDZhbkJ3WlhaRmJqZDFTR1ZaUmtrMWJYSjZlV2wzVWxFclZtbzNhbkI2VTNGNmMyZ0s=",
       "endpoints": [
         "https://passwall-releases.nyc3.cdn.digitaloceanspaces.com/desktop/latest.json"
       ]

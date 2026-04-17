@@ -2849,7 +2849,7 @@ dependencies = [
 
 [[package]]
 name = "passwall-desktop"
-version = "1.11.0"
+version = "1.12.0"
 dependencies = [
  "aes-gcm",
  "base64 0.22.1",

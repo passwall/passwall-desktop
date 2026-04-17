@@ -61,8 +61,11 @@ export default function Settings() {
         setPendingUpdateVersion(null);
         addNotification("success", t("AlreadyUpToDate"));
       }
-    } catch {
-      addNotification("warning", t("UpdateCheckUnavailable"));
+    } catch (error: unknown) {
+      const details =
+        error instanceof Error && error.message ? ` (${error.message})` : "";
+      addNotification("warning", `${t("UpdateCheckUnavailable")}${details}`);
+      console.error("Update check failed", error);
     } finally {
       setChecking(false);
     }
