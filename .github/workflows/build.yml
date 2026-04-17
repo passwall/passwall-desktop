@@ -218,9 +218,11 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path artifacts
           Copy-Item "src-tauri\target\${{ matrix.target }}\release\bundle\nsis\*.exe" artifacts\ -ErrorAction SilentlyContinue
+          Copy-Item "src-tauri\target\${{ matrix.target }}\release\bundle\nsis\*.exe.sig" artifacts\ -ErrorAction SilentlyContinue
           Copy-Item "src-tauri\target\${{ matrix.target }}\release\bundle\nsis\*.nsis.zip" artifacts\ -ErrorAction SilentlyContinue
           Copy-Item "src-tauri\target\${{ matrix.target }}\release\bundle\nsis\*.nsis.zip.sig" artifacts\ -ErrorAction SilentlyContinue
           Copy-Item "src-tauri\target\${{ matrix.target }}\release\bundle\msi\*.msi" artifacts\ -ErrorAction SilentlyContinue
+          Copy-Item "src-tauri\target\${{ matrix.target }}\release\bundle\msi\*.msi.sig" artifacts\ -ErrorAction SilentlyContinue
           Copy-Item "src-tauri\target\${{ matrix.target }}\release\bundle\msi\*.msi.zip" artifacts\ -ErrorAction SilentlyContinue
           Copy-Item "src-tauri\target\${{ matrix.target }}\release\bundle\msi\*.msi.zip.sig" artifacts\ -ErrorAction SilentlyContinue
 
@@ -368,6 +370,8 @@ jobs:
             "all-artifacts/artifacts-windows-x86_64" \
             "*.nsis.zip.sig" \
             "*.msi.zip.sig" \
+            "*.exe.sig" \
+            "*.msi.sig" \
             "*.exe.zip.sig" \
             "*.zip.sig" || true)
           if [ -z "$WINDOWS_BUNDLE" ]; then
@@ -375,6 +379,12 @@ jobs:
           fi
           if [ -z "$WINDOWS_BUNDLE" ]; then
             WINDOWS_BUNDLE=$(find_bundle "all-artifacts/artifacts-windows-x86_64" "*.msi.zip")
+          fi
+          if [ -z "$WINDOWS_BUNDLE" ]; then
+            WINDOWS_BUNDLE=$(find_bundle "all-artifacts/artifacts-windows-x86_64" "*.exe")
+          fi
+          if [ -z "$WINDOWS_BUNDLE" ]; then
+            WINDOWS_BUNDLE=$(find_bundle "all-artifacts/artifacts-windows-x86_64" "*.msi")
           fi
           WINDOWS_SIG=""
           WINDOWS_URL=""
