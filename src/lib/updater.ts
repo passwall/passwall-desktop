@@ -1,3 +1,5 @@
+import { logError } from "@/lib/error-logger";
+
 export const AUTO_UPDATE_CHECKS_KEY = "passwall_auto_update";
 
 export type UpdateProgressEvent =
@@ -26,6 +28,7 @@ export async function checkForAvailableUpdate(): Promise<AvailableUpdate | null>
     const updaterModule = await import("@tauri-apps/plugin-updater");
     check = updaterModule.check as (options?: { target?: string }) => Promise<unknown>;
   } catch (error: unknown) {
+    await logError("updater.module_import", "Failed to import updater module", error);
     throw error;
   }
 
@@ -39,6 +42,7 @@ export async function checkForAvailableUpdate(): Promise<AvailableUpdate | null>
     if (!update) return null;
     return update as AvailableUpdate;
   } catch (error: unknown) {
+    await logError("updater.check", "Update check failed", error);
     throw error;
   }
 }
@@ -47,7 +51,12 @@ export async function installUpdate(
   update: AvailableUpdate,
   onEvent?: (event: UpdateProgressEvent) => void
 ): Promise<void> {
-  await update.downloadAndInstall(onEvent);
-  const { relaunch } = await import("@tauri-apps/plugin-process");
-  await relaunch();
+  try {
+    await update.downloadAndInstall(onEvent);
+    const { relaunch } = await import("@tauri-apps/plugin-process");
+    await relaunch();
+  } catch (error: unknown) {
+    await logError("updater.install", "Update download/install failed", error);
+    throw error;
+  }
 }

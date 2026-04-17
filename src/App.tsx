@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from "react-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTheme } from "@/hooks/useTheme";
 import { AUTH_EXPIRED_EVENT } from "@/lib/http-client";
+import { hydrateSecureStorage } from "@/lib/secure-storage";
 import Login from "@/pages/Login";
 import TwoFactor from "@/pages/TwoFactor";
 import Home from "@/pages/Home";
@@ -16,52 +17,59 @@ import Settings from "@/pages/Settings";
 import ConnectedBrowsers from "@/pages/ConnectedBrowsers";
 import UpdateNotifier from "@/components/common/UpdateNotifier";
 
-let _keychainRestoreAttempted = false;
 const IDLE_LOCK_TIMEOUT_MS = 15 * 60 * 1000;
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const authenticated = useAuthStore((s) => s.authenticated);
-  const userKey = useAuthStore((s) => s.userKey);
-  const [restoring, setRestoring] = useState(!_keychainRestoreAttempted);
+let _bootstrapPromise: Promise<void> | null = null;
+function bootstrapAuth(): Promise<void> {
+  if (_bootstrapPromise) return _bootstrapPromise;
+  _bootstrapPromise = (async () => {
+    await hydrateSecureStorage();
+    await useAuthStore.getState().restoreSession();
+  })();
+  return _bootstrapPromise;
+}
 
+function useAuthBootstrap() {
+  const [ready, setReady] = useState<boolean>(() => _bootstrapPromise !== null);
   useEffect(() => {
-    if (_keychainRestoreAttempted) return;
-    _keychainRestoreAttempted = true;
-
-    const accessToken = localStorage.getItem("access_token");
-    if (!accessToken) {
-      setRestoring(false);
-      return;
-    }
-
-    useAuthStore
-      .getState()
-      .restoreSession()
-      .finally(() => setRestoring(false));
+    let mounted = true;
+    bootstrapAuth().finally(() => {
+      if (mounted) setReady(true);
+    });
+    return () => {
+      mounted = false;
+    };
   }, []);
+  return ready;
+}
 
-  if (restoring) {
+function BootstrapGate({ children }: { children: React.ReactNode }) {
+  const ready = useAuthBootstrap();
+  if (!ready) {
     return (
       <div className="h-full flex items-center justify-center bg-surface-secondary">
         <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
+  return <>{children}</>;
+}
 
-  const hasAccessToken = !!localStorage.getItem("access_token");
-  if (!authenticated || !userKey || !hasAccessToken) {
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const authenticated = useAuthStore((s) => s.authenticated);
+  const userKey = useAuthStore((s) => s.userKey);
+
+  if (!authenticated || !userKey) {
     return <Navigate to="/login" replace />;
   }
-
   return <>{children}</>;
 }
 
 function AuthRoute({ children }: { children: React.ReactNode }) {
   const authenticated = useAuthStore((s) => s.authenticated);
   const userKey = useAuthStore((s) => s.userKey);
-  const hasAccessToken = !!localStorage.getItem("access_token");
 
-  if (authenticated && userKey && hasAccessToken) {
+  if (authenticated && userKey) {
     return <Navigate to="/passwords" replace />;
   }
   return <>{children}</>;
@@ -94,7 +102,7 @@ export default function App() {
   }, [logout, navigate]);
 
   useEffect(() => {
-    if (!authenticated || !userKey || !localStorage.getItem("access_token")) {
+    if (!authenticated || !userKey) {
       return;
     }
 
@@ -136,7 +144,7 @@ export default function App() {
   }, [authenticated, userKey, logout, navigate]);
 
   return (
-    <>
+    <BootstrapGate>
       <Routes>
         <Route
           path="/login"
@@ -181,6 +189,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <UpdateNotifier />
-    </>
+    </BootstrapGate>
   );
 }

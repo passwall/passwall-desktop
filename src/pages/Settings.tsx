@@ -14,6 +14,7 @@ import {
   isStartOnLoginSupported,
   setStartOnLoginEnabled,
 } from "@/lib/autostart";
+import { exportErrorLogs, logError } from "@/lib/error-logger";
 import { Download, Upload, Sun, Moon, Monitor } from "lucide-react";
 
 export default function Settings() {
@@ -25,6 +26,7 @@ export default function Settings() {
   const [autoUpdate, setAutoUpdate] = useState(isAutoUpdateChecksEnabled());
   const [checking, setChecking] = useState(false);
   const [installingUpdate, setInstallingUpdate] = useState(false);
+  const [exportingLogs, setExportingLogs] = useState(false);
   const [pendingUpdateVersion, setPendingUpdateVersion] = useState<string | null>(
     null
   );
@@ -115,6 +117,11 @@ export default function Settings() {
       const details =
         error instanceof Error && error.message ? ` (${error.message})` : "";
       addNotification("warning", `${t("UpdateCheckUnavailable")}${details}`);
+      void logError(
+        "settings.check_updates",
+        "Update check failed from settings",
+        error
+      );
       console.error("Update check failed", error);
     } finally {
       setChecking(false);
@@ -131,7 +138,12 @@ export default function Settings() {
         return;
       }
       await installUpdate(update);
-    } catch {
+    } catch (error: unknown) {
+      void logError(
+        "settings.install_update",
+        "Update install failed from settings",
+        error
+      );
       addNotification("error", t("UpdateFailed"));
     } finally {
       setInstallingUpdate(false);
@@ -196,9 +208,25 @@ export default function Settings() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleExportLogs = async () => {
+    setExportingLogs(true);
+    try {
+      const exported = await exportErrorLogs();
+      if (!exported) {
+        return;
+      }
+      addNotification("success", t("LogsExported"));
+    } catch (error) {
+      addNotification("warning", t("LogsExportFailed"));
+      void logError("settings.export_logs", "Failed to export error logs", error);
+    } finally {
+      setExportingLogs(false);
+    }
+  };
+
   return (
-    <div className="flex-1 min-h-0">
-      <div className="p-6 max-w-xl mx-auto h-full overflow-y-auto">
+    <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="p-6 max-w-xl mx-auto">
         <h2 className="text-lg font-semibold text-text-primary mb-1">
           {t("Settings")}
         </h2>
@@ -350,6 +378,27 @@ export default function Settings() {
                   className="hidden"
                 />
               </label>
+            </div>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-medium text-text-primary mb-3">
+              {t("Diagnostics")}
+            </h3>
+            <div className="bg-surface-secondary border border-border rounded-xl">
+              <button
+                onClick={() => void handleExportLogs()}
+                disabled={exportingLogs}
+                className="flex items-center gap-3 p-4 w-full text-left hover:bg-border/30 transition-colors disabled:opacity-50"
+              >
+                <Download size={16} className="text-text-secondary" />
+                <div>
+                  <p className="text-sm text-text-primary">{t("ExportLogs")}</p>
+                  <p className="text-xs text-text-muted">
+                    {exportingLogs ? t("ExportingLogs") : t("ExportLogsDesc")}
+                  </p>
+                </div>
+              </button>
             </div>
           </section>
 

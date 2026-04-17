@@ -8,7 +8,7 @@ export default function SearchBar() {
   const setSearchQuery = useUiStore((s) => s.setSearchQuery);
 
   return (
-    <div className="relative flex-1 max-w-md">
+    <div className="relative w-72 shrink-0">
       <Search
         className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
         size={16}

@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { invoke } from "@tauri-apps/api/core";
 import {
   cryptoService,
   SymmetricKey,
@@ -7,6 +6,12 @@ import {
 } from "@/lib/crypto";
 import AuthService from "@/api/auth";
 import HTTPClient from "@/lib/http-client";
+import {
+  clearAllSecrets,
+  getSecure,
+  getSecureSync,
+  setManySecure,
+} from "@/lib/secure-storage";
 import type { User, Organization, LoginPayload, SignInResponse } from "@/types";
 import { useVaultStore } from "./vault-store";
 
@@ -34,10 +39,6 @@ interface AuthState {
   logout: () => Promise<void>;
   fetchOrganizations: () => Promise<void>;
   restoreSession: () => Promise<boolean>;
-  persistSessionKeys: (userKey: SymmetricKey) => void;
-  storeUserKeyInKeychain: (email: string) => Promise<void>;
-  restoreUserKeyFromKeychain: () => Promise<boolean>;
-  removeUserKeyFromKeychain: (email: string) => Promise<void>;
 }
 
 function resolveDefaultOrgId(orgs: Organization[]): number | null {
@@ -47,11 +48,6 @@ function resolveDefaultOrgId(orgs: Organization[]): number | null {
 }
 
 export const useAuthStore = create<AuthState>((set, get) => {
-  const userKeyBase64 = sessionStorage.getItem("userKey");
-  const userKey = userKeyBase64
-    ? SymmetricKey.fromBytes(cryptoService.base64ToArray(userKeyBase64))
-    : null;
-  const accessToken = localStorage.getItem("access_token") || "";
   const userStr = localStorage.getItem("user");
   const user = userStr ? (JSON.parse(userStr) as User) : null;
 
@@ -63,12 +59,12 @@ export const useAuthStore = create<AuthState>((set, get) => {
     organizations = [];
   }
 
-  sessionStorage.removeItem("masterKey");
-
   return {
-    authenticated: !!accessToken && !!userKey,
+    // Populated by restoreSession() during bootstrap once the secure cache
+    // has been hydrated from the OS keychain.
+    authenticated: false,
     user,
-    userKey,
+    userKey: null,
     organizations,
     defaultOrgId: resolveDefaultOrgId(organizations),
     orgKeys: {},
@@ -78,7 +74,9 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
     isAuthenticated: () => {
       const s = get();
-      return s.authenticated && !!s.userKey && !!localStorage.getItem("access_token");
+      return (
+        s.authenticated && !!s.userKey && !!getSecureSync("access_token")
+      );
     },
 
     hasProPlan: () => {
@@ -217,20 +215,23 @@ export const useAuthStore = create<AuthState>((set, get) => {
         stretchedMasterKey
       );
 
+      localStorage.setItem("email", email);
+      localStorage.setItem("server", server);
+      localStorage.setItem("user", JSON.stringify(data.user || {}));
+
+      const userKeyB64 = cryptoService.arrayToBase64(userKey.toBytes());
+      await setManySecure({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        user_key: userKeyB64,
+      });
+
       set({
         userKey,
         authenticated: true,
         user: data.user,
       });
 
-      localStorage.setItem("email", email);
-      localStorage.setItem("server", server);
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("refresh_token", data.refresh_token);
-      localStorage.setItem("user", JSON.stringify(data.user || {}));
-
-      get().persistSessionKeys(userKey);
-      await get().storeUserKeyInKeychain(email);
       await get().fetchOrganizations();
     },
 
@@ -241,9 +242,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         // Ignore server-side logout errors
       }
 
-      const email = localStorage.getItem("email") || "";
-      await get().removeUserKeyFromKeychain(email);
-
+      await clearAllSecrets();
       useVaultStore.getState().clearItems();
 
       set({
@@ -258,9 +257,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         orgKeys: {},
       });
 
-      sessionStorage.removeItem("userKey");
-
-      const keysToKeep = ["email", "server"];
+      const keysToKeep = ["email", "server", "passwall_theme", "passwall_desktop_locale"];
       const allKeys = Object.keys(localStorage);
       allKeys.forEach((key) => {
         if (!keysToKeep.includes(key)) {
@@ -315,10 +312,15 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
 
     async restoreSession(): Promise<boolean> {
-      const accessToken = localStorage.getItem("access_token");
-      if (!accessToken) return false;
+      const accessToken = await getSecure("access_token");
+      const userKeyB64 = await getSecure("user_key");
+      if (!accessToken || !userKeyB64) return false;
 
-      // Restore user from localStorage if not in state
+      const savedServer = localStorage.getItem("server");
+      if (savedServer) {
+        HTTPClient.setBaseURL(savedServer);
+      }
+
       if (!get().user) {
         const userStr = localStorage.getItem("user");
         if (userStr) {
@@ -330,68 +332,16 @@ export const useAuthStore = create<AuthState>((set, get) => {
         }
       }
 
-      // Restore server base URL
-      const savedServer = localStorage.getItem("server");
-      if (savedServer) {
-        HTTPClient.setBaseURL(savedServer);
-      }
-
-      const restored = await get().restoreUserKeyFromKeychain();
-      if (restored) {
-        await get().fetchOrganizations();
-      }
-      return restored;
-    },
-
-    persistSessionKeys(userKey: SymmetricKey) {
-      const userKeyB64 = cryptoService.arrayToBase64(userKey.toBytes());
-      sessionStorage.setItem("userKey", userKeyB64);
-    },
-
-    async storeUserKeyInKeychain(email: string) {
       try {
-        const userKeyB64 = sessionStorage.getItem("userKey");
-        if (!userKeyB64 || !email) return;
-        await invoke("store_key", { email, keyB64: userKeyB64 });
-      } catch {
-        // Keychain may not be available on some platforms
-      }
-    },
-
-    async restoreUserKeyFromKeychain(): Promise<boolean> {
-      try {
-        const email = localStorage.getItem("email") || "";
-        if (!email) return false;
-
-        const available = await invoke<boolean>("is_keystore_available");
-        if (!available) return false;
-
-        const userKeyB64 = await invoke<string | null>("retrieve_key", {
-          email,
-        });
-        if (!userKeyB64) return false;
-
         const userKeyBytes = cryptoService.base64ToArray(userKeyB64);
         const userKey = SymmetricKey.fromBytes(userKeyBytes);
-
-        sessionStorage.setItem("userKey", userKeyB64);
-        set({
-          userKey,
-          authenticated: true,
-        });
-        return true;
+        set({ userKey, authenticated: true });
       } catch {
         return false;
       }
-    },
 
-    async removeUserKeyFromKeychain(email: string) {
-      try {
-        if (!email) return;
-        await invoke("remove_key", { email });
-      } catch {
-        // ignore
-      }
+      await get().fetchOrganizations();
+      return true;
     },
   };
 });

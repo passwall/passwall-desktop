@@ -6,6 +6,7 @@ import {
   installUpdate,
   isAutoUpdateChecksEnabled,
 } from "@/lib/updater";
+import { logError } from "@/lib/error-logger";
 
 type UpdateState = "idle" | "available" | "downloading" | "ready" | "error";
 
@@ -23,7 +24,12 @@ export default function UpdateNotifier() {
         setUpdateVersion(update.version ?? "");
         setState("available");
       }
-    } catch {
+    } catch (error: unknown) {
+      void logError(
+        "update_notifier.auto_check",
+        "Background update check failed",
+        error
+      );
       // Updater not available in dev or no endpoint configured
     }
   }, []);
@@ -64,7 +70,12 @@ export default function UpdateNotifier() {
       });
 
       setState("ready");
-    } catch {
+    } catch (error: unknown) {
+      void logError(
+        "update_notifier.install",
+        "Update install failed from notifier",
+        error
+      );
       setState("error");
     }
   };

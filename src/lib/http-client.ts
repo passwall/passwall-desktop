@@ -1,5 +1,10 @@
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 import { normalizeHttpClientBaseURL } from "@/lib/http-base-url";
+import {
+  getSecureSync,
+  removeSecure,
+  setSecure,
+} from "@/lib/secure-storage";
 
 function isTauriRuntime(): boolean {
   return (
@@ -34,7 +39,7 @@ function getAuthHeaders(): Record<string, string> {
     "Content-Type": "application/json; charset=utf-8",
     Accept: "application/json, text/plain, */*",
   };
-  const token = localStorage.getItem("access_token") || "";
+  const token = getSecureSync("access_token") || "";
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
@@ -158,7 +163,7 @@ async function requestWithRefresh<T = unknown>(
 
     isRefreshing = true;
 
-    const refreshToken = localStorage.getItem("refresh_token");
+    const refreshToken = getSecureSync("refresh_token");
     if (!refreshToken) {
       emitAuthExpired();
       isRefreshing = false;
@@ -177,8 +182,8 @@ async function requestWithRefresh<T = unknown>(
       const newRefreshToken =
         refreshResponse.data.refresh_token || refreshToken;
 
-      localStorage.setItem("access_token", newAccessToken);
-      localStorage.setItem("refresh_token", newRefreshToken);
+      await setSecure("access_token", newAccessToken);
+      await setSecure("refresh_token", newRefreshToken);
 
       processQueue(null, newAccessToken);
 
@@ -190,8 +195,8 @@ async function requestWithRefresh<T = unknown>(
       return await request<T>(method, path, opts);
     } catch (refreshError) {
       processQueue(refreshError, null);
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
+      await removeSecure("access_token");
+      await removeSecure("refresh_token");
       emitAuthExpired();
       throw refreshError;
     } finally {

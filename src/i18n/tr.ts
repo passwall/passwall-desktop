@@ -179,5 +179,11 @@ export default {
   PasswordCopied: "Şifre panoya kopyalandı",
   FailedToCopy: "Şifre kopyalanamadı",
   Copied: "Kopyalandı!",
+  Diagnostics: "Tanılama",
+  ExportLogs: "Logları dışa aktar",
+  ExportLogsDesc: "Sorun giderme için uygulama hata loglarını kaydet",
+  ExportingLogs: "Loglar hazırlanıyor...",
+  LogsExported: "Loglar başarıyla dışa aktarıldı",
+  LogsExportFailed: "Loglar dışa aktarılamadı",
   Version: "Sürüm",
 } as const;

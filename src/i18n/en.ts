@@ -177,5 +177,11 @@ export default {
   PasswordCopied: "Password copied to clipboard",
   FailedToCopy: "Failed to copy password",
   Copied: "Copied!",
+  Diagnostics: "Diagnostics",
+  ExportLogs: "Export logs",
+  ExportLogsDesc: "Save application error logs for troubleshooting",
+  ExportingLogs: "Preparing logs...",
+  LogsExported: "Logs exported successfully",
+  LogsExportFailed: "Could not export logs",
   Version: "Version",
 } as const;

@@ -1,8 +1,8 @@
 use keyring::Entry;
 
 const SERVICE_NAME: &str = "io.passwall.desktop";
-const MAX_EMAIL_LEN: usize = 254;
-const MAX_KEY_LEN: usize = 4096;
+const MAX_ACCOUNT_LEN: usize = 512;
+const MAX_SECRET_LEN: usize = 8192;
 
 pub struct KeyStore;
 
@@ -11,62 +11,56 @@ impl KeyStore {
         Self
     }
 
-    fn validate_email(email: &str) -> Result<(), String> {
-        if email.is_empty() {
-            return Err("Email cannot be empty".into());
+    fn validate_account(account: &str) -> Result<(), String> {
+        if account.is_empty() {
+            return Err("Account cannot be empty".into());
         }
-        if email.len() > MAX_EMAIL_LEN {
-            return Err("Email too long".into());
-        }
-        if !email.contains('@') {
-            return Err("Invalid email format".into());
+        if account.len() > MAX_ACCOUNT_LEN {
+            return Err("Account too long".into());
         }
         Ok(())
     }
 
-    fn validate_key(key_b64: &str) -> Result<(), String> {
-        if key_b64.is_empty() {
-            return Err("Key cannot be empty".into());
+    fn validate_secret(secret: &str) -> Result<(), String> {
+        if secret.is_empty() {
+            return Err("Secret cannot be empty".into());
         }
-        if key_b64.len() > MAX_KEY_LEN {
-            return Err("Key data too large".into());
-        }
-        if !key_b64.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'+' || b == b'/' || b == b'=') {
-            return Err("Key contains invalid characters".into());
+        if secret.len() > MAX_SECRET_LEN {
+            return Err("Secret too large".into());
         }
         Ok(())
     }
 
-    fn entry_for(email: &str) -> Result<Entry, String> {
-        Entry::new(SERVICE_NAME, email).map_err(|e| format!("Keyring error: {}", e))
+    fn entry_for(account: &str) -> Result<Entry, String> {
+        Entry::new(SERVICE_NAME, account).map_err(|e| format!("Keyring error: {}", e))
     }
 
-    pub fn store(&self, email: &str, key_b64: &str) -> Result<(), String> {
-        Self::validate_email(email)?;
-        Self::validate_key(key_b64)?;
-        let entry = Self::entry_for(email)?;
+    pub fn store(&self, account: &str, secret: &str) -> Result<(), String> {
+        Self::validate_account(account)?;
+        Self::validate_secret(secret)?;
+        let entry = Self::entry_for(account)?;
         entry
-            .set_password(key_b64)
-            .map_err(|_| "Failed to store key in keychain".into())
+            .set_password(secret)
+            .map_err(|_| "Failed to store secret in keychain".into())
     }
 
-    pub fn retrieve(&self, email: &str) -> Result<Option<String>, String> {
-        Self::validate_email(email)?;
-        let entry = Self::entry_for(email)?;
+    pub fn retrieve(&self, account: &str) -> Result<Option<String>, String> {
+        Self::validate_account(account)?;
+        let entry = Self::entry_for(account)?;
         match entry.get_password() {
-            Ok(password) => Ok(Some(password)),
+            Ok(secret) => Ok(Some(secret)),
             Err(keyring::Error::NoEntry) => Ok(None),
-            Err(_) => Err("Failed to retrieve key from keychain".into()),
+            Err(_) => Err("Failed to retrieve secret from keychain".into()),
         }
     }
 
-    pub fn remove(&self, email: &str) -> Result<(), String> {
-        Self::validate_email(email)?;
-        let entry = Self::entry_for(email)?;
+    pub fn remove(&self, account: &str) -> Result<(), String> {
+        Self::validate_account(account)?;
+        let entry = Self::entry_for(account)?;
         match entry.delete_credential() {
             Ok(()) => Ok(()),
             Err(keyring::Error::NoEntry) => Ok(()),
-            Err(_) => Err("Failed to remove key from keychain".into()),
+            Err(_) => Err("Failed to remove secret from keychain".into()),
         }
     }
 
@@ -77,53 +71,31 @@ impl KeyStore {
 
 #[cfg(test)]
 mod tests {
-    use super::{KeyStore, MAX_KEY_LEN};
+    use super::{KeyStore, MAX_SECRET_LEN};
 
     #[test]
-    fn validate_email_rejects_empty() {
-        assert_eq!(
-            KeyStore::validate_email("").unwrap_err(),
-            "Email cannot be empty"
-        );
+    fn validate_account_rejects_empty() {
+        assert!(KeyStore::validate_account("").is_err());
     }
 
     #[test]
-    fn validate_email_rejects_without_at() {
-        assert!(KeyStore::validate_email("not-an-email").is_err());
+    fn validate_account_accepts_arbitrary() {
+        assert!(KeyStore::validate_account("access_token:user@example.com").is_ok());
     }
 
     #[test]
-    fn validate_email_accepts_simple() {
-        assert!(KeyStore::validate_email("a@b.co").is_ok());
+    fn validate_secret_rejects_empty() {
+        assert!(KeyStore::validate_secret("").is_err());
     }
 
     #[test]
-    fn validate_email_rejects_too_long() {
-        let long = format!("{}@x.io", "a".repeat(300));
-        assert!(KeyStore::validate_email(&long).is_err());
+    fn validate_secret_rejects_too_large() {
+        let huge = "a".repeat(MAX_SECRET_LEN + 1);
+        assert!(KeyStore::validate_secret(&huge).is_err());
     }
 
     #[test]
-    fn validate_key_rejects_empty() {
-        assert_eq!(
-            KeyStore::validate_key("").unwrap_err(),
-            "Key cannot be empty"
-        );
-    }
-
-    #[test]
-    fn validate_key_rejects_invalid_chars() {
-        assert!(KeyStore::validate_key("abc+def spaces").is_err());
-    }
-
-    #[test]
-    fn validate_key_accepts_standard_base64() {
-        assert!(KeyStore::validate_key("YWJj+/==").is_ok());
-    }
-
-    #[test]
-    fn validate_key_rejects_too_large() {
-        let huge = "a".repeat(MAX_KEY_LEN + 1);
-        assert!(KeyStore::validate_key(&huge).is_err());
+    fn validate_secret_accepts_jwt_like() {
+        assert!(KeyStore::validate_secret("eyJhbGciOi.ab_cd-ef.signature").is_ok());
     }
 }

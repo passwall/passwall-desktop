@@ -2,8 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router";
 import App from "./App";
+import { initGlobalErrorLogging } from "./lib/error-logger";
 import "./i18n";
 import "./index.css";
+
+initGlobalErrorLogging();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
