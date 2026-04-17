@@ -178,10 +178,26 @@ jobs:
       - name: Collect updater artifacts (macOS)
         if: matrix.platform == 'macos-latest'
         run: |
+          set -euo pipefail
+          shopt -s nullglob
           mkdir -p artifacts
           cp src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz artifacts/ 2>/dev/null || true
           cp src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz.sig artifacts/ 2>/dev/null || true
           cp src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg artifacts/ 2>/dev/null || true
+
+          # Avoid cross-target overwrite on CDN: arm64 and x64 generated updater
+          # bundles share the default filename (Passwall.app.tar.gz).
+          # Give each macOS target a unique updater bundle filename.
+          for bundle in artifacts/*.app.tar.gz; do
+            [ -f "$bundle" ] || continue
+            base="$(basename "$bundle" .app.tar.gz)"
+            renamed="artifacts/${base}-${{ matrix.artifact_target }}.app.tar.gz"
+            mv "$bundle" "$renamed"
+            if [ -f "${bundle}.sig" ]; then
+              mv "${bundle}.sig" "${renamed}.sig"
+            fi
+          done
+
           # Fail fast if no .sig file was produced – the updater cannot work without it.
           ls artifacts/*.sig 2>/dev/null || { echo "::error::No .sig file found. Check TAURI_SIGNING_PRIVATE_KEY secret."; exit 1; }
 
