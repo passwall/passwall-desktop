@@ -17,6 +17,10 @@ env:
 
 jobs:
   build:
+    # Release artifacts must use Vite production mode (import.meta.env.DEV === false) and Rust --release.
+    env:
+      CI: true
+      NODE_ENV: production
     strategy:
       fail-fast: false
       matrix:
@@ -86,6 +90,10 @@ jobs:
 
       - name: Build Tauri app
         env:
+          NODE_ENV: production
+          CI: true
+          # Avoid accidentally treating CI like a remote `tauri dev` host (vite.config server.hmr).
+          TAURI_DEV_HOST: ""
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           APPLE_CERTIFICATE: ${{ matrix.platform == 'macos-latest' && secrets.CSC_LINK || '' }}
@@ -93,7 +101,7 @@ jobs:
           APPLE_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_ID || '' }}
           APPLE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
           APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_TEAM_ID || '' }}
-        run: pnpm tauri build --target ${{ matrix.target }}
+        run: pnpm exec tauri build --ci --target ${{ matrix.target }}
 
       - name: Collect updater artifacts (macOS)
         if: matrix.platform == 'macos-latest'
