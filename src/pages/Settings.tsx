@@ -9,11 +9,19 @@ import {
   isAutoUpdateChecksEnabled,
   setAutoUpdateChecksEnabled,
 } from "@/lib/updater";
+import {
+  isStartOnLoginEnabled,
+  isStartOnLoginSupported,
+  setStartOnLoginEnabled,
+} from "@/lib/autostart";
 import { Download, Upload, Sun, Moon, Monitor } from "lucide-react";
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
   const [version, setVersion] = useState("");
+  const [launchAtLogin, setLaunchAtLogin] = useState(false);
+  const [launchAtLoginLoading, setLaunchAtLoginLoading] = useState(true);
+  const [launchAtLoginSupported, setLaunchAtLoginSupported] = useState(true);
   const [autoUpdate, setAutoUpdate] = useState(isAutoUpdateChecksEnabled());
   const [checking, setChecking] = useState(false);
   const [installingUpdate, setInstallingUpdate] = useState(false);
@@ -39,6 +47,34 @@ export default function Settings() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    let mounted = true;
+    const loadLaunchAtLogin = async () => {
+      try {
+        const supported = await isStartOnLoginSupported();
+        if (!mounted) return;
+        setLaunchAtLoginSupported(supported);
+        if (!supported) {
+          setLaunchAtLogin(false);
+          return;
+        }
+        const enabled = await isStartOnLoginEnabled();
+        if (mounted) setLaunchAtLogin(enabled);
+      } catch {
+        if (mounted) {
+          setLaunchAtLoginSupported(false);
+          setLaunchAtLogin(false);
+        }
+      } finally {
+        if (mounted) setLaunchAtLoginLoading(false);
+      }
+    };
+    void loadLaunchAtLogin();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
     localStorage.setItem("passwall_desktop_locale", lng);
@@ -48,6 +84,20 @@ export default function Settings() {
     const newVal = !autoUpdate;
     setAutoUpdate(newVal);
     setAutoUpdateChecksEnabled(newVal);
+  };
+
+  const toggleLaunchAtLogin = async () => {
+    const newVal = !launchAtLogin;
+    setLaunchAtLoginLoading(true);
+    try {
+      await setStartOnLoginEnabled(newVal);
+      setLaunchAtLogin(newVal);
+      addNotification("success", newVal ? t("LaunchAtLoginEnabled") : t("LaunchAtLoginDisabled"));
+    } catch {
+      addNotification("error", t("LaunchAtLoginUpdateFailed"));
+    } finally {
+      setLaunchAtLoginLoading(false);
+    }
   };
 
   const checkForUpdates = async () => {
@@ -147,149 +197,169 @@ export default function Settings() {
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h2 className="text-lg font-semibold text-text-primary mb-1">
-        {t("Settings")}
-      </h2>
-      <p className="text-sm text-text-muted mb-6">{t("AppPreferences")}</p>
+    <div className="flex-1 min-h-0">
+      <div className="p-6 max-w-xl mx-auto h-full overflow-y-auto">
+        <h2 className="text-lg font-semibold text-text-primary mb-1">
+          {t("Settings")}
+        </h2>
+        <p className="text-sm text-text-muted mb-6">{t("AppPreferences")}</p>
 
-      <div className="space-y-6">
-        <section>
-          <h3 className="text-sm font-medium text-text-primary mb-3">
-            {t("General")}
-          </h3>
-          <div className="bg-surface-secondary border border-border rounded-xl divide-y divide-border">
-            <div className="flex items-center justify-between p-4">
-              <div>
-                <p className="text-sm text-text-primary">{t("Language")}</p>
-                <p className="text-xs text-text-muted">
-                  {t("ChooseLanguage")}
-                </p>
-              </div>
-              <select
-                value={i18n.language}
-                onChange={(e) => changeLanguage(e.target.value)}
-                className="bg-surface border border-border rounded-lg px-3 py-1.5 text-sm text-text-primary"
-              >
-                <option value="en">{t("English")}</option>
-                <option value="tr">{t("Turkish")}</option>
-              </select>
-            </div>
-            <div className="flex items-center justify-between p-4">
-              <div>
-                <p className="text-sm text-text-primary">Theme</p>
-                <p className="text-xs text-text-muted">
-                  Choose appearance mode
-                </p>
-              </div>
-              <div className="flex rounded-lg border border-border overflow-hidden">
-                {themeOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setTheme(opt.value)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors ${
-                      theme === opt.value
-                        ? "bg-primary text-white"
-                        : "bg-surface text-text-secondary hover:bg-surface-secondary"
-                    }`}
-                  >
-                    <opt.icon size={13} />
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h3 className="text-sm font-medium text-text-primary mb-3">
-            {t("Updates")}
-          </h3>
-          <div className="bg-surface-secondary border border-border rounded-xl divide-y divide-border">
-            <div className="flex items-center justify-between p-4">
-              <div>
-                <p className="text-sm text-text-primary">
-                  {t("AutoUpdateChecks")}
-                </p>
-                <p className="text-xs text-text-muted">
-                  {t("AutoCheckUpdatesDesc")}
-                </p>
-              </div>
-              <input
-                type="checkbox"
-                checked={autoUpdate}
-                onChange={toggleAutoUpdate}
-                className="w-4 h-4 accent-primary rounded"
-              />
-            </div>
-            <div className="p-4">
-              <button
-                onClick={checkForUpdates}
-                disabled={checking || installingUpdate}
-                className="text-sm text-primary hover:text-primary-hover disabled:opacity-50"
-              >
-                {checking ? t("Checking") : t("CheckForUpdates")}
-              </button>
-              {pendingUpdateVersion && (
-                <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="space-y-6">
+          <section>
+            <h3 className="text-sm font-medium text-text-primary mb-3">
+              {t("General")}
+            </h3>
+            <div className="bg-surface-secondary border border-border rounded-xl divide-y divide-border">
+              <div className="flex items-center justify-between p-4">
+                <div>
+                  <p className="text-sm text-text-primary">{t("LaunchAtLogin")}</p>
                   <p className="text-xs text-text-muted">
-                    {t("UpdateToVersion")} {pendingUpdateVersion}
+                    {launchAtLoginSupported
+                      ? t("LaunchAtLoginDesc")
+                      : t("LaunchAtLoginUnsupported")}
                   </p>
-                  <button
-                    onClick={installPendingUpdate}
-                    disabled={installingUpdate || checking}
-                    className="text-xs bg-primary hover:bg-primary-hover disabled:opacity-50 text-white px-3 py-1.5 rounded-lg transition-colors"
-                  >
-                    {installingUpdate ? t("Checking") : t("InstallUpdate")}
-                  </button>
                 </div>
-              )}
+                <input
+                  type="checkbox"
+                  checked={launchAtLogin}
+                  onChange={() => void toggleLaunchAtLogin()}
+                  disabled={launchAtLoginLoading || !launchAtLoginSupported}
+                  className="w-4 h-4 accent-primary rounded disabled:opacity-50"
+                />
+              </div>
+              <div className="flex items-center justify-between p-4">
+                <div>
+                  <p className="text-sm text-text-primary">{t("Language")}</p>
+                  <p className="text-xs text-text-muted">
+                    {t("ChooseLanguage")}
+                  </p>
+                </div>
+                <select
+                  value={i18n.language}
+                  onChange={(e) => changeLanguage(e.target.value)}
+                  className="bg-surface border border-border rounded-lg px-3 py-1.5 text-sm text-text-primary"
+                >
+                  <option value="en">{t("English")}</option>
+                  <option value="tr">{t("Turkish")}</option>
+                </select>
+              </div>
+              <div className="flex items-center justify-between p-4">
+                <div>
+                  <p className="text-sm text-text-primary">Theme</p>
+                  <p className="text-xs text-text-muted">
+                    Choose appearance mode
+                  </p>
+                </div>
+                <div className="flex rounded-lg border border-border overflow-hidden">
+                  {themeOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setTheme(opt.value)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors ${
+                        theme === opt.value
+                          ? "bg-primary text-white"
+                          : "bg-surface text-text-secondary hover:bg-surface-secondary"
+                      }`}
+                    >
+                      <opt.icon size={13} />
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section>
-          <h3 className="text-sm font-medium text-text-primary mb-3">
-            Import / Export
-          </h3>
-          <div className="bg-surface-secondary border border-border rounded-xl divide-y divide-border">
-            <button
-              onClick={handleExport}
-              className="flex items-center gap-3 p-4 w-full text-left hover:bg-border/30 transition-colors"
-            >
-              <Download size={16} className="text-text-secondary" />
-              <div>
-                <p className="text-sm text-text-primary">Export Vault</p>
-                <p className="text-xs text-text-muted">
-                  Download all items as CSV files
-                </p>
+          <section>
+            <h3 className="text-sm font-medium text-text-primary mb-3">
+              {t("Updates")}
+            </h3>
+            <div className="bg-surface-secondary border border-border rounded-xl divide-y divide-border">
+              <div className="flex items-center justify-between p-4">
+                <div>
+                  <p className="text-sm text-text-primary">
+                    {t("AutoUpdateChecks")}
+                  </p>
+                  <p className="text-xs text-text-muted">
+                    {t("AutoCheckUpdatesDesc")}
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={autoUpdate}
+                  onChange={toggleAutoUpdate}
+                  className="w-4 h-4 accent-primary rounded"
+                />
               </div>
-            </button>
-            <label className="flex items-center gap-3 p-4 cursor-pointer hover:bg-border/30 transition-colors">
-              <Upload size={16} className="text-text-secondary" />
-              <div>
-                <p className="text-sm text-text-primary">Import Items</p>
-                <p className="text-xs text-text-muted">
-                  Import items from a CSV file
-                </p>
+              <div className="p-4">
+                <button
+                  onClick={checkForUpdates}
+                  disabled={checking || installingUpdate}
+                  className="text-sm text-primary hover:text-primary-hover disabled:opacity-50"
+                >
+                  {checking ? t("Checking") : t("CheckForUpdates")}
+                </button>
+                {pendingUpdateVersion && (
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <p className="text-xs text-text-muted">
+                      {t("UpdateToVersion")} {pendingUpdateVersion}
+                    </p>
+                    <button
+                      onClick={installPendingUpdate}
+                      disabled={installingUpdate || checking}
+                      className="text-xs bg-primary hover:bg-primary-hover disabled:opacity-50 text-white px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      {installingUpdate ? t("Checking") : t("InstallUpdate")}
+                    </button>
+                  </div>
+                )}
               </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                onChange={handleImport}
-                className="hidden"
-              />
-            </label>
-          </div>
-        </section>
+            </div>
+          </section>
 
-        {version && (
-          <p className="text-xs text-text-muted text-center">
-            Passwall Desktop v{version}
-          </p>
-        )}
+          <section>
+            <h3 className="text-sm font-medium text-text-primary mb-3">
+              Import / Export
+            </h3>
+            <div className="bg-surface-secondary border border-border rounded-xl divide-y divide-border">
+              <button
+                onClick={handleExport}
+                className="flex items-center gap-3 p-4 w-full text-left hover:bg-border/30 transition-colors"
+              >
+                <Download size={16} className="text-text-secondary" />
+                <div>
+                  <p className="text-sm text-text-primary">Export Vault</p>
+                  <p className="text-xs text-text-muted">
+                    Download all items as CSV files
+                  </p>
+                </div>
+              </button>
+              <label className="flex items-center gap-3 p-4 cursor-pointer hover:bg-border/30 transition-colors">
+                <Upload size={16} className="text-text-secondary" />
+                <div>
+                  <p className="text-sm text-text-primary">Import Items</p>
+                  <p className="text-xs text-text-muted">
+                    Import items from a CSV file
+                  </p>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </section>
+
+          {version && (
+            <p className="text-xs text-text-muted text-center">
+              Passwall Desktop v{version}
+            </p>
+          )}
+        </div>
+
       </div>
     </div>
   );

@@ -118,6 +118,11 @@ export default {
   LaunchAtLogin: "Launch at login",
   LaunchAtLoginDesc:
     "Automatically start Passwall when you log in to your computer",
+  LaunchAtLoginUnsupported:
+    "Launch at login is not supported in this environment.",
+  LaunchAtLoginEnabled: "Passwall will start automatically when you log in.",
+  LaunchAtLoginDisabled: "Launch at login has been turned off.",
+  LaunchAtLoginUpdateFailed: "Could not update launch at login setting.",
   Language: "Language",
   ChooseLanguage: "Choose the application language",
   English: "English",

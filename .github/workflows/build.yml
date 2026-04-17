@@ -28,19 +28,23 @@ jobs:
           - platform: macos-latest
             target: aarch64-apple-darwin
             name: macOS-arm64
-            updater_target: darwin-aarch64
+            updater_target: darwin-arm64
+            artifact_target: darwin-arm64
           - platform: macos-latest
             target: x86_64-apple-darwin
             name: macOS-x64
             updater_target: darwin-x86_64
+            artifact_target: darwin-x86_64
           - platform: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             name: Linux-x64
             updater_target: linux-x86_64
+            artifact_target: linux-x86_64
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
             name: Windows-x64
             updater_target: windows-x86_64
+            artifact_target: windows-x86_64
 
     runs-on: ${{ matrix.platform }}
     name: Build (${{ matrix.name }})
@@ -223,7 +227,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-${{ matrix.updater_target }}
+          name: artifacts-${{ matrix.artifact_target }}
           path: artifacts/
           if-no-files-found: error
 
@@ -305,8 +309,30 @@ jobs:
             find "$dir" -name "$pattern" -not -name "*.sig" 2>/dev/null | head -1
           }
 
+          # Prefer signature-first discovery because Tauri bundle names can vary by platform/version.
+          # We only accept a bundle if a sibling .sig file exists and both are non-empty paths.
+          find_updater_bundle_from_sig() {
+            local dir="$1"
+            shift
+            local pattern sig bundle
+
+            shopt -s nullglob
+            for pattern in "$@"; do
+              for sig in "$dir"/$pattern; do
+                [ -f "$sig" ] || continue
+                bundle="${sig%.sig}"
+                [ -f "$bundle" ] || continue
+                echo "$bundle"
+                shopt -u nullglob
+                return 0
+              done
+            done
+            shopt -u nullglob
+            return 1
+          }
+
           # macOS ARM64
-          MACOS_ARM_BUNDLE=$(find_bundle "all-artifacts/artifacts-darwin-aarch64" "*.app.tar.gz")
+          MACOS_ARM_BUNDLE=$(find_bundle "all-artifacts/artifacts-darwin-arm64" "*.app.tar.gz")
           MACOS_ARM_SIG=""
           MACOS_ARM_URL=""
           if [ -n "$MACOS_ARM_BUNDLE" ]; then
@@ -324,7 +350,11 @@ jobs:
           fi
 
           # Linux x86_64
-          LINUX_BUNDLE=$(find_bundle "all-artifacts/artifacts-linux-x86_64" "*.AppImage.tar.gz")
+          LINUX_BUNDLE=$(find_updater_bundle_from_sig \
+            "all-artifacts/artifacts-linux-x86_64" \
+            "*.AppImage.tar.gz.sig" \
+            "*.AppImage.zip.sig" \
+            "*.AppImage.sig")
           LINUX_SIG=""
           LINUX_URL=""
           if [ -n "$LINUX_BUNDLE" ]; then
@@ -333,7 +363,15 @@ jobs:
           fi
 
           # Windows x86_64
-          WINDOWS_BUNDLE=$(find_bundle "all-artifacts/artifacts-windows-x86_64" "*.nsis.zip")
+          WINDOWS_BUNDLE=$(find_updater_bundle_from_sig \
+            "all-artifacts/artifacts-windows-x86_64" \
+            "*.nsis.zip.sig" \
+            "*.msi.zip.sig" \
+            "*.exe.zip.sig" \
+            "*.zip.sig")
+          if [ -z "$WINDOWS_BUNDLE" ]; then
+            WINDOWS_BUNDLE=$(find_bundle "all-artifacts/artifacts-windows-x86_64" "*.nsis.zip")
+          fi
           if [ -z "$WINDOWS_BUNDLE" ]; then
             WINDOWS_BUNDLE=$(find_bundle "all-artifacts/artifacts-windows-x86_64" "*.msi.zip")
           fi
@@ -349,7 +387,7 @@ jobs:
           import json, sys
           platforms = {}
           entries = [
-              ('darwin-aarch64', '''${MACOS_ARM_URL}''', '''${MACOS_ARM_SIG}'''),
+              ('darwin-arm64', '''${MACOS_ARM_URL}''', '''${MACOS_ARM_SIG}'''),
               ('darwin-x86_64',  '''${MACOS_X64_URL}''', '''${MACOS_X64_SIG}'''),
               ('linux-x86_64',   '''${LINUX_URL}''',     '''${LINUX_SIG}'''),
               ('windows-x86_64', '''${WINDOWS_URL}''',   '''${WINDOWS_SIG}'''),
@@ -376,7 +414,7 @@ jobs:
           with open("latest.json", "r", encoding="utf-8") as f:
               data = json.load(f)
 
-          required = ["darwin-aarch64", "darwin-x86_64", "linux-x86_64", "windows-x86_64"]
+          required = ["darwin-arm64", "darwin-x86_64", "linux-x86_64", "windows-x86_64"]
           platforms = data.get("platforms", {})
 
           missing = [k for k in required if k not in platforms]

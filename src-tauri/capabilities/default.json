@@ -7,6 +7,9 @@
     "core:default",
     "opener:default",
     "updater:default",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
     "process:allow-restart",
     {
       "identifier": "http:default",

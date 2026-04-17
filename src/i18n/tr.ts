@@ -118,6 +118,12 @@ export default {
   LaunchAtLogin: "Açılışta başlat",
   LaunchAtLoginDesc:
     "Bilgisayarınıza giriş yaptığınızda Passwall otomatik başlasın",
+  LaunchAtLoginUnsupported:
+    "Açılışta başlat bu ortamda desteklenmiyor.",
+  LaunchAtLoginEnabled:
+    "Bilgisayara giriş yaptığınızda Passwall otomatik başlatılacak.",
+  LaunchAtLoginDisabled: "Açılışta başlat ayarı kapatıldı.",
+  LaunchAtLoginUpdateFailed: "Açılışta başlat ayarı güncellenemedi.",
   Language: "Dil",
   ChooseLanguage: "Uygulama dilini seçin",
   English: "İngilizce",
