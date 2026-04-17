@@ -147,6 +147,7 @@ jobs:
       #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD – password for that key (empty string if unencrypted)
       # Without these the build will fail because createUpdaterArtifacts=true requires signing.
       - name: Verify signing secret is present
+        shell: bash
         run: |
           if [ -z "$TAURI_SIGNING_PRIVATE_KEY" ]; then
             echo "::error::TAURI_SIGNING_PRIVATE_KEY secret is not set. Updater artifacts cannot be signed."

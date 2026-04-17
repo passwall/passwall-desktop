@@ -64,27 +64,6 @@ export default function Settings() {
     } catch (error: unknown) {
       const details =
         error instanceof Error && error.message ? ` (${error.message})` : "";
-      // #region agent log
-      fetch("http://127.0.0.1:7424/ingest/d56ae62b-d051-4704-a2bf-8292a48c483c", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Debug-Session-Id": "b2cb2e",
-        },
-        body: JSON.stringify({
-          sessionId: "b2cb2e",
-          runId: `settings-update-check-${Date.now()}`,
-          hypothesisId: "H5",
-          location: "src/pages/Settings.tsx:checkForUpdates:catch",
-          message: "Settings update check surfaced error",
-          data: {
-            details,
-            message: error instanceof Error ? error.message : String(error),
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       addNotification("warning", `${t("UpdateCheckUnavailable")}${details}`);
       console.error("Update check failed", error);
     } finally {
