@@ -328,7 +328,8 @@ jobs:
               done
             done
             shopt -u nullglob
-            return 1
+            # Missing optional match should not fail the whole step under `bash -e`.
+            return 0
           }
 
           # macOS ARM64
@@ -354,7 +355,7 @@ jobs:
             "all-artifacts/artifacts-linux-x86_64" \
             "*.AppImage.tar.gz.sig" \
             "*.AppImage.zip.sig" \
-            "*.AppImage.sig")
+            "*.AppImage.sig" || true)
           LINUX_SIG=""
           LINUX_URL=""
           if [ -n "$LINUX_BUNDLE" ]; then
@@ -368,7 +369,7 @@ jobs:
             "*.nsis.zip.sig" \
             "*.msi.zip.sig" \
             "*.exe.zip.sig" \
-            "*.zip.sig")
+            "*.zip.sig" || true)
           if [ -z "$WINDOWS_BUNDLE" ]; then
             WINDOWS_BUNDLE=$(find_bundle "all-artifacts/artifacts-windows-x86_64" "*.nsis.zip")
           fi
