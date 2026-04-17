@@ -1,4 +1,14 @@
 export const AUTO_UPDATE_CHECKS_KEY = "passwall_auto_update";
+const DEBUG_RUN_ID = "update-check-investigation-1";
+
+function sendDebugLog(
+  hypothesisId: string,
+  location: string,
+  message: string,
+  data: Record<string, unknown>
+) {
+  fetch("http://127.0.0.1:7424/ingest/d56ae62b-d051-4704-a2bf-8292a48c483c", { method: "POST", headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "21998d" }, body: JSON.stringify({ sessionId: "21998d", runId: DEBUG_RUN_ID, hypothesisId, location, message, data, timestamp: Date.now() }) }).catch(() => {});
+}
 
 export type UpdateProgressEvent =
   | { event: "Started"; data: { contentLength?: number } }
@@ -21,12 +31,63 @@ export function setAutoUpdateChecksEnabled(enabled: boolean): void {
 }
 
 export async function checkForAvailableUpdate(): Promise<AvailableUpdate | null> {
-  const { check } = await import("@tauri-apps/plugin-updater");
+  // #region agent log
+  sendDebugLog("H3", "src/lib/updater.ts:checkForAvailableUpdate:entry", "Updater check requested", {
+    autoUpdateChecksEnabled: isAutoUpdateChecksEnabled(),
+  });
+  // #endregion
+
+  let check: (() => Promise<unknown>) | undefined;
   try {
+    const updaterModule = await import("@tauri-apps/plugin-updater");
+    check = updaterModule.check as () => Promise<unknown>;
+    // #region agent log
+    sendDebugLog("H1", "src/lib/updater.ts:checkForAvailableUpdate:import", "Updater plugin imported", {
+      hasCheckFunction: typeof check === "function",
+    });
+    // #endregion
+  } catch (error) {
+    // #region agent log
+    sendDebugLog("H1", "src/lib/updater.ts:checkForAvailableUpdate:import_error", "Updater plugin import failed", {
+      errorName: error instanceof Error ? error.name : typeof error,
+      errorMessage: error instanceof Error ? error.message : String(error),
+    });
+    // #endregion
+    throw error;
+  }
+
+  try {
+    // #region agent log
+    sendDebugLog("H2", "src/lib/updater.ts:checkForAvailableUpdate:before_check", "Calling updater check()", {});
+    // #endregion
+
     const update = await check();
+
+    // #region agent log
+    sendDebugLog("H4", "src/lib/updater.ts:checkForAvailableUpdate:after_check", "Updater check() resolved", {
+      hasUpdate: !!update,
+      updateVersion:
+        update && typeof update === "object" && "version" in update
+          ? String((update as { version?: unknown }).version ?? "")
+          : "",
+      hasDownloadAndInstall:
+        !!update &&
+        typeof update === "object" &&
+        "downloadAndInstall" in update &&
+        typeof (update as { downloadAndInstall?: unknown }).downloadAndInstall ===
+          "function",
+    });
+    // #endregion
+
     if (!update) return null;
     return update as AvailableUpdate;
   } catch (error) {
+    // #region agent log
+    sendDebugLog("H2", "src/lib/updater.ts:checkForAvailableUpdate:check_error", "Updater check() threw error", {
+      errorName: error instanceof Error ? error.name : typeof error,
+      errorMessage: error instanceof Error ? error.message : String(error),
+    });
+    // #endregion
     throw error;
   }
 }

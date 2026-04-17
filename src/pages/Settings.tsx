@@ -102,6 +102,9 @@ export default function Settings() {
 
   const checkForUpdates = async () => {
     setChecking(true);
+    // #region agent log
+    fetch("http://127.0.0.1:7424/ingest/d56ae62b-d051-4704-a2bf-8292a48c483c", { method: "POST", headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "21998d" }, body: JSON.stringify({ sessionId: "21998d", runId: "update-check-investigation-1", hypothesisId: "H5", location: "src/pages/Settings.tsx:checkForUpdates:start", message: "Settings update check button triggered", data: { checkingStateBefore: checking, autoUpdate }, timestamp: Date.now() }) }).catch(() => {});
+    // #endregion
     try {
       const update = await checkForAvailableUpdate();
       if (update) {
@@ -112,6 +115,9 @@ export default function Settings() {
         addNotification("success", t("AlreadyUpToDate"));
       }
     } catch (error: unknown) {
+      // #region agent log
+      fetch("http://127.0.0.1:7424/ingest/d56ae62b-d051-4704-a2bf-8292a48c483c", { method: "POST", headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "21998d" }, body: JSON.stringify({ sessionId: "21998d", runId: "update-check-investigation-1", hypothesisId: "H5", location: "src/pages/Settings.tsx:checkForUpdates:catch", message: "Settings update check failed", data: { errorName: error instanceof Error ? error.name : typeof error, errorMessage: error instanceof Error ? error.message : String(error) }, timestamp: Date.now() }) }).catch(() => {});
+      // #endregion
       const details =
         error instanceof Error && error.message ? ` (${error.message})` : "";
       addNotification("warning", `${t("UpdateCheckUnavailable")}${details}`);

@@ -13,7 +13,7 @@ env:
   DO_SPACES_BUCKET: ${{ secrets.DO_SPACES_BUCKET }}
   DO_SPACES_REGION: ${{ secrets.DO_SPACES_REGION }}
   DO_SPACES_ENDPOINT: ${{ secrets.DO_SPACES_ENDPOINT }}
-  DO_SPACES_CDN_URL: https://${{ secrets.DO_SPACES_BUCKET }}.${{ secrets.DO_SPACES_ENDPOINT }}
+  DO_SPACES_CDN_URL: https://passwall-desktop-releases.fra1.cdn.digitaloceanspaces.com
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
           - platform: macos-latest
             target: aarch64-apple-darwin
             name: macOS-arm64
-            updater_target: darwin-arm64
+            updater_target: darwin-aarch64
             artifact_target: darwin-arm64
           - platform: macos-latest
             target: x86_64-apple-darwin
@@ -125,7 +125,7 @@ jobs:
       - name: Configure updater endpoint for this build
         shell: bash
         env:
-          UPDATER_ENDPOINT: https://${{ secrets.DO_SPACES_BUCKET }}.${{ secrets.DO_SPACES_ENDPOINT }}/desktop/latest.json
+          UPDATER_ENDPOINT: https://passwall-desktop-releases.fra1.cdn.digitaloceanspaces.com/desktop/latest.json
         run: |
           python3 - <<'PY'
           import json
@@ -398,7 +398,7 @@ jobs:
           import json, sys
           platforms = {}
           entries = [
-              ('darwin-arm64', '''${MACOS_ARM_URL}''', '''${MACOS_ARM_SIG}'''),
+              ('darwin-aarch64', '''${MACOS_ARM_URL}''', '''${MACOS_ARM_SIG}'''),
               ('darwin-x86_64',  '''${MACOS_X64_URL}''', '''${MACOS_X64_SIG}'''),
               ('linux-x86_64',   '''${LINUX_URL}''',     '''${LINUX_SIG}'''),
               ('windows-x86_64', '''${WINDOWS_URL}''',   '''${WINDOWS_SIG}'''),
@@ -425,7 +425,7 @@ jobs:
           with open("latest.json", "r", encoding="utf-8") as f:
               data = json.load(f)
 
-          required = ["darwin-arm64", "darwin-x86_64", "linux-x86_64", "windows-x86_64"]
+          required = ["darwin-aarch64", "darwin-x86_64", "linux-x86_64", "windows-x86_64"]
           platforms = data.get("platforms", {})
 
           missing = [k for k in required if k not in platforms]
