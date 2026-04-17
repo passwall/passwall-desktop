@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build --mode production",
+    "build:update-local": "tauri build --ci --target aarch64-apple-darwin --bundles app",
     "preview": "vite preview",
     "tauri": "tauri",
     "typecheck": "tsc --noEmit",

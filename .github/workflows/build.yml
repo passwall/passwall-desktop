@@ -13,7 +13,7 @@ env:
   DO_SPACES_BUCKET: ${{ secrets.DO_SPACES_BUCKET }}
   DO_SPACES_REGION: ${{ secrets.DO_SPACES_REGION }}
   DO_SPACES_ENDPOINT: ${{ secrets.DO_SPACES_ENDPOINT }}
-  DO_SPACES_CDN_URL: https://passwall-releases.nyc3.cdn.digitaloceanspaces.com
+  DO_SPACES_CDN_URL: https://${{ secrets.DO_SPACES_BUCKET }}.${{ secrets.DO_SPACES_ENDPOINT }}
 
 jobs:
   build:
@@ -87,6 +87,60 @@ jobs:
 
       - name: Verify native messaging manifest origin pin
         run: pnpm verify:native-manifest
+
+      - name: Validate updater pubkey format
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          import sys
+
+          conf_path = "src-tauri/tauri.conf.json"
+          conf = json.load(open(conf_path, "r", encoding="utf-8"))
+          pubkey_b64 = conf.get("plugins", {}).get("updater", {}).get("pubkey", "")
+
+          if not isinstance(pubkey_b64, str) or not pubkey_b64.strip():
+              print("::error::plugins.updater.pubkey is empty in tauri.conf.json")
+              sys.exit(1)
+
+          try:
+              decoded = base64.b64decode(pubkey_b64).decode("utf-8")
+          except Exception as e:
+              print(f"::error::plugins.updater.pubkey is not valid base64: {e}")
+              sys.exit(1)
+
+          if not decoded.startswith("untrusted comment: minisign public key:"):
+              print("::error::plugins.updater.pubkey is malformed or double-encoded.")
+              print("::error::Expected base64(decodes-to: 'untrusted comment: minisign public key: ...').")
+              sys.exit(1)
+
+          print("Updater pubkey format is valid.")
+          PY
+
+      - name: Configure updater endpoint for this build
+        shell: bash
+        env:
+          UPDATER_ENDPOINT: https://${{ secrets.DO_SPACES_BUCKET }}.${{ secrets.DO_SPACES_ENDPOINT }}/desktop/latest.json
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          endpoint = os.environ.get("UPDATER_ENDPOINT", "").strip()
+          if not endpoint:
+              print("::error::UPDATER_ENDPOINT is empty")
+              sys.exit(1)
+
+          path = "src-tauri/tauri.conf.json"
+          conf = json.load(open(path, "r", encoding="utf-8"))
+          conf["plugins"]["updater"]["endpoints"] = [endpoint]
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(conf, f, indent=2)
+              f.write("\n")
+          print(f"Configured updater endpoint: {endpoint}")
+          PY
 
       # REQUIRED secrets for a working updater:
       #   TAURI_SIGNING_PRIVATE_KEY        – minisign private key (pnpm tauri signer generate)
@@ -360,7 +414,7 @@ jobs:
           body: |
             ## Passwall Desktop ${{ steps.version.outputs.tag }}
 
-            Download the installer for your platform from the assets below or from the [CDN](https://passwall-releases.nyc3.cdn.digitaloceanspaces.com/desktop/${{ steps.version.outputs.version }}/).
+            Download the installer for your platform from the assets below or from the [CDN](https://passwall-releases.nyc3.digitaloceanspaces.com/desktop/${{ steps.version.outputs.version }}/).
           files: all-artifacts/**/*
           draft: false
           prerelease: false

@@ -41,7 +41,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "ZFc1MGNuVnpkR1ZrSUdOdmJXMWxiblE2SUcxcGJtbHphV2R1SUhCMVlteHBZeUJyWlhrNklEUXdNekZDTVVORE1qZzRRamMzTWtJS1VsZFJjbVEwYzI5NlRFVjRVVU56UzBFeFVEbDZhbkJ3WlhaRmJqZDFTR1ZaUmtrMWJYSjZlV2wzVWxFclZtbzNhbkI2VTNGNmMyZ0s=",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFCREEzQUJBM0YzMkZDRTgKUldUby9ESS91anJhcXllazNjU0hGVU5ZaEUxa1Q0NVhmQTBLbjlMM0lWVEI4SXZHemlNMHYrRzYK",
       "endpoints": [
         "https://passwall-releases.nyc3.cdn.digitaloceanspaces.com/desktop/latest.json"
       ]
