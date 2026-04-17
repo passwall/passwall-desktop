@@ -82,6 +82,57 @@ export async function checkForAvailableUpdate(): Promise<AvailableUpdate | null>
     if (!update) return null;
     return update as AvailableUpdate;
   } catch (error) {
+    const isMacRuntime =
+      typeof navigator !== "undefined" && /Mac/i.test(navigator.userAgent);
+
+    if (isMacRuntime) {
+      // #region agent log
+      sendDebugLog(
+        "H6",
+        "src/lib/updater.ts:checkForAvailableUpdate:retry_arm64",
+        "Retrying updater check() with darwin-arm64 target on macOS",
+        { originalError: error instanceof Error ? error.message : String(error) }
+      );
+      // #endregion
+      try {
+        const update = await (
+          check as (options?: { target?: string }) => Promise<unknown>
+        )({ target: "darwin-arm64" });
+        // #region agent log
+        sendDebugLog(
+          "H6",
+          "src/lib/updater.ts:checkForAvailableUpdate:retry_arm64_result",
+          "Updater check() with darwin-arm64 target resolved",
+          {
+            hasUpdate: !!update,
+            updateVersion:
+              update && typeof update === "object" && "version" in update
+                ? String((update as { version?: unknown }).version ?? "")
+                : "",
+          }
+        );
+        // #endregion
+        if (!update) return null;
+        return update as AvailableUpdate;
+      } catch (retryError) {
+        // #region agent log
+        sendDebugLog(
+          "H6",
+          "src/lib/updater.ts:checkForAvailableUpdate:retry_arm64_error",
+          "Updater check() with darwin-arm64 target failed",
+          {
+            errorName:
+              retryError instanceof Error ? retryError.name : typeof retryError,
+            errorMessage:
+              retryError instanceof Error
+                ? retryError.message
+                : String(retryError),
+          }
+        );
+        // #endregion
+        throw retryError;
+      }
+    }
     // #region agent log
     sendDebugLog("H2", "src/lib/updater.ts:checkForAvailableUpdate:check_error", "Updater check() threw error", {
       errorName: error instanceof Error ? error.name : typeof error,
