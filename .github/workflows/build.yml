@@ -267,9 +267,23 @@ jobs:
       - name: Get version from tag
         id: version
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
+          set -euo pipefail
+
+          if [ "${GITHUB_REF_TYPE:-}" = "tag" ]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            TAG_NAME="${GITHUB_REF_NAME}"
+          else
+            VERSION="$(python3 -c 'import json; print(json.load(open("src-tauri/tauri.conf.json", "r", encoding="utf-8"))["version"])')"
+            TAG_NAME="v${VERSION}"
+          fi
+
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Resolved VERSION is not semver-compatible: $VERSION"
+            exit 1
+          fi
+
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Upload artifacts to DO Spaces
         run: |

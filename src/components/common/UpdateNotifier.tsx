@@ -23,10 +23,7 @@ export default function UpdateNotifier() {
         setUpdateVersion(update.version ?? "");
         setState("available");
       }
-    } catch (error: unknown) {
-      // #region agent log
-      fetch("http://127.0.0.1:7424/ingest/d56ae62b-d051-4704-a2bf-8292a48c483c", { method: "POST", headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "21998d" }, body: JSON.stringify({ sessionId: "21998d", runId: "update-check-investigation-1", hypothesisId: "H5", location: "src/components/common/UpdateNotifier.tsx:checkForUpdate:catch", message: "Background notifier update check failed", data: { errorName: error instanceof Error ? error.name : typeof error, errorMessage: error instanceof Error ? error.message : String(error) }, timestamp: Date.now() }) }).catch(() => {});
-      // #endregion
+    } catch {
       // Updater not available in dev or no endpoint configured
     }
   }, []);
