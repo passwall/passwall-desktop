@@ -63,7 +63,7 @@ export default function AddressForm({ initial, itemId, onSaved }: AddressFormPro
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full">
       <FormInput
         label={t("Title")}
         value={form.title}

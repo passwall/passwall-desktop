@@ -59,7 +59,7 @@ export default function BankAccountForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full">
       <FormInput
         label={t("BankName")}
         value={form.title}

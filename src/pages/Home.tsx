@@ -24,7 +24,9 @@ export default function Home() {
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         <AppShell>
-          <Outlet />
+          <div className="flex-1 min-w-0 min-h-0">
+            <Outlet />
+          </div>
         </AppShell>
       </div>
     </div>

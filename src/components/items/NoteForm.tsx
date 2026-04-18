@@ -51,7 +51,7 @@ export default function NoteForm({ initial, itemId, onSaved }: NoteFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full">
       <FormInput
         label={t("Title")}
         value={form.title}

@@ -21,7 +21,7 @@ export default function PasswordGenerator() {
   };
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto">
+    <div className="h-full overflow-y-auto">
       <div className="p-6 max-w-xl mx-auto">
         <h2 className="text-lg font-semibold text-text-primary mb-1">
           {t("PasswordGenerator")}

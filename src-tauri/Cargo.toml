@@ -1,6 +1,6 @@
 [package]
 name = "passwall-desktop"
-version = "1.22.0"
+version = "1.23.0"
 description = "Passwall Desktop - Password Manager"
 authors = ["Passwall"]
 edition = "2021"
@@ -29,6 +29,7 @@ rand_core = "0.6"
 base64 = "0.22"
 tauri-plugin-autostart = "2"
 tauri-plugin-dialog = "2"
+
 
 
 

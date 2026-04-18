@@ -26,7 +26,7 @@ export default function LoginForm() {
   const [server, setServer] = useState(
     localStorage.getItem("server") || HTTPClient.getBaseURL()
   );
-  const [showServer, setShowServer] = useState(true);
+  const [showServer, setShowServer] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
