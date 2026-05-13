@@ -20,6 +20,7 @@ let keystoreAvailable: boolean | null = null;
 let hydrated = false;
 const KEYCHAIN_SESSION_ACCOUNT = "session_bundle_v1";
 const ALL_KEYS: SecureKey[] = ["access_token", "refresh_token", "user_key"];
+const SIMPLE_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type SessionBundle = Partial<Record<SecureKey, string>>;
 
@@ -132,4 +133,41 @@ export async function clearAllSecrets(): Promise<void> {
   await invoke("remove_secret", { account: KEYCHAIN_SESSION_ACCOUNT }).catch(
     () => {}
   );
+}
+
+function normalizeEmailAccount(email: string): string | null {
+  const normalized = (email || "").trim().toLowerCase();
+  if (!SIMPLE_EMAIL_RE.test(normalized)) return null;
+  return normalized;
+}
+
+/**
+ * Stores the user key in the desktop keychain entry used by native messaging
+ * (`GET_USER_KEY` lookup by email). Best effort: never throws.
+ */
+export async function setNativeMessagingUserKey(
+  email: string,
+  userKeyB64: string
+): Promise<void> {
+  const account = normalizeEmailAccount(email);
+  if (!account || !userKeyB64) return;
+  if (!(await checkAvailable())) return;
+
+  await invoke("store_secret", {
+    account,
+    secret: userKeyB64,
+  }).catch(() => {});
+}
+
+/**
+ * Removes native messaging keychain entry for the given email. Best effort.
+ */
+export async function removeNativeMessagingUserKey(email: string): Promise<void> {
+  const account = normalizeEmailAccount(email);
+  if (!account) return;
+  if (!(await checkAvailable())) return;
+
+  await invoke("remove_secret", {
+    account,
+  }).catch(() => {});
 }

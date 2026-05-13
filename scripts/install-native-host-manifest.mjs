@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 
 const OFFICIAL_ORIGIN = "chrome-extension://blaiihhmnjllkfnkmkidahhegbmlghmo/";
 const ORIGIN_RE = /^chrome-extension:\/\/[a-p]{32}\/$/;
@@ -46,6 +47,59 @@ function toAbsoluteHostPath(hostPath) {
   return path.resolve(process.cwd(), hostPath);
 }
 
+function binaryName(baseName) {
+  return process.platform === "win32" ? `${baseName}.exe` : baseName;
+}
+
+function resolveHostPath(explicitHostPath) {
+  if (explicitHostPath) {
+    return toAbsoluteHostPath(explicitHostPath);
+  }
+
+  const candidates = [
+    path.join("native-messaging-host", "target", "release", binaryName("passwall-native-messaging-host")),
+    path.join("native-messaging-host", "target", "debug", binaryName("passwall-native-messaging-host")),
+    path.join("src-tauri", "target", "release", binaryName("passwall-desktop")),
+    path.join("src-tauri", "target", "debug", binaryName("passwall-desktop")),
+  ].map(toAbsoluteHostPath);
+
+  if (process.platform === "win32" && process.env.LOCALAPPDATA) {
+    candidates.push(path.join(process.env.LOCALAPPDATA, "Programs", "Passwall", "Passwall.exe"));
+  }
+  if (process.platform === "darwin") {
+    candidates.push("/Applications/Passwall.app/Contents/MacOS/Passwall");
+  }
+
+  return candidates.find((candidate) => fs.existsSync(candidate)) || candidates[0];
+}
+
+function registerWindowsNativeHost(manifestPath) {
+  const roots = [
+    "HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts",
+    "HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts",
+  ];
+
+  for (const root of roots) {
+    const key = `${root}\\com.passwall.desktop`;
+    const result = spawnSync(
+      "reg",
+      ["add", key, "/ve", "/t", "REG_SZ", "/d", manifestPath, "/f"],
+      { encoding: "utf8" },
+    );
+
+    if (result.error) {
+      throw new Error(`Failed to execute reg.exe for ${root}: ${result.error.message}`);
+    }
+    if (result.status !== 0) {
+      throw new Error(
+        `reg.exe failed for ${root}: ${
+          result.stderr?.trim() || result.stdout?.trim() || `exit ${result.status}`
+        }`,
+      );
+    }
+  }
+}
+
 const args = parseArgs(process.argv.slice(2));
 const mode = args.mode || "prod";
 
@@ -66,9 +120,7 @@ if (!fs.existsSync(templatePath)) {
   process.exit(1);
 }
 
-const hostPath = toAbsoluteHostPath(
-  args["host-path"] || "native-messaging-host/target/debug/passwall-native-messaging-host",
-);
+const hostPath = resolveHostPath(args["host-path"]);
 if (!fs.existsSync(hostPath)) {
   console.error(`Native host binary not found: ${hostPath}`);
   process.exit(1);
@@ -105,6 +157,13 @@ const outputPath = chromeManifestPath();
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, `${rendered}\n`, "utf8");
 
+if (process.platform === "win32") {
+  registerWindowsNativeHost(outputPath);
+}
+
 console.log(`Installed manifest (${mode}) -> ${outputPath}`);
 console.log(`Host path: ${hostPath}`);
 console.log(`Allowed origin: ${origin}`);
+if (process.platform === "win32") {
+  console.log("Windows registry keys registered for Chrome and Edge native messaging hosts.");
+}

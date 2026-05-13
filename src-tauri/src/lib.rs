@@ -1,5 +1,6 @@
 mod keystore;
 mod logger;
+mod native_host_registration;
 mod paired_browsers;
 
 use keystore::KeyStore;
@@ -63,6 +64,11 @@ fn export_error_logs_to_path(app: tauri::AppHandle, target_path: String) -> Resu
     logger::export_error_logs_to_path(&app, &target_path)
 }
 
+#[tauri::command]
+fn get_native_host_diagnostics() -> Result<native_host_registration::NativeHostDiagnostics, String> {
+    native_host_registration::collect_diagnostics()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -81,6 +87,11 @@ pub fn run() {
                     .map(|loc| format!("{}:{}:{}", loc.file(), loc.line(), loc.column()));
                 let _ = logger::append_error_log(&panic_handle, "rust.panic", &message, location.as_deref());
             }));
+
+            if let Err(err) = native_host_registration::ensure_registered() {
+                let _ =
+                    logger::append_error_log(&app_handle, "native_host.registration", &err, None);
+            }
             Ok(())
         })
         .plugin(tauri_plugin_http::init())
@@ -103,6 +114,7 @@ pub fn run() {
             read_error_logs,
             get_error_log_path,
             export_error_logs_to_path,
+            get_native_host_diagnostics,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

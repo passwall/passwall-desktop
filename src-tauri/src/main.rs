@@ -105,7 +105,7 @@ fn handle_request(req: Request, caller_origin: Option<&str>) -> Response {
                 .and_then(|v| v.as_str());
             let ks = KeyStore::new();
             match email {
-                Some(email) => match ks.retrieve(email) {
+                Some(email) => match ks.retrieve(&email.trim().to_ascii_lowercase()) {
                     Ok(Some(key)) => {
                         let payload = native_ipc::encrypt_user_key_payload_if_session(&key)
                             .unwrap_or_else(|| serde_json::json!({ "userKey": key }));
@@ -145,7 +145,7 @@ fn handle_request(req: Request, caller_origin: Option<&str>) -> Response {
                 .and_then(|v| v.as_str());
             let ks = KeyStore::new();
             match email {
-                Some(email) => match ks.retrieve(email) {
+                Some(email) => match ks.retrieve(&email.trim().to_ascii_lowercase()) {
                     Ok(Some(_)) => Response {
                         v: 1,
                         resp_type: "response".to_string(),
@@ -186,7 +186,7 @@ fn handle_request(req: Request, caller_origin: Option<&str>) -> Response {
             );
             let ks = KeyStore::new();
             match (email, key_b64) {
-                (Some(email), Some(key_b64)) => match ks.store(email, key_b64) {
+                (Some(email), Some(key_b64)) => match ks.store(&email.trim().to_ascii_lowercase(), key_b64) {
                     Ok(()) => Response {
                         v: 1,
                         resp_type: "response".to_string(),
@@ -216,7 +216,7 @@ fn handle_request(req: Request, caller_origin: Option<&str>) -> Response {
                 .and_then(|v| v.as_str());
             let ks = KeyStore::new();
             match email {
-                Some(email) => match ks.remove(email) {
+                Some(email) => match ks.remove(&email.trim().to_ascii_lowercase()) {
                     Ok(()) => Response {
                         v: 1,
                         resp_type: "response".to_string(),

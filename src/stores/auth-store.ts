@@ -10,6 +10,8 @@ import {
   clearAllSecrets,
   getSecure,
   getSecureSync,
+  removeNativeMessagingUserKey,
+  setNativeMessagingUserKey,
   setManySecure,
 } from "@/lib/secure-storage";
 import type { User, Organization, LoginPayload, SignInResponse } from "@/types";
@@ -225,6 +227,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         refresh_token: data.refresh_token,
         user_key: userKeyB64,
       });
+      await setNativeMessagingUserKey(email, userKeyB64);
 
       set({
         userKey,
@@ -236,6 +239,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
 
     async logout() {
+      const emailForNativeHost = (localStorage.getItem("email") || "").trim();
       try {
         await AuthService.logout();
       } catch {
@@ -243,6 +247,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
       }
 
       await clearAllSecrets();
+      await removeNativeMessagingUserKey(emailForNativeHost);
       useVaultStore.getState().clearItems();
 
       set({
@@ -338,6 +343,11 @@ export const useAuthStore = create<AuthState>((set, get) => {
         set({ userKey, authenticated: true });
       } catch {
         return false;
+      }
+
+      const savedEmail = localStorage.getItem("email");
+      if (savedEmail) {
+        await setNativeMessagingUserKey(savedEmail, userKeyB64);
       }
 
       await get().fetchOrganizations();
