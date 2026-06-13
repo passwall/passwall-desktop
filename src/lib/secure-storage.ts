@@ -13,13 +13,13 @@ import { invoke } from "@tauri-apps/api/core";
  * startup to populate the cache from the keychain.
  */
 
-export type SecureKey = "access_token" | "refresh_token" | "user_key";
+export type SecureKey = "access_token" | "refresh_token" | "user_key" | "protected_user_key";
 
 const cache = new Map<SecureKey, string>();
 let keystoreAvailable: boolean | null = null;
 let hydrated = false;
 const KEYCHAIN_SESSION_ACCOUNT = "session_bundle_v1";
-const ALL_KEYS: SecureKey[] = ["access_token", "refresh_token", "user_key"];
+const ALL_KEYS: SecureKey[] = ["access_token", "refresh_token", "user_key", "protected_user_key"];
 const SIMPLE_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type SessionBundle = Partial<Record<SecureKey, string>>;

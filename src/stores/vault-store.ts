@@ -180,6 +180,7 @@ function buildItemData(
       return normalizeSecureNoteData({
         name: (form.title as string) || "",
         notes: (form.note as string) || (form.notes as string) || "",
+        attachments: Array.isArray(form.attachments) ? form.attachments : [],
       });
     case ItemType.Card: {
       const raw = String(form.expiry_date || "").trim();

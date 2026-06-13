@@ -23,6 +23,12 @@ export function buildPasswordItemDataFromForm(
   form: Record<string, unknown> = {},
   url: string = ""
 ): PasswordItemData {
+  const uris = Array.isArray(form.uris)
+    ? form.uris
+    : url
+      ? [{ uri: url, match: null }]
+      : [];
+
   return normalizePasswordItemData({
     name:
       typeof form.name === "string"
@@ -32,7 +38,8 @@ export function buildPasswordItemDataFromForm(
           : "",
     username: (form.username as string) || "",
     password: (form.password as string) || "",
-    uris: url ? [{ uri: url, match: null }] : [],
+    uris,
+    fields: Array.isArray(form.fields) ? form.fields : undefined,
     notes:
       (form.notes as string) || (form.note as string) || (form.extra as string) || "",
     totp_secret: (form.totp_secret as string) || "",

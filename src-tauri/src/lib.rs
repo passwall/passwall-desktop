@@ -1,3 +1,4 @@
+mod biometric_keystore;
 mod keystore;
 mod logger;
 mod native_host_registration;
@@ -5,6 +6,14 @@ mod paired_browsers;
 
 use keystore::KeyStore;
 use logger::ErrorLogEntry;
+use serde::Deserialize;
+use std::{fs, path::PathBuf};
+
+#[derive(Deserialize)]
+struct ExportFile {
+    filename: String,
+    content: String,
+}
 
 #[tauri::command]
 fn store_secret(account: &str, secret: &str) -> Result<(), String> {
@@ -27,6 +36,31 @@ fn remove_secret(account: &str) -> Result<(), String> {
 #[tauri::command]
 fn is_keystore_available() -> bool {
     KeyStore::is_available()
+}
+
+#[tauri::command]
+fn is_biometric_unlock_available() -> bool {
+    biometric_keystore::is_available()
+}
+
+#[tauri::command]
+fn store_biometric_unlock_key(email: &str, user_key_b64: &str) -> Result<(), String> {
+    biometric_keystore::store(email, user_key_b64)
+}
+
+#[tauri::command]
+fn get_biometric_unlock_key(email: &str) -> Result<Option<String>, String> {
+    biometric_keystore::get(email)
+}
+
+#[tauri::command]
+fn remove_biometric_unlock_key(email: &str) -> Result<(), String> {
+    biometric_keystore::remove(email)
+}
+
+#[tauri::command]
+fn has_biometric_unlock_key(email: &str) -> bool {
+    biometric_keystore::has_key(email)
 }
 
 #[tauri::command]
@@ -62,6 +96,32 @@ fn get_error_log_path(app: tauri::AppHandle) -> Result<String, String> {
 #[tauri::command]
 fn export_error_logs_to_path(app: tauri::AppHandle, target_path: String) -> Result<(), String> {
     logger::export_error_logs_to_path(&app, &target_path)
+}
+
+#[tauri::command]
+fn write_export_files(target_dir: String, files: Vec<ExportFile>) -> Result<Vec<String>, String> {
+    let target = PathBuf::from(target_dir);
+    if !target.is_dir() {
+        return Err("Target directory does not exist".to_string());
+    }
+
+    let mut written = Vec::new();
+    for file in files {
+        let safe_name = file
+            .filename
+            .chars()
+            .filter(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '.' | '-' | '_'))
+            .collect::<String>();
+        if safe_name.is_empty() {
+            return Err("Invalid export filename".to_string());
+        }
+
+        let path = target.join(safe_name);
+        fs::write(&path, file.content).map_err(|err| err.to_string())?;
+        written.push(path.to_string_lossy().to_string());
+    }
+
+    Ok(written)
 }
 
 #[tauri::command]
@@ -108,12 +168,18 @@ pub fn run() {
             get_secret,
             remove_secret,
             is_keystore_available,
+            is_biometric_unlock_available,
+            store_biometric_unlock_key,
+            get_biometric_unlock_key,
+            remove_biometric_unlock_key,
+            has_biometric_unlock_key,
             get_connected_browsers,
             remove_browser,
             append_error_log,
             read_error_logs,
             get_error_log_path,
             export_error_logs_to_path,
+            write_export_files,
             get_native_host_diagnostics,
         ])
         .run(tauri::generate_context!())

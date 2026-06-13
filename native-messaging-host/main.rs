@@ -236,6 +236,60 @@ fn handle_request(req: Request, caller_origin: Option<&str>) -> Response {
     }
 }
 
+use std::sync::{Arc, Mutex};
+use std::thread;
+use std::time::Duration;
+
+fn keychain_watcher(
+    watched_email: Arc<Mutex<Option<String>>>,
+    stdout_lock: Arc<Mutex<()>>,
+) {
+    let mut last_has_key: Option<bool> = None;
+    let ks = KeyStore::new();
+
+    loop {
+        thread::sleep(Duration::from_secs(2));
+
+        let email = {
+            let guard = watched_email.lock().unwrap();
+            match guard.as_ref() {
+                Some(e) => e.clone(),
+                None => continue,
+            }
+        };
+
+        let has_key = matches!(ks.retrieve(&email), Ok(Some(_)));
+
+        if last_has_key == Some(true) && !has_key {
+            let event = Response {
+                v: 1,
+                resp_type: "event".to_string(),
+                id: None,
+                payload: Some(serde_json::json!({
+                    "event": "DESKTOP_LOCKED",
+                    "email": email
+                })),
+            };
+            let _lock = stdout_lock.lock().unwrap();
+            write_message(&event);
+        } else if last_has_key == Some(false) && has_key {
+            let event = Response {
+                v: 1,
+                resp_type: "event".to_string(),
+                id: None,
+                payload: Some(serde_json::json!({
+                    "event": "DESKTOP_UNLOCKED",
+                    "email": email
+                })),
+            };
+            let _lock = stdout_lock.lock().unwrap();
+            write_message(&event);
+        }
+
+        last_has_key = Some(has_key);
+    }
+}
+
 fn caller_origin_from_argv() -> Option<String> {
     std::env::args().find(|a| {
         a.starts_with("chrome-extension://") && a.ends_with('/') && a.len() > 40
@@ -244,9 +298,34 @@ fn caller_origin_from_argv() -> Option<String> {
 
 fn main() {
     let caller_origin = caller_origin_from_argv();
+    let watched_email: Arc<Mutex<Option<String>>> = Arc::new(Mutex::new(None));
+    let stdout_lock: Arc<Mutex<()>> = Arc::new(Mutex::new(()));
+
+    {
+        let email_clone = Arc::clone(&watched_email);
+        let stdout_clone = Arc::clone(&stdout_lock);
+        thread::spawn(move || {
+            keychain_watcher(email_clone, stdout_clone);
+        });
+    }
+
     loop {
         if let Some(req) = read_message() {
+            if let Some(email) = req
+                .payload
+                .as_ref()
+                .and_then(|p| p.get("email"))
+                .and_then(|v| v.as_str())
+            {
+                let normalized = email.trim().to_ascii_lowercase();
+                let mut guard = watched_email.lock().unwrap();
+                if guard.is_none() {
+                    *guard = Some(normalized);
+                }
+            }
+
             let resp = handle_request(req, caller_origin.as_deref());
+            let _lock = stdout_lock.lock().unwrap();
             write_message(&resp);
         } else {
             break;

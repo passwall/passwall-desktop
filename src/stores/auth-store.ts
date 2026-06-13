@@ -11,14 +11,41 @@ import {
   getSecure,
   getSecureSync,
   removeNativeMessagingUserKey,
+  removeSecure,
   setNativeMessagingUserKey,
   setManySecure,
+  setSecure,
 } from "@/lib/secure-storage";
-import type { User, Organization, LoginPayload, SignInResponse } from "@/types";
+import {
+  disableBiometricUnlock as disableBiometricUnlockKey,
+  enableBiometricUnlock as enableBiometricUnlockKey,
+  getBiometricUnlockKey,
+  isBiometricUnlockEnabled,
+  removeBiometricUnlockKey,
+} from "@/lib/biometric-unlock";
+import type {
+  User,
+  Organization,
+  LoginPayload,
+  SignInResponse,
+  KdfConfig,
+} from "@/types";
 import { useVaultStore } from "./vault-store";
+
+const KDF_CONFIG_PREFIX = "passwall_kdf_config:";
+const LOCAL_STORAGE_KEYS_TO_KEEP_ON_LOGOUT = new Set([
+  "email",
+  "server",
+  "passwall_auto_update",
+  "passwall_biometric_unlock_enabled",
+  "passwall_desktop_locale",
+  "passwall_session_settings",
+  "passwall_theme",
+]);
 
 interface AuthState {
   authenticated: boolean;
+  locked: boolean;
   user: User | null;
   userKey: SymmetricKey | null;
   organizations: Organization[];
@@ -38,6 +65,11 @@ interface AuthState {
     server: string,
     masterKey: Uint8Array
   ) => Promise<void>;
+  lock: () => Promise<void>;
+  unlock: (masterPassword: string) => Promise<void>;
+  unlockWithBiometrics: () => Promise<void>;
+  enableBiometricUnlock: () => Promise<void>;
+  disableBiometricUnlock: () => Promise<void>;
   logout: () => Promise<void>;
   fetchOrganizations: () => Promise<void>;
   restoreSession: () => Promise<boolean>;
@@ -47,6 +79,49 @@ function resolveDefaultOrgId(orgs: Organization[]): number | null {
   const personal = orgs.find((o) => o.is_personal);
   if (personal) return personal.id;
   return orgs[0]?.id ?? null;
+}
+
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+function getKdfConfigKey(email: string): string {
+  return `${KDF_CONFIG_PREFIX}${normalizeEmail(email)}`;
+}
+
+function storeKdfConfig(email: string, config: KdfConfig): void {
+  const normalized = normalizeEmail(email);
+  if (!normalized) return;
+  localStorage.setItem(getKdfConfigKey(normalized), JSON.stringify(config));
+}
+
+function getStoredKdfConfig(email: string): KdfConfig | null {
+  const normalized = normalizeEmail(email);
+  if (!normalized) return null;
+  try {
+    const raw = localStorage.getItem(getKdfConfigKey(normalized));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<KdfConfig>;
+    if (
+      typeof parsed.kdf_type !== "number" ||
+      typeof parsed.kdf_salt !== "string"
+    ) {
+      return null;
+    }
+    return parsed as KdfConfig;
+  } catch {
+    return null;
+  }
+}
+
+async function refreshBiometricUnlockKeyIfEnabled(
+  email: string,
+  userKeyB64: string
+): Promise<void> {
+  if (!email || !userKeyB64 || !isBiometricUnlockEnabled()) return;
+  await enableBiometricUnlockKey(email, userKeyB64).catch(() => {
+    // Keep normal login working if the biometric keychain entry cannot refresh.
+  });
 }
 
 export const useAuthStore = create<AuthState>((set, get) => {
@@ -65,6 +140,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     // Populated by restoreSession() during bootstrap once the secure cache
     // has been hydrated from the OS keychain.
     authenticated: false,
+    locked: false,
     user,
     userKey: null,
     organizations,
@@ -100,6 +176,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
       HTTPClient.setBaseURL(server);
 
       const { data: kdfConfig } = await AuthService.preLogin(email);
+      storeKdfConfig(email, kdfConfig);
 
       if (
         kdfConfig.kdf_type === 0 &&
@@ -226,16 +303,113 @@ export const useAuthStore = create<AuthState>((set, get) => {
         access_token: data.access_token,
         refresh_token: data.refresh_token,
         user_key: userKeyB64,
+        protected_user_key: data.protected_user_key,
       });
       await setNativeMessagingUserKey(email, userKeyB64);
+      await refreshBiometricUnlockKeyIfEnabled(email, userKeyB64);
 
       set({
         userKey,
         authenticated: true,
+        locked: false,
         user: data.user,
       });
 
       await get().fetchOrganizations();
+    },
+
+    async lock() {
+      const emailForNativeHost = (localStorage.getItem("email") || "").trim();
+      await removeNativeMessagingUserKey(emailForNativeHost);
+      await removeSecure("user_key");
+      useVaultStore.getState().clearItems();
+
+      set({
+        userKey: null,
+        locked: true,
+        orgKeys: {},
+      });
+    },
+
+    async unlock(masterPassword: string) {
+      const email = localStorage.getItem("email") || "";
+      const server = localStorage.getItem("server") || "";
+      if (server) HTTPClient.setBaseURL(server);
+
+      const protectedUserKey = await getSecure("protected_user_key");
+      if (!protectedUserKey) {
+        throw new Error("No protected user key available. Please sign in again.");
+      }
+
+      let kdfConfig = getStoredKdfConfig(email);
+      if (!kdfConfig) {
+        const { data } = await AuthService.preLogin(email);
+        kdfConfig = data;
+        storeKdfConfig(email, data);
+      }
+      const masterKey = await cryptoService.makeMasterKey(
+        masterPassword,
+        kdfConfig.kdf_salt,
+        kdfConfig
+      );
+      const stretchedMasterKey = await cryptoService.stretchMasterKey(masterKey);
+      const userKey = await cryptoService.unwrapUserKey(
+        protectedUserKey,
+        stretchedMasterKey
+      );
+
+      const userKeyB64 = cryptoService.arrayToBase64(userKey.toBytes());
+      await setSecure("user_key", userKeyB64);
+      await setNativeMessagingUserKey(email, userKeyB64);
+      await refreshBiometricUnlockKeyIfEnabled(email, userKeyB64);
+
+      set({
+        userKey,
+        locked: false,
+        authenticated: true,
+      });
+
+      await get().fetchOrganizations();
+    },
+
+    async unlockWithBiometrics() {
+      const email = localStorage.getItem("email") || "";
+      const server = localStorage.getItem("server") || "";
+      if (server) HTTPClient.setBaseURL(server);
+
+      const userKeyB64 = await getBiometricUnlockKey(email);
+      if (!userKeyB64) {
+        throw new Error("Biometric unlock failed");
+      }
+
+      const userKeyBytes = cryptoService.base64ToArray(userKeyB64);
+      const userKey = SymmetricKey.fromBytes(userKeyBytes);
+      await setSecure("user_key", userKeyB64);
+      await setNativeMessagingUserKey(email, userKeyB64);
+
+      set({
+        userKey,
+        locked: false,
+        authenticated: true,
+      });
+
+      await get().fetchOrganizations();
+    },
+
+    async enableBiometricUnlock() {
+      const { userKey, locked } = get();
+      const email = localStorage.getItem("email") || "";
+      if (locked || !userKey || !email) {
+        throw new Error("Biometric unlock requires an unlocked session");
+      }
+
+      const userKeyB64 = cryptoService.arrayToBase64(userKey.toBytes());
+      await enableBiometricUnlockKey(email, userKeyB64);
+    },
+
+    async disableBiometricUnlock() {
+      const email = localStorage.getItem("email") || "";
+      await disableBiometricUnlockKey(email);
     },
 
     async logout() {
@@ -248,12 +422,14 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
       await clearAllSecrets();
       await removeNativeMessagingUserKey(emailForNativeHost);
+      await removeBiometricUnlockKey(emailForNativeHost);
       useVaultStore.getState().clearItems();
 
       set({
         userKey: null,
         user: null,
         authenticated: false,
+        locked: false,
         twoFactorToken: null,
         twoFactorRequired: false,
         _pendingMasterKey: null,
@@ -262,10 +438,9 @@ export const useAuthStore = create<AuthState>((set, get) => {
         orgKeys: {},
       });
 
-      const keysToKeep = ["email", "server", "passwall_theme", "passwall_desktop_locale"];
       const allKeys = Object.keys(localStorage);
       allKeys.forEach((key) => {
-        if (!keysToKeep.includes(key)) {
+        if (!LOCAL_STORAGE_KEYS_TO_KEEP_ON_LOGOUT.has(key)) {
           localStorage.removeItem(key);
         }
       });
@@ -319,7 +494,8 @@ export const useAuthStore = create<AuthState>((set, get) => {
     async restoreSession(): Promise<boolean> {
       const accessToken = await getSecure("access_token");
       const userKeyB64 = await getSecure("user_key");
-      if (!accessToken || !userKeyB64) return false;
+      const protectedUserKey = await getSecure("protected_user_key");
+      if (!accessToken) return false;
 
       const savedServer = localStorage.getItem("server");
       if (savedServer) {
@@ -337,10 +513,22 @@ export const useAuthStore = create<AuthState>((set, get) => {
         }
       }
 
+      if (!userKeyB64 && protectedUserKey) {
+        set({
+          authenticated: true,
+          locked: true,
+          userKey: null,
+          orgKeys: {},
+        });
+        return true;
+      }
+
+      if (!userKeyB64) return false;
+
       try {
         const userKeyBytes = cryptoService.base64ToArray(userKeyB64);
         const userKey = SymmetricKey.fromBytes(userKeyBytes);
-        set({ userKey, authenticated: true });
+        set({ userKey, authenticated: true, locked: false });
       } catch {
         return false;
       }

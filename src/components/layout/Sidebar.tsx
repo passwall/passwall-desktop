@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import {
@@ -11,6 +11,7 @@ import {
   Globe,
   Settings as SettingsIcon,
   LogOut,
+  Lock,
   MessageSquare,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
@@ -33,6 +34,8 @@ const FEEDBACK_URL = "https://passwall.typeform.com/to/GAv1h2";
 
 export default function Sidebar() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const lock = useAuthStore((s) => s.lock);
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
   const hasProPlan = useAuthStore((s) => s.hasProPlan());
@@ -47,6 +50,11 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     await logout();
+  };
+
+  const handleLock = async () => {
+    await lock();
+    navigate("/unlock", { replace: true });
   };
 
   return (
@@ -141,6 +149,14 @@ export default function Sidebar() {
           <MessageSquare size={16} />
           <span>{t("GiveFeedback")}</span>
         </a>
+
+        <button
+          onClick={() => void handleLock()}
+          className="flex items-center gap-3 px-3 py-2 text-[13px] text-white/50 hover:bg-white/[0.04] hover:text-white/80 w-full rounded-lg transition-colors"
+        >
+          <Lock size={16} />
+          <span>{t("Lock")}</span>
+        </button>
 
         <button
           onClick={handleLogout}
