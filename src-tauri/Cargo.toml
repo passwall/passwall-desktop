@@ -1,6 +1,6 @@
 [package]
 name = "passwall-desktop"
-version = "1.25.0"
+version = "1.26.0"
 description = "Passwall Desktop - Password Manager"
 authors = ["Passwall"]
 edition = "2021"
@@ -40,6 +40,7 @@ objc2-local-authentication = "0.3.2"
 block2 = "0.6.2"
 objc2-foundation = "0.3.2"
 objc2 = "0.6.4"
+
 
 
 
