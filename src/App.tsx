@@ -4,6 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTheme } from "@/hooks/useTheme";
 import { AUTH_EXPIRED_EVENT } from "@/lib/http-client";
+import { logger } from "@/lib/logger";
 import { hydrateSecureStorage } from "@/lib/secure-storage";
 import { getSessionSettings, getTimeoutMs } from "@/lib/session-settings";
 import Login from "@/pages/Login";
@@ -24,8 +25,10 @@ let _bootstrapPromise: Promise<void> | null = null;
 function bootstrapAuth(): Promise<void> {
   if (_bootstrapPromise) return _bootstrapPromise;
   _bootstrapPromise = (async () => {
+    void logger.info("app.bootstrap_start", "Auth bootstrap started");
     await hydrateSecureStorage();
-    await useAuthStore.getState().restoreSession();
+    const restored = await useAuthStore.getState().restoreSession();
+    void logger.info("app.bootstrap_done", "Auth bootstrap completed", { restored });
   })();
   return _bootstrapPromise;
 }
@@ -62,9 +65,25 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const locked = useAuthStore((s) => s.locked);
 
   if (locked) {
+    void logger.info("route.guard_redirect", "Protected route redirected to unlock", {
+      guard: "ProtectedRoute",
+      to: "/unlock",
+      from: window.location.hash || window.location.pathname,
+      authenticated,
+      locked,
+      has_user_key: Boolean(userKey),
+    });
     return <Navigate to="/unlock" replace />;
   }
   if (!authenticated || !userKey) {
+    void logger.info("route.guard_redirect", "Protected route redirected to login", {
+      guard: "ProtectedRoute",
+      to: "/login",
+      from: window.location.hash || window.location.pathname,
+      authenticated,
+      locked,
+      has_user_key: Boolean(userKey),
+    });
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
@@ -76,9 +95,25 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
   const locked = useAuthStore((s) => s.locked);
 
   if (authenticated && locked) {
+    void logger.info("route.guard_redirect", "Auth route redirected to unlock", {
+      guard: "AuthRoute",
+      to: "/unlock",
+      from: window.location.hash || window.location.pathname,
+      authenticated,
+      locked,
+      has_user_key: Boolean(userKey),
+    });
     return <Navigate to="/unlock" replace />;
   }
   if (authenticated && userKey) {
+    void logger.info("route.guard_redirect", "Auth route redirected to passwords", {
+      guard: "AuthRoute",
+      to: "/passwords",
+      from: window.location.hash || window.location.pathname,
+      authenticated,
+      locked,
+      has_user_key: Boolean(userKey),
+    });
     return <Navigate to="/passwords" replace />;
   }
   return <>{children}</>;
@@ -88,15 +123,53 @@ function UnlockRoute() {
   const authenticated = useAuthStore((s) => s.authenticated);
   const userKey = useAuthStore((s) => s.userKey);
   const locked = useAuthStore((s) => s.locked);
-  if (!authenticated) return <Navigate to="/login" replace />;
-  if (!locked && userKey) return <Navigate to="/passwords" replace />;
-  if (!locked) return <Navigate to="/passwords" replace />;
+  if (!authenticated) {
+    void logger.info("route.guard_redirect", "Unlock route redirected to login", {
+      guard: "UnlockRoute",
+      to: "/login",
+      from: window.location.hash || window.location.pathname,
+      authenticated,
+      locked,
+      has_user_key: Boolean(userKey),
+    });
+    return <Navigate to="/login" replace />;
+  }
+  if (!locked && userKey) {
+    void logger.info("route.guard_redirect", "Unlock route redirected to passwords", {
+      guard: "UnlockRoute",
+      to: "/passwords",
+      from: window.location.hash || window.location.pathname,
+      authenticated,
+      locked,
+      has_user_key: Boolean(userKey),
+    });
+    return <Navigate to="/passwords" replace />;
+  }
+  if (!locked) {
+    void logger.info("route.guard_redirect", "Unlock route redirected to passwords without user key", {
+      guard: "UnlockRoute",
+      to: "/passwords",
+      from: window.location.hash || window.location.pathname,
+      authenticated,
+      locked,
+      has_user_key: Boolean(userKey),
+    });
+    return <Navigate to="/passwords" replace />;
+  }
   return <Unlock />;
 }
 
 function TwoFactorGuard() {
   const twoFactorRequired = useAuthStore((s) => s.twoFactorRequired);
-  if (!twoFactorRequired) return <Navigate to="/login" replace />;
+  if (!twoFactorRequired) {
+    void logger.info("route.guard_redirect", "Two-factor route redirected to login", {
+      guard: "TwoFactorGuard",
+      to: "/login",
+      from: window.location.hash || window.location.pathname,
+      two_factor_required: twoFactorRequired,
+    });
+    return <Navigate to="/login" replace />;
+  }
   return <TwoFactor />;
 }
 
@@ -109,10 +182,57 @@ export default function App() {
   const lock = useAuthStore((s) => s.lock);
   const logout = useAuthStore((s) => s.logout);
   const closingRef = useRef(false);
+  const previousAuthStateRef = useRef<{
+    authenticated: boolean;
+    locked: boolean;
+    hasUserKey: boolean;
+  } | null>(null);
 
   useEffect(() => {
-    const handleAuthExpired = () => {
-      void logout().finally(() => {
+    const current = {
+      authenticated,
+      locked,
+      hasUserKey: Boolean(userKey),
+    };
+    const previous = previousAuthStateRef.current;
+    if (
+      previous &&
+      (previous.authenticated !== current.authenticated ||
+        previous.locked !== current.locked ||
+        previous.hasUserKey !== current.hasUserKey)
+    ) {
+      void logger.info("auth.state_changed", "Auth state changed", {
+        previous_authenticated: previous.authenticated,
+        previous_locked: previous.locked,
+        previous_has_user_key: previous.hasUserKey,
+        authenticated: current.authenticated,
+        locked: current.locked,
+        has_user_key: current.hasUserKey,
+        route: window.location.hash || window.location.pathname,
+      });
+    }
+    previousAuthStateRef.current = current;
+  }, [authenticated, locked, userKey]);
+
+  useEffect(() => {
+    const handleAuthExpired = (event: Event) => {
+      const state = useAuthStore.getState();
+      const detail =
+        event instanceof CustomEvent && typeof event.detail === "object" && event.detail !== null
+          ? (event.detail as Record<string, string | number | undefined>)
+          : {};
+      void logger.warn("auth.expired_event_received", "Auth expired event received", {
+        reason: detail.reason,
+        triggering_method: detail.method,
+        triggering_path: detail.path,
+        triggering_status: detail.triggering_status,
+        refresh_status: detail.refresh_status,
+        authenticated: state.authenticated,
+        locked: state.locked,
+        has_user_key: Boolean(state.userKey),
+        organizations_count: state.organizations.length,
+      });
+      void logout("auth_expired_event").finally(() => {
         navigate("/login", { replace: true });
       });
     };
@@ -123,12 +243,30 @@ export default function App() {
     };
   }, [logout, navigate]);
 
+  const prevTimeoutConfigRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (!authenticated || !userKey || locked) {
+      prevTimeoutConfigRef.current = null;
       return;
     }
 
     const settings = getSessionSettings();
+    const timeoutMs = getTimeoutMs(settings.vaultTimeout);
+    const effectStartedAt = Date.now();
+
+    const configKey = `${settings.vaultTimeout}|${settings.vaultTimeoutAction}`;
+    if (prevTimeoutConfigRef.current !== configKey) {
+      prevTimeoutConfigRef.current = configKey;
+      void logger.info("session.timeout_effect_active", "Session timeout watcher activated", {
+        vault_timeout: settings.vaultTimeout,
+        vault_timeout_action: settings.vaultTimeoutAction,
+        timeout_ms: timeoutMs,
+        authenticated,
+        locked,
+        has_user_key: Boolean(userKey),
+      });
+    }
 
     if (settings.vaultTimeout === "on_close") {
       const appWindow = getCurrentWindow();
@@ -136,10 +274,18 @@ export default function App() {
         if (closingRef.current) return;
         closingRef.current = true;
         event.preventDefault();
+        void logger.info("session.close_requested", "Window close requested", {
+          vault_timeout: settings.vaultTimeout,
+          vault_timeout_action: settings.vaultTimeoutAction,
+          ms_since_effect_start: Date.now() - effectStartedAt,
+          authenticated,
+          locked,
+          has_user_key: Boolean(userKey),
+        });
         if (settings.vaultTimeoutAction === "lock") {
           await lock();
         } else {
-          await logout();
+          await logout("window_close_timeout");
         }
         await appWindow.close();
       });
@@ -149,19 +295,23 @@ export default function App() {
       };
     }
 
-    const timeoutMs = getTimeoutMs(settings.vaultTimeout);
-
     if (timeoutMs === null) return;
 
     let idleTimer: ReturnType<typeof setTimeout> | null = null;
 
     const handleTimeout = () => {
+      void logger.info("session.idle_timeout_fired", "Vault timeout fired", {
+        vault_timeout: settings.vaultTimeout,
+        vault_timeout_action: settings.vaultTimeoutAction,
+        timeout_ms: timeoutMs,
+        ms_since_effect_start: Date.now() - effectStartedAt,
+      });
       if (settings.vaultTimeoutAction === "lock") {
         void lock().finally(() => {
           navigate("/unlock", { replace: true });
         });
       } else {
-        void logout().finally(() => {
+        void logout("idle_timeout").finally(() => {
           navigate("/login", { replace: true });
         });
       }

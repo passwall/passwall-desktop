@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { logger } from "@/lib/logger";
 
 /**
  * Secure storage for sensitive credentials (access/refresh tokens, user key).
@@ -24,6 +25,20 @@ const SIMPLE_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type SessionBundle = Partial<Record<SecureKey, string>>;
 
+function getPresenceFields(bundle: SessionBundle = Object.fromEntries(cache)): {
+  has_access_token: boolean;
+  has_refresh_token: boolean;
+  has_user_key: boolean;
+  has_protected_user_key: boolean;
+} {
+  return {
+    has_access_token: Boolean(bundle.access_token),
+    has_refresh_token: Boolean(bundle.refresh_token),
+    has_user_key: Boolean(bundle.user_key),
+    has_protected_user_key: Boolean(bundle.protected_user_key),
+  };
+}
+
 async function checkAvailable(): Promise<boolean> {
   if (keystoreAvailable !== null) return keystoreAvailable;
   try {
@@ -31,6 +46,9 @@ async function checkAvailable(): Promise<boolean> {
   } catch {
     keystoreAvailable = false;
   }
+  void logger.info("secure_storage.availability_checked", "Secure storage availability checked", {
+    available: keystoreAvailable,
+  });
   return keystoreAvailable;
 }
 
@@ -44,7 +62,11 @@ export function getSecureSync(key: SecureKey): string | null {
 }
 
 async function persistBundleToKeychain(): Promise<void> {
-  if (!(await checkAvailable())) return;
+  const startedAt = performance.now();
+  if (!(await checkAvailable())) {
+    void logger.warn("secure_storage.persist_skipped", "Secure storage is unavailable");
+    return;
+  }
   const bundle: SessionBundle = {};
   for (const key of ALL_KEYS) {
     const value = cache.get(key);
@@ -54,13 +76,24 @@ async function persistBundleToKeychain(): Promise<void> {
   try {
     if (Object.keys(bundle).length === 0) {
       await invoke("remove_secret", { account: KEYCHAIN_SESSION_ACCOUNT });
+      void logger.info("secure_storage.persist_cleared", "Persisted session bundle removed", {
+        duration_ms: Math.round(performance.now() - startedAt),
+      });
       return;
     }
     await invoke("store_secret", {
       account: KEYCHAIN_SESSION_ACCOUNT,
       secret: JSON.stringify(bundle),
     });
-  } catch {
+    void logger.info("secure_storage.persist_success", "Session bundle persisted", {
+      ...getPresenceFields(bundle),
+      duration_ms: Math.round(performance.now() - startedAt),
+    });
+  } catch (error) {
+    void logger.warn("secure_storage.persist_failed", "Session bundle persistence failed", {
+      error: error instanceof Error ? error.message : String(error),
+      duration_ms: Math.round(performance.now() - startedAt),
+    });
     // keychain write failed – cache remains so the session keeps working
   }
 }
@@ -75,16 +108,37 @@ function setCacheFromBundle(bundle: SessionBundle): void {
 
 async function loadBundleFromKeychain(): Promise<void> {
   if (hydrated) return;
+  const startedAt = performance.now();
+  void logger.info("secure_storage.hydrate_start", "Secure storage hydration started");
   hydrated = true;
-  if (!(await checkAvailable())) return;
+  if (!(await checkAvailable())) {
+    void logger.warn("secure_storage.hydrate_skipped", "Secure storage hydration skipped", {
+      reason: "unavailable",
+      duration_ms: Math.round(performance.now() - startedAt),
+    });
+    return;
+  }
   try {
     const rawBundle = await invoke<string | null>("get_secret", {
       account: KEYCHAIN_SESSION_ACCOUNT,
     });
-    if (!rawBundle) return;
+    if (!rawBundle) {
+      void logger.info("secure_storage.hydrate_empty", "No persisted session bundle found", {
+        duration_ms: Math.round(performance.now() - startedAt),
+      });
+      return;
+    }
     const parsed = JSON.parse(rawBundle) as SessionBundle;
     setCacheFromBundle(parsed);
-  } catch {
+    void logger.info("secure_storage.hydrate_success", "Secure storage hydration completed", {
+      ...getPresenceFields(parsed),
+      duration_ms: Math.round(performance.now() - startedAt),
+    });
+  } catch (error) {
+    void logger.warn("secure_storage.hydrate_failed", "Secure storage hydration failed", {
+      error: error instanceof Error ? error.message : String(error),
+      duration_ms: Math.round(performance.now() - startedAt),
+    });
     // ignore malformed/missing bundle
   }
 }
@@ -129,10 +183,21 @@ export function clearSecureCache(): void {
 export async function clearAllSecrets(): Promise<void> {
   cache.clear();
   hydrated = false;
-  if (!(await checkAvailable())) return;
-  await invoke("remove_secret", { account: KEYCHAIN_SESSION_ACCOUNT }).catch(
-    () => {}
-  );
+  if (!(await checkAvailable())) {
+    void logger.warn("secure_storage.clear_skipped", "Secure storage clear skipped", {
+      reason: "unavailable",
+    });
+    return;
+  }
+  await invoke("remove_secret", { account: KEYCHAIN_SESSION_ACCOUNT })
+    .then(() => {
+      void logger.info("secure_storage.clear_success", "All session secrets cleared");
+    })
+    .catch((error) => {
+      void logger.warn("secure_storage.clear_failed", "Failed to clear session secrets", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    });
 }
 
 function normalizeEmailAccount(email: string): string | null {
@@ -151,12 +216,29 @@ export async function setNativeMessagingUserKey(
 ): Promise<void> {
   const account = normalizeEmailAccount(email);
   if (!account || !userKeyB64) return;
-  if (!(await checkAvailable())) return;
+  if (!(await checkAvailable())) {
+    void logger.warn("native_messaging.user_key_set_skipped", "Native messaging user key write skipped", {
+      reason: "secure_storage_unavailable",
+      email_present: Boolean(email),
+    });
+    return;
+  }
 
   await invoke("store_secret", {
     account,
     secret: userKeyB64,
-  }).catch(() => {});
+  })
+    .then(() => {
+      void logger.info("native_messaging.user_key_set", "Native messaging user key stored", {
+        email_present: Boolean(email),
+      });
+    })
+    .catch((error) => {
+      void logger.warn("native_messaging.user_key_set_failed", "Native messaging user key store failed", {
+        email_present: Boolean(email),
+        error: error instanceof Error ? error.message : String(error),
+      });
+    });
 }
 
 /**
@@ -165,9 +247,26 @@ export async function setNativeMessagingUserKey(
 export async function removeNativeMessagingUserKey(email: string): Promise<void> {
   const account = normalizeEmailAccount(email);
   if (!account) return;
-  if (!(await checkAvailable())) return;
+  if (!(await checkAvailable())) {
+    void logger.warn("native_messaging.user_key_remove_skipped", "Native messaging user key remove skipped", {
+      reason: "secure_storage_unavailable",
+      email_present: Boolean(email),
+    });
+    return;
+  }
 
   await invoke("remove_secret", {
     account,
-  }).catch(() => {});
+  })
+    .then(() => {
+      void logger.info("native_messaging.user_key_removed", "Native messaging user key removed", {
+        email_present: Boolean(email),
+      });
+    })
+    .catch((error) => {
+      void logger.warn("native_messaging.user_key_remove_failed", "Native messaging user key remove failed", {
+        email_present: Boolean(email),
+        error: error instanceof Error ? error.message : String(error),
+      });
+    });
 }

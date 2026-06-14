@@ -5,7 +5,9 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "log:default",
     "opener:default",
+    "opener:allow-reveal-item-in-dir",
     "dialog:allow-open",
     "dialog:allow-save",
     "updater:default",

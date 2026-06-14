@@ -4,6 +4,7 @@ import type { VaultItem, Organization } from "@/types";
 import { encryptWithOrgKey, decryptWithOrgKey } from "@/lib/crypto";
 import type { SymmetricKey } from "@/lib/crypto";
 import OrganizationsService from "@/api/organizations";
+import { errorFields, logger } from "@/lib/logger";
 import {
   normalizePasswordItemData,
   buildPasswordItemDataFromForm,
@@ -310,12 +311,19 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   itemsLoading: false,
 
   async fetchItems(filter = {}) {
+    const startedAt = performance.now();
     set({ itemsLoading: true });
     try {
       const authState = getAuthState();
       const organizations: Organization[] = authState.organizations;
       if (!organizations || organizations.length === 0) {
         set({ items: [], itemsLoading: false });
+        void logger.info("vault.fetch_items_skipped", "Vault item fetch skipped", {
+          reason: "no_organizations",
+          authenticated: authState.authenticated,
+          locked: authState.locked,
+          has_user_key: Boolean(authState.userKey),
+        });
         return;
       }
 
@@ -325,9 +333,20 @@ export const useVaultStore = create<VaultState>((set, get) => ({
       if (filter.is_favorite !== undefined)
         params.is_favorite = filter.is_favorite;
       if (filter.folder_id) params.folder_id = filter.folder_id;
-      params.per_page = filter.per_page || 5000;
+      const perPage = filter.per_page || 5000;
+      params.per_page = perPage;
 
       const orgErrors: Error[] = [];
+      let decryptFailures = 0;
+      let orgsWithoutKeys = 0;
+      void logger.info("vault.fetch_items_start", "Vault item fetch started", {
+        organizations_count: organizations.length,
+        filter_type: filter.type ?? null,
+        has_search: Boolean(filter.search),
+        is_favorite: filter.is_favorite ?? null,
+        has_folder_id: Boolean(filter.folder_id),
+        per_page: perPage,
+      });
       const orgFetchPromises = organizations.map(async (org) => {
         try {
           const { data } = await OrganizationsService.listItems(
@@ -349,12 +368,17 @@ export const useVaultStore = create<VaultState>((set, get) => ({
               useAuthStore.setState({
                 orgKeys: { ...authState.orgKeys, [org.id]: orgKey! },
               });
-            } catch {
+            } catch (error) {
+              void logger.warn("vault.org_key_unwrap_failed", "Organization key unwrap failed", {
+                org_id: org.id,
+                ...errorFields(error),
+              });
               // Key unwrap failed
             }
           }
 
           if (!orgKey) {
+            orgsWithoutKeys += 1;
             return (items as VaultItem[]).map((item) => ({
               ...item,
               _orgId: org.id,
@@ -374,6 +398,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
                 const normalized = mergeDecryptedItem(item, decryptedData);
                 return { ...normalized, _orgId: org.id, _orgName: org.name };
               } catch {
+                decryptFailures += 1;
                 return {
                   ...item,
                   _orgId: org.id,
@@ -386,6 +411,10 @@ export const useVaultStore = create<VaultState>((set, get) => ({
           );
         } catch (error) {
           orgErrors.push(error as Error);
+          void logger.warn("vault.fetch_org_items_failed", "Organization item fetch failed", {
+            org_id: org.id,
+            ...errorFields(error),
+          });
           return [];
         }
       });
@@ -407,8 +436,20 @@ export const useVaultStore = create<VaultState>((set, get) => ({
       } else {
         set({ items: decryptedItems, itemsLoading: false });
       }
+      void logger.info("vault.fetch_items_success", "Vault item fetch completed", {
+        organizations_count: organizations.length,
+        org_errors_count: orgErrors.length,
+        orgs_without_keys: orgsWithoutKeys,
+        decrypt_failures: decryptFailures,
+        items_count: decryptedItems.length,
+        duration_ms: Math.round(performance.now() - startedAt),
+      });
     } catch (error) {
       set({ itemsLoading: false });
+      void logger.error("vault.fetch_items_failed", "Vault item fetch failed", {
+        ...errorFields(error),
+        duration_ms: Math.round(performance.now() - startedAt),
+      });
       throw error;
     }
   },

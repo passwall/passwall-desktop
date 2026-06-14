@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import {
   KeyRound,
   StickyNote,
@@ -15,6 +15,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
+import { logger } from "@/lib/logger";
 
 const navItems = [
   { to: "/passwords", icon: KeyRound, labelKey: "Passwords" },
@@ -48,8 +49,24 @@ export default function Sidebar() {
       .catch(() => {});
   }, []);
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = async (event: MouseEvent<HTMLButtonElement>) => {
+    const state = useAuthStore.getState();
+    const eventFields = {
+      event_type: event.type,
+      is_trusted: event.nativeEvent.isTrusted,
+      detail: event.detail,
+      button: event.button,
+      route: window.location.hash || window.location.pathname,
+      active_element_tag: document.activeElement?.tagName.toLowerCase() ?? null,
+    };
+    void logger.info("ui.sidebar_logout_clicked", "Sidebar logout button activated", {
+      ...eventFields,
+      authenticated: state.authenticated,
+      locked: state.locked,
+      has_user_key: Boolean(state.userKey),
+      organizations_count: state.organizations.length,
+    });
+    await logout("sidebar", eventFields);
   };
 
   const handleLock = async () => {

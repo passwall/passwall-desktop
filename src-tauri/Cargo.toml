@@ -29,6 +29,10 @@ rand_core = "0.6"
 base64 = "0.22"
 tauri-plugin-autostart = "2"
 tauri-plugin-dialog = "2"
+tauri-plugin-log = "2.8.0"
+log = "0.4.32"
+chrono = "0.4.45"
+flate2 = "1"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 security-framework = "3.7.0"

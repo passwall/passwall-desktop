@@ -6,7 +6,7 @@ import {
   installUpdate,
   isAutoUpdateChecksEnabled,
 } from "@/lib/updater";
-import { logError } from "@/lib/error-logger";
+import { errorFields, logger } from "@/lib/logger";
 
 type UpdateState = "idle" | "available" | "downloading" | "ready" | "error";
 
@@ -25,11 +25,9 @@ export default function UpdateNotifier() {
         setState("available");
       }
     } catch (error: unknown) {
-      void logError(
-        "update_notifier.auto_check",
-        "Background update check failed",
-        error
-      );
+      void logger.error("update_notifier.auto_check_failed", "Background update check failed", {
+        ...errorFields(error),
+      });
       // Updater not available in dev or no endpoint configured
     }
   }, []);
@@ -71,11 +69,9 @@ export default function UpdateNotifier() {
 
       setState("ready");
     } catch (error: unknown) {
-      void logError(
-        "update_notifier.install",
-        "Update install failed from notifier",
-        error
-      );
+      void logger.error("update_notifier.install_failed", "Update install failed from notifier", {
+        ...errorFields(error),
+      });
       setState("error");
     }
   };

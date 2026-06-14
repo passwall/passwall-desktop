@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useVaultStore } from "@/stores/vault-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useUiStore, type ThemeMode } from "@/stores/ui-store";
@@ -21,7 +22,7 @@ import {
   isStartOnLoginSupported,
   setStartOnLoginEnabled,
 } from "@/lib/autostart";
-import { exportErrorLogs, logError } from "@/lib/error-logger";
+import { errorFields, exportAppLogs, getAppLogPath, logger } from "@/lib/logger";
 import {
   getSessionSettings,
   setSessionSettings,
@@ -37,6 +38,8 @@ import {
   ChevronDown,
   Download,
   Upload,
+  Copy,
+  FolderOpen,
   Sun,
   Moon,
   Monitor,
@@ -148,6 +151,7 @@ export default function Settings() {
   const [checking, setChecking] = useState(false);
   const [installingUpdate, setInstallingUpdate] = useState(false);
   const [exportingLogs, setExportingLogs] = useState(false);
+  const [appLogPath, setAppLogPath] = useState<string | null>(null);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [biometricEnabled, setBiometricEnabled] = useState(isBiometricUnlockEnabled);
   const [biometricLoading, setBiometricLoading] = useState(true);
@@ -192,6 +196,12 @@ export default function Settings() {
       .then((mod) => mod.getVersion())
       .then(setVersion)
       .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    getAppLogPath()
+      .then(setAppLogPath)
+      .catch(() => setAppLogPath(null));
   }, []);
 
   useEffect(() => {
@@ -242,24 +252,42 @@ export default function Settings() {
   }, []);
 
   const changeLanguage = (lng: string) => {
+    const previousLanguage = i18n.language;
     i18n.changeLanguage(lng);
     localStorage.setItem("passwall_desktop_locale", lng);
+    void logger.info("settings.language_changed", "Language setting changed", {
+      previous_language: previousLanguage,
+      new_language: lng,
+    });
   };
 
   const toggleAutoUpdate = () => {
     const newVal = !autoUpdate;
     setAutoUpdate(newVal);
     setAutoUpdateChecksEnabled(newVal);
+    void logger.info("settings.auto_update_changed", "Auto update setting changed", {
+      enabled: newVal,
+    });
   };
 
   const toggleLaunchAtLogin = async () => {
     const newVal = !launchAtLogin;
+    void logger.info("settings.launch_at_login_change_requested", "Launch at login change requested", {
+      enabled: newVal,
+    });
     setLaunchAtLoginLoading(true);
     try {
       await setStartOnLoginEnabled(newVal);
       setLaunchAtLogin(newVal);
+      void logger.info("settings.launch_at_login_changed", "Launch at login setting changed", {
+        enabled: newVal,
+      });
       addNotification("success", newVal ? t("LaunchAtLoginEnabled") : t("LaunchAtLoginDisabled"));
-    } catch {
+    } catch (error) {
+      void logger.error("settings.launch_at_login_change_failed", "Launch at login setting update failed", {
+        ...errorFields(error),
+        requested_enabled: newVal,
+      });
       addNotification("error", t("LaunchAtLoginUpdateFailed"));
     } finally {
       setLaunchAtLoginLoading(false);
@@ -267,20 +295,46 @@ export default function Settings() {
   };
 
   const handleTimeoutChange = (value: string) => {
+    const previousTimeout = sessionSettings.vaultTimeout;
     const parsed: VaultTimeoutDuration =
       value === "on_close" || value === "never" ? value : (Number(value) as VaultTimeoutDuration);
     setSessionSettings({ vaultTimeout: parsed });
     setSessionSettingsState((s) => ({ ...s, vaultTimeout: parsed }));
+    void logger.info("settings.vault_timeout_changed", "Vault timeout setting changed", {
+      previous_timeout: previousTimeout,
+      new_timeout: parsed,
+    });
   };
 
   const handleTimeoutActionChange = (value: string) => {
+    const previousAction = sessionSettings.vaultTimeoutAction;
     const action = value as VaultTimeoutAction;
     setSessionSettings({ vaultTimeoutAction: action });
     setSessionSettingsState((s) => ({ ...s, vaultTimeoutAction: action }));
+    void logger.info("settings.vault_timeout_action_changed", "Vault timeout action changed", {
+      previous_action: previousAction,
+      new_action: action,
+    });
+  };
+
+  const handleThemeChange = (nextTheme: ThemeMode) => {
+    if (theme === nextTheme) return;
+    setTheme(nextTheme);
+    void logger.info("settings.theme_changed", "Theme setting changed", {
+      previous_theme: theme,
+      new_theme: nextTheme,
+    });
   };
 
   const handleBiometricToggle = async () => {
     const nextEnabled = !biometricEnabled;
+    void logger.info(
+      "settings.biometric_unlock_change_requested",
+      "Biometric unlock setting change requested",
+      {
+        enabled: nextEnabled,
+      }
+    );
     setBiometricLoading(true);
     try {
       if (nextEnabled) {
@@ -289,16 +343,19 @@ export default function Settings() {
         await disableBiometricUnlock();
       }
       setBiometricEnabled(nextEnabled);
+      void logger.info("settings.biometric_unlock_changed", "Biometric unlock setting changed", {
+        enabled: nextEnabled,
+      });
       addNotification(
         "success",
         nextEnabled ? t("TouchIDUnlockEnabled") : t("TouchIDUnlockDisabled")
       );
     } catch (error) {
       const details = getErrorMessage(error);
-      void logError(
-        "settings.biometric_unlock",
+      void logger.error(
+        "settings.biometric_unlock_failed",
         "Touch ID unlock setting update failed",
-        error
+        { ...errorFields(error) }
       );
       addNotification(
         "error",
@@ -312,25 +369,28 @@ export default function Settings() {
   };
 
   const checkForUpdates = async () => {
+    void logger.info("settings.update_check_requested", "Manual update check requested");
     setChecking(true);
     try {
       const update = await checkForAvailableUpdate();
       if (update) {
         setPendingUpdateVersion(update.version ?? null);
+        void logger.info("settings.update_available", "Update is available", {
+          version: update.version ?? null,
+        });
         addNotification("info", t("UpdateAvailable"));
       } else {
         setPendingUpdateVersion(null);
+        void logger.info("settings.update_not_available", "No update is available");
         addNotification("success", t("AlreadyUpToDate"));
       }
     } catch (error: unknown) {
       const details =
         error instanceof Error && error.message ? ` (${error.message})` : "";
       addNotification("warning", `${t("UpdateCheckUnavailable")}${details}`);
-      void logError(
-        "settings.check_updates",
-        "Update check failed from settings",
-        error
-      );
+      void logger.error("settings.update_check_failed", "Update check failed from settings", {
+        ...errorFields(error),
+      });
       console.error("Update check failed", error);
     } finally {
       setChecking(false);
@@ -338,21 +398,26 @@ export default function Settings() {
   };
 
   const installPendingUpdate = async () => {
+    void logger.info("settings.update_install_requested", "Install update requested", {
+      pending_version: pendingUpdateVersion,
+    });
     setInstallingUpdate(true);
     try {
       const update = await checkForAvailableUpdate();
       if (!update) {
         setPendingUpdateVersion(null);
+        void logger.info("settings.update_install_skipped", "Install update skipped because no update is available");
         addNotification("success", t("AlreadyUpToDate"));
         return;
       }
+      void logger.info("settings.update_install_started", "Installing available update", {
+        version: update.version ?? null,
+      });
       await installUpdate(update);
     } catch (error: unknown) {
-      void logError(
-        "settings.install_update",
-        "Update install failed from settings",
-        error
-      );
+      void logger.error("settings.update_install_failed", "Update install failed from settings", {
+        ...errorFields(error),
+      });
       addNotification("error", t("UpdateFailed"));
     } finally {
       setInstallingUpdate(false);
@@ -360,11 +425,13 @@ export default function Settings() {
   };
 
   const handleExport = async () => {
+    void logger.info("settings.export_items_requested", "Vault export requested");
     await fetchItems();
     const grouped = exportItems();
     const files = exportItemsToCSV(grouped);
     const jsonFile = exportItemsToJSON(grouped);
     if (files.length === 0) {
+      void logger.info("settings.export_items_skipped", "Vault export skipped because there are no items");
       addNotification("warning", "No items to export");
       return;
     }
@@ -375,6 +442,7 @@ export default function Settings() {
       title: "Choose export folder",
     });
     if (!targetDir || Array.isArray(targetDir)) {
+      void logger.info("settings.export_items_cancelled", "Vault export cancelled by user");
       return;
     }
 
@@ -390,34 +458,58 @@ export default function Settings() {
       "success",
       `Exported ${writtenPaths.length} file(s) to ${folderLabel}`
     );
+    void logger.info("settings.export_items_succeeded", "Vault export completed", {
+      exported_files_count: writtenPaths.length,
+      csv_files_count: files.length,
+      included_json_backup: true,
+    });
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    void logger.info("settings.import_items_requested", "Vault import requested", {
+      filename: file.name,
+      file_size: file.size,
+    });
 
     try {
       const text = await file.text();
       const rows = parseImportFile(file.name, text);
       if (rows.length === 0) {
+        void logger.info("settings.import_items_skipped", "Vault import skipped because parsed rows are empty", {
+          filename: file.name,
+        });
         addNotification("warning", "No items found in file");
         return;
       }
 
       const createItem = useVaultStore.getState().createItem;
       let imported = 0;
+      let failed = 0;
       for (const row of rows) {
         try {
           await createItem({ type: row.type, form: row.form });
           imported++;
         } catch {
+          failed++;
           // Skip individual failures
         }
       }
 
       addNotification("success", `Imported ${imported} of ${rows.length} items`);
+      void logger.info("settings.import_items_completed", "Vault import completed", {
+        filename: file.name,
+        total_rows: rows.length,
+        imported_rows: imported,
+        failed_rows: failed,
+      });
       void useVaultStore.getState().fetchItems();
-    } catch {
+    } catch (error) {
+      void logger.error("settings.import_items_failed", "Vault import failed", {
+        filename: file.name,
+        ...errorFields(error),
+      });
       addNotification("error", "Failed to parse import file");
     }
 
@@ -425,18 +517,50 @@ export default function Settings() {
   };
 
   const handleExportLogs = async () => {
+    void logger.info("settings.export_logs_requested", "App log export requested");
     setExportingLogs(true);
     try {
-      const exported = await exportErrorLogs();
+      const exported = await exportAppLogs();
       if (!exported) {
+        void logger.info("settings.export_logs_cancelled", "App log export cancelled by user");
         return;
       }
+      void logger.info("settings.export_logs_succeeded", "App log export completed");
       addNotification("success", t("LogsExported"));
     } catch (error) {
       addNotification("warning", t("LogsExportFailed"));
-      void logError("settings.export_logs", "Failed to export error logs", error);
+      void logger.error("settings.export_logs_failed", "Failed to export app logs", {
+        ...errorFields(error),
+      });
     } finally {
       setExportingLogs(false);
+    }
+  };
+
+  const handleCopyLogPath = async () => {
+    if (!appLogPath) return;
+    try {
+      await navigator.clipboard.writeText(appLogPath);
+      void logger.info("settings.log_path_copied", "App log path copied to clipboard");
+      addNotification("success", t("LogsPathCopied"));
+    } catch (error) {
+      addNotification("warning", t("LogsPathCopyFailed"));
+      void logger.error("settings.copy_log_path_failed", "Failed to copy app log path", {
+        ...errorFields(error),
+      });
+    }
+  };
+
+  const handleRevealLogPath = async () => {
+    if (!appLogPath) return;
+    try {
+      await revealItemInDir(appLogPath);
+      void logger.info("settings.log_path_revealed", "App log path revealed in file manager");
+    } catch (error) {
+      addNotification("warning", t("LogsPathOpenFailed"));
+      void logger.error("settings.reveal_log_path_failed", "Failed to reveal app log path", {
+        ...errorFields(error),
+      });
     }
   };
 
@@ -496,7 +620,7 @@ export default function Settings() {
                   {themeOptions.map((opt) => (
                     <button
                       key={opt.value}
-                      onClick={() => setTheme(opt.value)}
+                      onClick={() => handleThemeChange(opt.value)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors ${
                         theme === opt.value
                           ? "bg-primary text-white"
@@ -673,6 +797,40 @@ export default function Settings() {
                   </p>
                 </div>
               </button>
+              {appLogPath && (
+                <div className="border-t border-border px-4 py-3">
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2">
+                    <div className="mb-1 flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-medium uppercase tracking-wide text-primary">
+                        {t("LogFilePath")}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => void handleCopyLogPath()}
+                          className="rounded-md p-1.5 text-primary transition-colors hover:bg-primary/10"
+                          title={t("Copy")}
+                          aria-label={t("Copy")}
+                        >
+                          <Copy size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void handleRevealLogPath()}
+                          className="rounded-md p-1.5 text-primary transition-colors hover:bg-primary/10"
+                          title={t("OpenLogFolder")}
+                          aria-label={t("OpenLogFolder")}
+                        >
+                          <FolderOpen size={14} />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="break-all font-mono text-[11px] leading-4 text-text-primary">
+                      {appLogPath}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 

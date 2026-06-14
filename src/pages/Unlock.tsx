@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import Button from "@/components/common/Button";
@@ -6,6 +6,7 @@ import FormInput from "@/components/common/FormInput";
 import { useAuthStore } from "@/stores/auth-store";
 import { useUiStore } from "@/stores/ui-store";
 import AuthLayout from "@/components/auth/AuthLayout";
+import { logger } from "@/lib/logger";
 import {
   isBiometricUnlockAvailable,
   isBiometricUnlockEnabled,
@@ -62,8 +63,23 @@ export default function Unlock() {
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = async (event: MouseEvent<HTMLButtonElement>) => {
+    const state = useAuthStore.getState();
+    const eventFields = {
+      event_type: event.type,
+      is_trusted: event.nativeEvent.isTrusted,
+      detail: event.detail,
+      button: event.button,
+      route: window.location.hash || window.location.pathname,
+      active_element_tag: document.activeElement?.tagName.toLowerCase() ?? null,
+    };
+    void logger.info("ui.unlock_logout_clicked", "Unlock screen logout button activated", {
+      ...eventFields,
+      authenticated: state.authenticated,
+      locked: state.locked,
+      has_user_key: Boolean(state.userKey),
+    });
+    await logout("unlock_screen", eventFields);
     navigate("/login", { replace: true });
   };
 
@@ -137,7 +153,7 @@ export default function Unlock() {
         <div className="text-center">
           <button
             type="button"
-            onClick={() => void handleLogout()}
+            onClick={(event) => void handleLogout(event)}
             className="text-xs text-text-muted hover:text-text-secondary"
           >
             {t("SignOutDifferentAccount")}

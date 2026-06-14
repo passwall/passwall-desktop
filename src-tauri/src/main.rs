@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod keystore;
+mod host_logger;
 mod native_ipc;
 mod nm_host_args;
 mod paired_browsers;
@@ -41,6 +42,138 @@ struct Response {
     resp_type: String,
     id: Option<String>,
     payload: Option<serde_json::Value>,
+}
+
+fn request_log_fields(req: &Request, caller_origin: Option<&str>) -> serde_json::Value {
+    let mut fields = serde_json::Map::new();
+    fields.insert("protocol_version".into(), serde_json::json!(req.v));
+    fields.insert("request_type".into(), serde_json::json!(req.req_type));
+    fields.insert("request_id_present".into(), serde_json::json!(req.id.is_some()));
+    fields.insert(
+        "caller_origin_present".into(),
+        serde_json::json!(caller_origin.is_some()),
+    );
+    if let Some(origin) = caller_origin {
+        fields.insert("caller_origin".into(), serde_json::json!(origin));
+    }
+    let payload = req.payload.as_ref();
+    fields.insert("payload_present".into(), serde_json::json!(payload.is_some()));
+
+    match req.req_type.as_str() {
+        "HANDSHAKE" => {
+            fields.insert(
+                "extension_public_key_present".into(),
+                serde_json::json!(
+                    payload
+                        .and_then(|p| p.get("extensionPublicKey"))
+                        .and_then(|v| v.as_str())
+                        .map(|s| !s.is_empty())
+                        .unwrap_or(false)
+                ),
+            );
+        }
+        "GET_USER_KEY" | "HAS_USER_KEY" | "REMOVE_USER_KEY" => {
+            fields.insert(
+                "email_present".into(),
+                serde_json::json!(
+                    payload
+                        .and_then(|p| p.get("email"))
+                        .and_then(|v| v.as_str())
+                        .map(|s| !s.trim().is_empty())
+                        .unwrap_or(false)
+                ),
+            );
+        }
+        "STORE_USER_KEY" => {
+            fields.insert(
+                "email_present".into(),
+                serde_json::json!(
+                    payload
+                        .and_then(|p| p.get("email"))
+                        .and_then(|v| v.as_str())
+                        .map(|s| !s.trim().is_empty())
+                        .unwrap_or(false)
+                ),
+            );
+            fields.insert(
+                "user_key_present".into(),
+                serde_json::json!(
+                    payload
+                        .and_then(|p| p.get("userKey"))
+                        .and_then(|v| v.as_str())
+                        .map(|s| !s.is_empty())
+                        .unwrap_or(false)
+                ),
+            );
+        }
+        _ => {}
+    }
+
+    serde_json::Value::Object(fields)
+}
+
+fn response_log_fields(req_type: &str, resp: &Response) -> serde_json::Value {
+    let mut fields = serde_json::Map::new();
+    fields.insert("request_type".into(), serde_json::json!(req_type));
+    fields.insert("response_type".into(), serde_json::json!(resp.resp_type));
+    fields.insert("request_id_present".into(), serde_json::json!(resp.id.is_some()));
+    fields.insert(
+        "payload_present".into(),
+        serde_json::json!(resp.payload.is_some()),
+    );
+    fields.insert(
+        "is_error_response".into(),
+        serde_json::json!(resp.resp_type == "error"),
+    );
+
+    if let Some(payload) = resp.payload.as_ref() {
+        fields.insert(
+            "error_message_present".into(),
+            serde_json::json!(
+                payload
+                    .get("message")
+                    .and_then(|v| v.as_str())
+                    .map(|s| !s.is_empty())
+                    .unwrap_or(false)
+            ),
+        );
+    }
+
+    match req_type {
+        "GET_USER_KEY" => {
+            let payload = resp.payload.as_ref();
+            fields.insert(
+                "user_key_present".into(),
+                serde_json::json!(
+                    payload
+                        .and_then(|p| p.get("userKey"))
+                        .map(|v| !v.is_null())
+                        .unwrap_or(false)
+                ),
+            );
+            fields.insert(
+                "encrypted_payload_present".into(),
+                serde_json::json!(
+                    payload
+                        .and_then(|p| p.get("ciphertext"))
+                        .and_then(|v| v.as_str())
+                        .map(|s| !s.is_empty())
+                        .unwrap_or(false)
+                ),
+            );
+        }
+        "HAS_USER_KEY" => {
+            let exists = resp
+                .payload
+                .as_ref()
+                .and_then(|p| p.get("exists"))
+                .and_then(|v| v.as_bool());
+            fields.insert("exists".into(), serde_json::json!(exists));
+        }
+        _ => {}
+    }
+
+    serde_json::Value::Object(fields)
 }
 
 fn read_message() -> Option<Request> {
@@ -269,7 +402,21 @@ fn keychain_watcher(
             }
         };
 
-        let has_key = matches!(ks.retrieve(&email), Ok(Some(_)));
+        let has_key = match ks.retrieve(&email) {
+            Ok(Some(_)) => true,
+            Ok(None) => false,
+            Err(err) => {
+                host_logger::warn(
+                    "nm.keychain_watch_failed",
+                    "Native messaging keychain watcher read failed",
+                    serde_json::json!({
+                        "email_present": true,
+                        "error_present": !err.is_empty(),
+                    }),
+                );
+                false
+            }
+        };
 
         if last_has_key == Some(true) && !has_key {
             let event = Response {
@@ -283,6 +430,14 @@ fn keychain_watcher(
             };
             let _lock = stdout_lock.lock().unwrap();
             write_message(&event);
+            host_logger::info(
+                "nm.event_sent",
+                "Native messaging event sent",
+                serde_json::json!({
+                    "event": "DESKTOP_LOCKED",
+                    "email_present": true,
+                }),
+            );
         } else if last_has_key == Some(false) && has_key {
             let event = Response {
                 v: 1,
@@ -295,6 +450,14 @@ fn keychain_watcher(
             };
             let _lock = stdout_lock.lock().unwrap();
             write_message(&event);
+            host_logger::info(
+                "nm.event_sent",
+                "Native messaging event sent",
+                serde_json::json!({
+                    "event": "DESKTOP_UNLOCKED",
+                    "email_present": true,
+                }),
+            );
         }
 
         last_has_key = Some(has_key);
@@ -304,6 +467,14 @@ fn keychain_watcher(
 fn native_messaging_host() {
     let args: Vec<String> = env::args().collect();
     let caller_origin = nm_host_args::caller_origin_from_args(&args);
+    host_logger::info(
+        "nm.host_started",
+        "Native messaging host started",
+        serde_json::json!({
+            "caller_origin_present": caller_origin.is_some(),
+            "caller_origin": caller_origin.as_deref(),
+        }),
+    );
     let watched_email: Arc<Mutex<Option<String>>> = Arc::new(Mutex::new(None));
     let stdout_lock: Arc<Mutex<()>> = Arc::new(Mutex::new(()));
 
@@ -317,6 +488,12 @@ fn native_messaging_host() {
 
     loop {
         if let Some(req) = read_message() {
+            let req_type = req.req_type.clone();
+            host_logger::info(
+                "nm.request_received",
+                "Native messaging request received",
+                request_log_fields(&req, caller_origin.as_deref()),
+            );
             if let Some(email) = req
                 .payload
                 .as_ref()
@@ -327,13 +504,54 @@ fn native_messaging_host() {
                 let mut guard = watched_email.lock().unwrap();
                 if guard.is_none() {
                     *guard = Some(normalized);
+                    host_logger::info(
+                        "nm.watched_email_set",
+                        "Native messaging watcher email set",
+                        serde_json::json!({
+                            "request_type": req_type.as_str(),
+                            "email_present": true,
+                        }),
+                    );
                 }
             }
 
             let resp = handle_request(req, caller_origin.as_deref());
+            host_logger::info(
+                "nm.response_sent",
+                "Native messaging response sent",
+                response_log_fields(&req_type, &resp),
+            );
+            if req_type == "HANDSHAKE" {
+                if resp.resp_type == "response" {
+                    host_logger::info(
+                        "nm.extension_connected",
+                        "Extension handshake succeeded",
+                        serde_json::json!({
+                            "caller_origin_present": caller_origin.is_some(),
+                            "caller_origin": caller_origin.as_deref(),
+                        }),
+                    );
+                } else {
+                    host_logger::warn(
+                        "nm.extension_handshake_failed",
+                        "Extension handshake failed",
+                        serde_json::json!({
+                            "caller_origin_present": caller_origin.is_some(),
+                            "caller_origin": caller_origin.as_deref(),
+                        }),
+                    );
+                }
+            }
             let _lock = stdout_lock.lock().unwrap();
             write_message(&resp);
         } else {
+            host_logger::info(
+                "nm.host_stopped",
+                "Native messaging host stopped",
+                serde_json::json!({
+                    "reason": "stdin_closed_or_invalid_message",
+                }),
+            );
             break;
         }
     }

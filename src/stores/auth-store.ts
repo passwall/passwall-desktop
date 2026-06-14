@@ -5,7 +5,10 @@ import {
   PBKDF2_MIN_ITERATIONS,
 } from "@/lib/crypto";
 import AuthService from "@/api/auth";
+import OrganizationsService from "@/api/organizations";
 import HTTPClient from "@/lib/http-client";
+import type { ApiError } from "@/lib/http-client";
+import { createFlowId, logger, type LogFields } from "@/lib/logger";
 import {
   clearAllSecrets,
   getSecure,
@@ -43,6 +46,8 @@ const LOCAL_STORAGE_KEYS_TO_KEEP_ON_LOGOUT = new Set([
   "passwall_theme",
 ]);
 
+let lastAuthSuccessAt: number | null = null;
+
 interface AuthState {
   authenticated: boolean;
   locked: boolean;
@@ -63,14 +68,15 @@ interface AuthState {
     data: SignInResponse,
     email: string,
     server: string,
-    masterKey: Uint8Array
+    masterKey: Uint8Array,
+    flowId?: string
   ) => Promise<void>;
   lock: () => Promise<void>;
   unlock: (masterPassword: string) => Promise<void>;
   unlockWithBiometrics: () => Promise<void>;
   enableBiometricUnlock: () => Promise<void>;
   disableBiometricUnlock: () => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (source?: string, metadata?: LogFields) => Promise<void>;
   fetchOrganizations: () => Promise<void>;
   restoreSession: () => Promise<boolean>;
 }
@@ -120,6 +126,10 @@ async function refreshBiometricUnlockKeyIfEnabled(
 ): Promise<void> {
   if (!email || !userKeyB64 || !isBiometricUnlockEnabled()) return;
   await enableBiometricUnlockKey(email, userKeyB64).catch(() => {
+    void logger.warn(
+      "auth.biometric_unlock_key_refresh_failed",
+      "Biometric unlock key refresh failed"
+    );
     // Keep normal login working if the biometric keychain entry cannot refresh.
   });
 }
@@ -173,15 +183,44 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
     async login(payload: LoginPayload) {
       const { email, master_password, server } = payload;
+      const flowId = createFlowId("login");
+      void logger.info(
+        "auth.login_start",
+        "Login flow started",
+        {
+          email_present: email.trim().length > 0,
+          server_present: server.trim().length > 0,
+        },
+        { flow_id: flowId }
+      );
       HTTPClient.setBaseURL(server);
 
       const { data: kdfConfig } = await AuthService.preLogin(email);
       storeKdfConfig(email, kdfConfig);
+      void logger.info(
+        "auth.prelogin_success",
+        "Prelogin KDF configuration loaded",
+        {
+          kdf_type: kdfConfig.kdf_type,
+          kdf_iterations: kdfConfig.kdf_iterations,
+        },
+        { flow_id: flowId }
+      );
 
       if (
         kdfConfig.kdf_type === 0 &&
         kdfConfig.kdf_iterations < PBKDF2_MIN_ITERATIONS
       ) {
+        void logger.error(
+          "auth.kdf_policy_rejected",
+          "KDF iterations are below the desktop minimum",
+          {
+            kdf_type: kdfConfig.kdf_type,
+            kdf_iterations: kdfConfig.kdf_iterations,
+            min_iterations: PBKDF2_MIN_ITERATIONS,
+          },
+          { flow_id: flowId }
+        );
         throw new Error(
           `KDF iterations too low (${kdfConfig.kdf_iterations}). Minimum required: ${PBKDF2_MIN_ITERATIONS}.`
         );
@@ -217,10 +256,25 @@ export const useAuthStore = create<AuthState>((set, get) => {
             { type: "REQUIRE_2FA_SETUP" }
           );
         }
+        void logger.warn(
+          "auth.signin_failed",
+          "Signin request failed",
+          {
+            status: err.response?.status,
+            error_code: err.response?.data?.error,
+          },
+          { flow_id: flowId }
+        );
         throw error;
       }
 
       if (data.two_factor_required) {
+        void logger.info(
+          "auth.signin_2fa_required",
+          "Signin requires two-factor verification",
+          undefined,
+          { flow_id: flowId }
+        );
         set({
           twoFactorRequired: true,
           twoFactorToken: data.two_factor_token || null,
@@ -232,6 +286,12 @@ export const useAuthStore = create<AuthState>((set, get) => {
       }
 
       if (data.require_two_factor_setup?.is_mandatory) {
+        void logger.warn(
+          "auth.signin_2fa_setup_required",
+          "Organization requires two-factor setup",
+          undefined,
+          { flow_id: flowId }
+        );
         throw Object.assign(
           new Error(
             "Two-factor authentication setup is required by your organization. Please set it up in the Passwall Vault web app."
@@ -240,7 +300,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         );
       }
 
-      await get().completeLogin(data, email, server, masterKey);
+      await get().completeLogin(data, email, server, masterKey, flowId);
       return {};
     },
 
@@ -278,15 +338,27 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
       const email = localStorage.getItem("email") || "";
       const server = localStorage.getItem("server") || "";
-      await get().completeLogin(data, email, server, masterKey);
+      await get().completeLogin(data, email, server, masterKey, createFlowId("2fa"));
     },
 
     async completeLogin(
       data: SignInResponse,
       email: string,
       server: string,
-      masterKey: Uint8Array
+      masterKey: Uint8Array,
+      flowId = createFlowId("login")
     ) {
+      void logger.info(
+        "auth.complete_login_start",
+        "Completing login and storing session secrets",
+        {
+          has_user: Boolean(data.user),
+          has_access_token: Boolean(data.access_token),
+          has_refresh_token: Boolean(data.refresh_token),
+          has_protected_user_key: Boolean(data.protected_user_key),
+        },
+        { flow_id: flowId }
+      );
       const stretchedMasterKey =
         await cryptoService.stretchMasterKey(masterKey);
       const userKey = await cryptoService.unwrapUserKey(
@@ -299,12 +371,35 @@ export const useAuthStore = create<AuthState>((set, get) => {
       localStorage.setItem("user", JSON.stringify(data.user || {}));
 
       const userKeyB64 = cryptoService.arrayToBase64(userKey.toBytes());
-      await setManySecure({
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-        user_key: userKeyB64,
-        protected_user_key: data.protected_user_key,
-      });
+      try {
+        await setManySecure({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+          user_key: userKeyB64,
+          protected_user_key: data.protected_user_key,
+        });
+      } catch (error) {
+        void logger.error(
+          "auth.secure_storage_write_failed",
+          "Failed to store session secrets",
+          {
+            error: error instanceof Error ? error.message : String(error),
+          },
+          { flow_id: flowId }
+        );
+        throw error;
+      }
+      void logger.info(
+        "auth.secure_storage_write_success",
+        "Session secrets were stored in secure storage",
+        {
+          has_access_token: Boolean(data.access_token),
+          has_refresh_token: Boolean(data.refresh_token),
+          has_user_key: Boolean(userKeyB64),
+          has_protected_user_key: Boolean(data.protected_user_key),
+        },
+        { flow_id: flowId }
+      );
       await setNativeMessagingUserKey(email, userKeyB64);
       await refreshBiometricUnlockKeyIfEnabled(email, userKeyB64);
 
@@ -314,12 +409,29 @@ export const useAuthStore = create<AuthState>((set, get) => {
         locked: false,
         user: data.user,
       });
+      lastAuthSuccessAt = Date.now();
 
       await get().fetchOrganizations();
+      lastAuthSuccessAt = Date.now();
+      void logger.info(
+        "auth.complete_login_success",
+        "Login flow completed",
+        {
+          authenticated: get().authenticated,
+          locked: get().locked,
+          has_user_key: Boolean(get().userKey),
+          organizations_count: get().organizations.length,
+        },
+        { flow_id: flowId }
+      );
     },
 
     async lock() {
       const emailForNativeHost = (localStorage.getItem("email") || "").trim();
+      void logger.info("auth.lock_start", "Locking vault", {
+        authenticated: get().authenticated,
+        organizations_count: get().organizations.length,
+      });
       await removeNativeMessagingUserKey(emailForNativeHost);
       await removeSecure("user_key");
       useVaultStore.getState().clearItems();
@@ -329,11 +441,19 @@ export const useAuthStore = create<AuthState>((set, get) => {
         locked: true,
         orgKeys: {},
       });
+      void logger.info("auth.lock_success", "Vault locked", {
+        authenticated: get().authenticated,
+        locked: get().locked,
+      });
     },
 
     async unlock(masterPassword: string) {
       const email = localStorage.getItem("email") || "";
       const server = localStorage.getItem("server") || "";
+      const flowId = createFlowId("unlock");
+      void logger.info("auth.unlock_start", "Master password unlock started", undefined, {
+        flow_id: flowId,
+      });
       if (server) HTTPClient.setBaseURL(server);
 
       const protectedUserKey = await getSecure("protected_user_key");
@@ -368,13 +488,29 @@ export const useAuthStore = create<AuthState>((set, get) => {
         locked: false,
         authenticated: true,
       });
+      lastAuthSuccessAt = Date.now();
 
       await get().fetchOrganizations();
+      lastAuthSuccessAt = Date.now();
+      void logger.info(
+        "auth.unlock_success",
+        "Master password unlock completed",
+        {
+          authenticated: get().authenticated,
+          locked: get().locked,
+          organizations_count: get().organizations.length,
+        },
+        { flow_id: flowId }
+      );
     },
 
     async unlockWithBiometrics() {
       const email = localStorage.getItem("email") || "";
       const server = localStorage.getItem("server") || "";
+      const flowId = createFlowId("biometric-unlock");
+      void logger.info("auth.biometric_unlock_start", "Biometric unlock started", undefined, {
+        flow_id: flowId,
+      });
       if (server) HTTPClient.setBaseURL(server);
 
       const userKeyB64 = await getBiometricUnlockKey(email);
@@ -392,8 +528,20 @@ export const useAuthStore = create<AuthState>((set, get) => {
         locked: false,
         authenticated: true,
       });
+      lastAuthSuccessAt = Date.now();
 
       await get().fetchOrganizations();
+      lastAuthSuccessAt = Date.now();
+      void logger.info(
+        "auth.biometric_unlock_success",
+        "Biometric unlock completed",
+        {
+          authenticated: get().authenticated,
+          locked: get().locked,
+          organizations_count: get().organizations.length,
+        },
+        { flow_id: flowId }
+      );
     },
 
     async enableBiometricUnlock() {
@@ -405,18 +553,45 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
       const userKeyB64 = cryptoService.arrayToBase64(userKey.toBytes());
       await enableBiometricUnlockKey(email, userKeyB64);
+      void logger.info("auth.biometric_unlock_enabled", "Biometric unlock enabled", {
+        locked,
+        has_user_key: Boolean(userKey),
+        email_present: Boolean(email),
+      });
     },
 
     async disableBiometricUnlock() {
       const email = localStorage.getItem("email") || "";
       await disableBiometricUnlockKey(email);
+      void logger.info("auth.biometric_unlock_disabled", "Biometric unlock disabled", {
+        email_present: Boolean(email),
+      });
     },
 
-    async logout() {
+    async logout(source = "unknown", metadata: LogFields = {}) {
       const emailForNativeHost = (localStorage.getItem("email") || "").trim();
+      const callerStack = new Error().stack
+        ?.split("\n")
+        .slice(1, 8)
+        .join(" | ");
+      void logger.info("auth.logout_start", "Logout started", {
+        source,
+        ...metadata,
+        caller_stack: callerStack,
+        ms_since_last_auth_success:
+          lastAuthSuccessAt === null ? null : Date.now() - lastAuthSuccessAt,
+        authenticated: get().authenticated,
+        locked: get().locked,
+        has_user_key: Boolean(get().userKey),
+        organizations_count: get().organizations.length,
+      });
       try {
         await AuthService.logout();
-      } catch {
+      } catch (error) {
+        void logger.warn("auth.logout_server_failed", "Server logout request failed", {
+          source,
+          error: error instanceof Error ? error.message : String(error),
+        });
         // Ignore server-side logout errors
       }
 
@@ -444,6 +619,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
           localStorage.removeItem(key);
         }
       });
+      void logger.info("auth.logout_success", "Logout completed", { source });
     },
 
     async fetchOrganizations() {
@@ -483,7 +659,16 @@ export const useAuthStore = create<AuthState>((set, get) => {
         });
 
         localStorage.setItem("organizations", JSON.stringify(orgs));
+        void logger.info("org.fetch_success", "Organizations loaded", {
+          organizations_count: orgs.length,
+          default_org_present: Boolean(resolveDefaultOrgId(orgs)),
+        });
       } catch (error) {
+        const apiError = error as ApiError;
+        void logger.error("org.fetch_failed", "Failed to fetch organizations", {
+          status: apiError.response?.status,
+          error: error instanceof Error ? error.message : String(error),
+        });
         console.error(
           "Failed to fetch organizations:",
           (error as Error).message
@@ -492,10 +677,31 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
 
     async restoreSession(): Promise<boolean> {
+      const flowId = createFlowId("restore");
+      void logger.info("auth.restore_start", "Session restore started", undefined, {
+        flow_id: flowId,
+      });
       const accessToken = await getSecure("access_token");
       const userKeyB64 = await getSecure("user_key");
       const protectedUserKey = await getSecure("protected_user_key");
-      if (!accessToken) return false;
+      void logger.info(
+        "auth.restore_secure_state",
+        "Secure storage state loaded for restore",
+        {
+          has_access_token: Boolean(accessToken),
+          has_user_key: Boolean(userKeyB64),
+          has_protected_user_key: Boolean(protectedUserKey),
+          has_user_before: Boolean(get().user),
+          organizations_count: get().organizations.length,
+        },
+        { flow_id: flowId }
+      );
+      if (!accessToken) {
+        void logger.info("auth.restore_no_session", "No access token available", undefined, {
+          flow_id: flowId,
+        });
+        return false;
+      }
 
       const savedServer = localStorage.getItem("server");
       if (savedServer) {
@@ -520,16 +726,38 @@ export const useAuthStore = create<AuthState>((set, get) => {
           userKey: null,
           orgKeys: {},
         });
+        lastAuthSuccessAt = Date.now();
+        void logger.info(
+          "auth.restore_locked",
+          "Session restored in locked state",
+          undefined,
+          { flow_id: flowId }
+        );
         return true;
       }
 
-      if (!userKeyB64) return false;
+      if (!userKeyB64) {
+        void logger.warn(
+          "auth.restore_missing_user_key",
+          "Session restore found no user key",
+          { has_protected_user_key: Boolean(protectedUserKey) },
+          { flow_id: flowId }
+        );
+        return false;
+      }
 
       try {
         const userKeyBytes = cryptoService.base64ToArray(userKeyB64);
         const userKey = SymmetricKey.fromBytes(userKeyBytes);
         set({ userKey, authenticated: true, locked: false });
+        lastAuthSuccessAt = Date.now();
       } catch {
+        void logger.error(
+          "auth.restore_invalid_user_key",
+          "Stored user key could not be decoded",
+          undefined,
+          { flow_id: flowId }
+        );
         return false;
       }
 
@@ -539,11 +767,21 @@ export const useAuthStore = create<AuthState>((set, get) => {
       }
 
       await get().fetchOrganizations();
+      lastAuthSuccessAt = Date.now();
+      void logger.info(
+        "auth.restore_unlocked",
+        "Session restored in unlocked state",
+        {
+          authenticated: get().authenticated,
+          locked: get().locked,
+          has_user_key: Boolean(get().userKey),
+          has_user: Boolean(get().user),
+          organizations_count: get().organizations.length,
+        },
+        { flow_id: flowId }
+      );
       return true;
     },
   };
 });
 
-// Imported at module level — Zustand's lazy getState() pattern prevents
-// circular initialization issues at runtime.
-import OrganizationsService from "@/api/organizations";
